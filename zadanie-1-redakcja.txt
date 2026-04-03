@@ -1,0 +1,231 @@
+Działaj jako światowej klasy ekspert od prezentacji naukowych na konferencjach z informatyki teoretycznej, w szczególności na konferencjach typu **LATIN / ESA / SODA / STACS / ICALP**. Masz doświadczenie zarówno w teorii grafów, strukturach danych, algorytmice, jak i w projektowaniu bardzo dobrych referatów 20-minutowych dla szerokiej publiczności TCS.
+
+Przygotowuję referat na konferencję **LATIN 2026 (Latin American Symposium on Theoretical Informatics)**.
+Temat referatu dotyczy mojej pracy naukowej.
+Organizatorzy przekazali następującą informację techniczną:
+
+* slot referatowy trwa **20 minut łącznie**,
+* w te 20 minut wchodzą także **1–2 pytania i przejście między prezentacjami**,
+* organizatorzy proszą, aby **nie używać własnego laptopa**,
+* prezentacja powinna być dostępna jako **plik PDF** uruchamiany na komputerze sali.
+
+Twoim zadaniem **NIE jest pisać samych slajdów**, tylko stworzyć **bardzo dokładny plan slajdów w punktach**.
+
+## Główny cel
+
+Masz przygotować **plan kompletnej prezentacji**, gdzie kolejne punkty odpowiadają kolejnym slajdom.
+Plan ma być zoptymalizowany pod **referat konferencyjny na LATIN**: szeroka publiczność TCS, mało czasu, wysoka oczekiwana klarowność, nacisk na główny wynik i ideę, a nie na pełne dowody techniczne.
+
+## Obowiązkowa baza źródłowa
+
+Masz **bezwzględnie oprzeć cały plan na dwóch plikach źródłowych**:
+
+* `main-all.tex`
+* `main.pdf`
+
+Traktuj te dwa pliki jako podstawowe źródła prawdy o artykule i o treści referatu.
+
+### Rola plików
+
+1. **`main-all.tex`** ma być głównym źródłem dla:
+
+   * dokładnej treści matematycznej,
+   * definicji,
+   * notacji,
+   * nazw obiektów, procedur i operacji,
+   * twierdzeń, lematów i pojęć,
+   * logicznej struktury argumentu,
+   * sformułowań, które warto przenieść na slajdy.
+
+2. **`main.pdf`** ma być głównym źródłem dla:
+
+   * ogólnej narracji artykułu,
+   * hierarchii tematów,
+   * tego, co jest centralne z perspektywy prezentacyjnej,
+   * istniejących figur, tabel, przykładów i schematów,
+   * intuicji, które fragmenty najlepiej nadają się na slajdy konferencyjne.
+
+### Twarde zasady pracy z plikami
+
+1. Najpierw przeanalizuj `main-all.tex` i `main.pdf`, a dopiero potem buduj plan slajdów.
+2. Nie wolno tworzyć planu „z powietrza” ani opierać go wyłącznie na ogólnym szablonie referatu TCS.
+3. Nie wolno zmieniać terminologii, jeśli `main-all.tex` używa już ustalonej terminologii.
+4. Nie wolno proponować slajdów, treści, definicji, claimów ani rysunków, które nie mają wyraźnego oparcia w `main-all.tex` lub `main.pdf`.
+5. Jeśli w `main.pdf` istnieją figury, przykłady lub schematy, które można sensownie przerobić na slajdy konferencyjne, preferuj je zamiast wymyślania zupełnie nowych obiektów.
+6. Jeśli proponujesz nowy rysunek, jego treść musi wynikać bezpośrednio z materiału obecnego w `main-all.tex` lub `main.pdf`.
+7. Jeśli jakaś informacja jest zbyt techniczna, możesz uprościć jej ekspozycję konferencyjną, ale nie wolno zmieniać sensu matematycznego.
+8. Jeśli czegoś nie da się bezpiecznie ustalić na podstawie `main-all.tex` i `main.pdf`, użyj jawnego placeholdera w nawiasach kwadratowych zamiast halucynować treść.
+
+## Bezwzględnie obowiązujące założenia, które musisz uwzględnić
+
+Twój plan slajdów ma realizować jednocześnie wszystkie poniższe 10 cech dobrego referatu:
+
+1. **Prezentacja ma być zaprojektowana na ok. 16–17 minut mówienia**, a nie na pełne 20 minut, aby zostawić margines na pytania i przejście.
+2. **Liczba głównych slajdów ma wynosić około 12–14**, plus na końcu możesz zaproponować **2–5 backup slides**.
+3. **Do 3. minuty słuchacz musi zrozumieć problem, model i pytanie badawcze.**
+4. **Główny wynik ma zostać pokazany wcześnie i bardzo wyraźnie.**
+5. **Referat ma wyjaśniać główną nową ideę**, a nie tylko oznajmiać twierdzenie.
+6. **Ma występować jeden running example / jeden centralny przykład**, który pomaga nie-specjaliście śledzić prezentację.
+7. **Ma być pokazane osadzenie względem wcześniejszych prac**, ale krótko i celowo, bez przeładowanego related work.
+8. **Część techniczna ma pokazywać proof idea / structural idea**, a nie próbować odtwarzać pełnego dowodu.
+9. **Plan musi być zgodny z realiami PDF na obcym komputerze**:
+
+   * brak zależności od multimediów,
+   * brak efektów wymagających PowerPointa,
+   * wszystko musi działać jako statyczny PDF lub PDF-safe overlays,
+   * każdy slajd ma być wizualnie prosty i czytelny.
+10. **Ostatni główny slajd ma zostawiać mocny take-away oraz naturalne otwarcie na pytania / open problem / next step.**
+
+## Bardzo ważny kontekst konferencyjny
+
+Pamiętaj, że LATIN to konferencja z **szeroką publicznością z informatyki teoretycznej**, a nie seminarium wyłącznie dla wąskich specjalistów w mojej subdziedzinie.
+Dlatego plan ma być tworzony pod słuchacza, który:
+
+* jest bardzo inteligentny i techniczny,
+* zna standardy TCS,
+* ale **nie musi znać mojej konkretnej niszy**,
+* oczekuje, że po referacie będzie umiał odpowiedzieć na trzy pytania:
+
+  1. **Jaki jest problem?**
+  2. **Jaki jest główny wynik?**
+  3. **Jaka jest główna idea, która ten wynik umożliwia?**
+
+## Format odpowiedzi — obowiązkowy
+
+Masz wypisać kolejne slajdy jako numerowaną listę.
+
+Dla **każdego slajdu** podaj dokładnie cztery elementy:
+
+### a) Tytuł slajdu
+
+Krótki, konkretny, konferencyjny. Nie ogólnikowy.
+
+### b) Cele slajdu
+
+W 2–5 bardzo konkretnych punktach:
+
+* co słuchacz ma zrozumieć po tym slajdzie,
+* po co ten slajd istnieje,
+* jaką funkcję pełni w dramaturgii całego referatu.
+
+### c) Treść slajdu
+
+Podaj bardzo konkretnie, co ma się znaleźć na slajdzie:
+
+* nagłówki,
+* krótkie hasła,
+* wzory, jeśli są potrzebne,
+* treść twierdzenia, jeśli to slajd z wynikiem,
+* wypunktowania,
+* podpisy pod tabelą lub schematem,
+* ewentualne krótkie zdania, które powinny się pojawić dosłownie.
+
+Nie pisz tylko „tu definicja” albo „tu wynik”.
+Masz zaproponować rzeczywistą treść, która mogłaby zostać potem przeniesiona do Beamera.
+
+### d) Bardzo precyzyjny opis rysunku
+
+Dla każdego slajdu opisz **dokładnie**, jaki rysunek powinien się pojawić:
+
+* co przedstawia,
+* jakie elementy ma zawierać,
+* jak są rozmieszczone,
+* które elementy są najważniejsze wizualnie,
+* co ma być podpisane,
+* czy rysunek ma być schematem, tabelą, ilustracją przykładu, diagramem przepływu idei, wizualizacją macierzy, osią czasu, porównaniem „before/after”, itp.
+
+Opis ma być na tyle precyzyjny, aby później można było na jego podstawie wygenerować lub narysować figurę bez zgadywania.
+
+## Dodatkowe wymogi jakościowe
+
+1. **Każdy slajd ma mieć jedną dominującą myśl.**
+2. **Nie wolno przeładowywać slajdów.**
+3. **Plan ma być spójny czasowo** — powinno być widać, że całość realnie mieści się w 16–17 minutach mówienia.
+4. **Nie wolno proponować zbyt wielu definicji naraz.**
+5. **Running example ma wracać na kilku slajdach**, a nie pojawić się tylko raz.
+6. **Main theorem ma być wyeksponowane wizualnie i retorycznie.**
+7. **Proof idea ma być rozbita na strawne etapy.**
+8. **Nie wolno budować planu tak, jakby to był wykład 50-minutowy.**
+9. **Ostatni slajd ma być dobry także jako slajd wiszący podczas pytań.**
+10. **Backup slides mają być sensowne i konkretne**, nie symboliczne.
+11. **Plan ma być zgodny z `main-all.tex` i `main.pdf` zarówno na poziomie treści, jak i terminologii.**
+12. **Jeśli jakiś slajd opiera się szczególnie mocno na jednej figurze, definicji lub fragmencie argumentu z artykułu, ma to być widoczne w jego konstrukcji.**
+
+## Czego nie wolno robić
+
+* Nie pisz ogólników typu „wstaw odpowiedni rysunek”.
+* Nie pisz banalnych porad prezentacyjnych.
+* Nie opisuj, jak mówić do publiczności.
+* Nie streszczaj teorii prezentacji.
+* Nie twórz abstrakcyjnego outline’u typu „Intro / Results / Proof / End”.
+* Nie pomijaj żadnego z czterech elementów (a–d) dla żadnego slajdu.
+* Nie zakładaj, że publiczność zna szczegóły mojej specjalizacji.
+* Nie próbuj upchnąć pełnego dowodu na slajdy.
+* Nie wolno ignorować `main-all.tex` i `main.pdf`.
+* Nie wolno tworzyć planu na podstawie ogólnych szablonów referatu TCS bez zakotwiczenia w rzeczywistej treści artykułu.
+* Nie wolno proponować tekstów slajdów ani rysunków, które nie mają wyraźnego oparcia w dostarczonych plikach.
+
+## Oczekiwany poziom szczegółowości
+
+Chcę plan **bardzo szczegółowy**, nadający się jako bezpośredni blueprint do późniejszego tworzenia prezentacji w Beamerze.
+
+## Struktura końcowej odpowiedzi
+
+Twoja odpowiedź ma mieć trzy części:
+
+### Część I. Krótka decyzja projektowa
+
+Na początku napisz w 5–10 punktach:
+
+* ile głównych slajdów proponujesz,
+* ile backup slides proponujesz,
+* jaka jest ogólna dramaturgia referatu,
+* gdzie pojawia się main result,
+* gdzie pojawia się running example,
+* gdzie kończy się część „problem/setup”, a zaczyna część „wynik/idea”,
+* które części planu są oparte przede wszystkim na `main-all.tex`,
+* które części planu są oparte przede wszystkim na `main.pdf`.
+
+### Część II. Szczegółowy plan slajd po slajdzie
+
+Numerowana lista slajdów.
+Dla każdego slajdu obowiązkowo:
+
+* **a) Tytuł**
+* **b) Cele slajdu**
+* **c) Treść slajdu**
+* **d) Bardzo precyzyjny opis rysunku**
+
+### Część III. Kontrola zgodności z 10 cechami dobrego referatu
+
+Na końcu zrób tabelę lub listę 10 punktów i przy każdym krótko wyjaśnij,
+**w którym miejscu planu ta cecha została zrealizowana**.
+
+Dodatkowo wskaż krótko:
+
+* które slajdy najbardziej bezpośrednio wynikają z `main-all.tex`,
+* które slajdy najbardziej bezpośrednio wynikają z `main.pdf`,
+* które rysunki są adaptacją materiału z artykułu, a które są nowymi, ale ściśle tekstowo uzasadnionymi wizualizacjami.
+
+## Styl odpowiedzi
+
+* precyzyjny,
+* konkretny,
+* bez lania wody,
+* konferencyjny,
+* nastawiony na realne użycie.
+
+Jeżeli uznasz, że jakaś informacja o samej pracy naukowej jest potrzebna, to:
+
+* **nie zadawaj pytań**,
+* tylko wprowadź rozsądne placeholdery typu:
+
+  * `[MAIN THEOREM]`
+  * `[RUNNING EXAMPLE]`
+  * `[PREVIOUS BEST RESULT]`
+  * `[KEY TECHNICAL IDEA]`
+  * `[OPEN PROBLEM]`
+
+ale **tylko wtedy**, gdy naprawdę nie da się bezpiecznie wydobyć danej treści z `main-all.tex` i `main.pdf`.
+
+W przeciwnym razie masz używać rzeczywistej treści, terminologii i struktury wynikającej z tych plików.
