@@ -3,11 +3,11 @@
 - Plan zakłada **13 głównych slajdów** oraz **3 backup slides**; to mieści się dokładnie w celu „12–14 + 2–5” i pozwala utrzymać gęstość typową dla 16–17 minut mówienia.
 - Ogólna dramaturgia jest czterofazowa: **(1)** szybkie ustawienie problemu i modelu na slajdach 1–4, **(2)** wczesne wyłożenie wyniku na slajdzie 5, **(3)** pokazanie głównej idei strukturalnej na slajdach 6–9, **(4)** pokazanie warstwy dynamicznej i deamortyzacji na slajdach 10–13.
 - **Main result** pojawia się na **slajdzie 5** i jest tam jedynym dominującym obiektem; wcześniejsze slajdy prowadzą wyłącznie do tego momentu.
-- **Running example** pojawia się na **slajdach 8–9** jako jedyny ciągły przykład techniczny; na slajdach 10–11 jego funkcję przejmują już figury ilustrujące dynamikę struktury, ale bez zmiany centralnej narracji.
+- **Running example** pojawia się na **slajdach 8–9** jako jedyny ścisły ciągły przykład techniczny; slajdy **10–12** pozostają z nim spójne narracyjnie i przejmują powiązaną, źródłowo zakotwiczoną intuicję wizualną, ale nie trzeba ich opisywać tak, jakby nadal dosłownie rozwijały ten sam pojedynczy przykład.
 - Część **problem/setup** kończy się po **slajdzie 4**; **slajd 5** jest pomostem „wynik”, a część **wynik/idea** zaczyna się operacyjnie od **slajdu 6**.
 - Partie oparte przede wszystkim na **`main-all.tex`** to slajdy **4–12** oraz backupy **14–16**, bo tam kluczowe są dokładne definicje, nazwy procedur, inwarianty, granice asymptotyczne i logiczna kolejność argumentu.
 - Partie oparte przede wszystkim na **`main.pdf`** to wizualny kręgosłup slajdów **3, 6, 7, 8, 9 i 11**, bo tam należy możliwie wiernie adaptować **Figure 1–6** zamiast projektować nowe figury bez potrzeby.
-- Centralne figury artykułu to **Figure 1**, **Figure 4**, **Figure 5** i **Figure 6**: pierwsza tłumaczy model, dwie środkowe niosą running example dla `Decompose`, a ostatnia najlepiej kondensuje ideę przebudowy dynamicznej.
+- Centralne figury artykułu to **Figure 1**, **Figure 4**, **Figure 5** i **Figure 6**: pierwsza tłumaczy model, dwie środkowe niosą running example dla `Decompose`, a ostatnia dostarcza powiązaną wizualną intuicję dla przebudowy dynamicznej.
 - **Figure 2** i **Figure 3** pozostają ważne, ale pełnią rolę wspierającą: Figure 2 uzasadnia, że opis przez prostokąty jest mały, a Figure 3 pokazuje, dlaczego potrzebna jest kanoniczność zamiast dowolnej dekompozycji.
 - Plan jest **świadomie projektowany pod 16–17 minut mówienia, a nie pod pełne 20 minut slotu**: około 3 minuty idą na setup, około 1.5 minuty na theorem slide, około 8–9 minut na ideę techniczną i około 1 minutę na końcowy take-away, zostawiając realny margines na pytania i przejście.
 
@@ -182,8 +182,9 @@ M \in \{0,1\}^{n\times n}
 **d) Bardzo precyzyjny opis rysunku**
 - Bez osobnej figury narracyjnej; głównym obiektem ma być theorem box.
 - Pod theorem boxem mała tabelka `static vs dynamic` z trzema wierszami: `space`, `query`, `update`.
-- W wierszu `space` uczciwie wpisać `static: \(O_d(n)\) bits`, `dynamic: \(O_d(n)\) memory`.
-- W wierszu `update` komórka dla wyniku statycznego ma zawierać kreskę, a dla nowego wyniku pogrubione `\(O(\log\log n)\)`.
+- W wierszu `space` wpisać dokładnie `static: \(O_d(n)\) bits`, `dynamic: \(O_d(n)\) memory`.
+- W wierszu `query` wpisać dokładnie `static: \(O_d(\log\log n)\)`, `dynamic: \(O(\log\log n)\)`.
+- W wierszu `update` wpisać dokładnie `static: —`, `dynamic: \(O(\log\log n)\)`.
 
 **e) Zakotwiczenie źródłowe**
 - Przede wszystkim: oba źródła.
@@ -285,7 +286,7 @@ C_i := \{[a,b] \mid (a,b,c',i)\in \mathcal K \text{ for some } c'\le i\}
 B_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i+1}
 \]
 - Po prawej trzy punkty:
-- `maintain an adhesive segment set \(\mathbb S\); at the beginning of round \(i\), \(\mathbb S_i=\mathtt{strips}_i\)`
+- `formal invariant: after the \(i\)-th iteration, \(\mathbb S\) stores \(\mathtt{strips}_{i+1}\); equivalently, at the beginning of round \(i\), the current state is \(\mathtt{strips}_i\)`
 - `build \(L_i\) using \(\mathtt{Containing}\) on \(C_i\) and \(\mathtt{Adjacent}\) on \(O_{i+1}\)`
 - `after \(\mathtt{Split}\) on \(C_i\) and \(\mathtt{Merge}\) on \(O_{i+1}\), the touched strips that disappear form \(B_i\)`
 - Na dole jedna linia:
@@ -294,7 +295,7 @@ B_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i+1}
 **d) Bardzo precyzyjny opis rysunku**
 - Adaptacja **Figure 4** prawie bez zmian.
 - U góry mała kolorowa macierz `4\times 4`.
-- Pod nią tabela z kolumnami `O_i`, `C_i`, `strips in \(\mathbb S_i\)`, `L_i`, `B_i`.
+- Pod nią tabela z kolumnami `O_i`, `C_i`, `strips in \(\mathbb S_i\)` (stan na początku rundy `i`), `L_i`, `B_i`.
 - Graficznie wyróżnić wiersze `i=1` i `i=3`; pozostałe mogą być lekko przygaszone.
 - Obok tabeli pionowa czerwona linia symbolizująca aktualną kolumnę sweepa.
 
@@ -357,29 +358,31 @@ A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
 
 **c) Treść slajdu**
 - Dwa duże boksy:
-- `\(\mathbb P\)`: static 2D orthogonal point location on the current canonical slab decomposition, storing at most `\(4f_d(n+2)+4n\)` slabs
-- `\(\mathbb Q\)`: hash table of recent updates
+- `\(\mathbb P\)`: static 2D orthogonal point location on the canonical slab decomposition built at the last rebuild / at some earlier moment, storing at most `\(4f_d(n+2)+4n\)` slabs
+- `\(\mathbb Q\)`: hash table of recent updates since that rebuild
 - Próg bufora:
 \[
 |\mathbb Q| \le 8f_d(n+2)
 \]
+- Jedna linia intuicji:
+`Current matrix = base representation in \(\mathbb P\) overlaid with the explicit overrides stored in \(\mathbb Q\).`
 - Inwariant:
 \[
 (i,j)\in \mathbb Q \Rightarrow M[i,j]=\mathbb Q[i,j]
 \]
 \[
-(i,j)\notin \mathbb Q \Rightarrow M[i,j]=1 \iff (i,j)\text{ lies in a slab stored in }\mathbb P
+(i,j)\notin \mathbb Q \Rightarrow M[i,j]=1 \iff (i,j)\text{ lies in a base slab stored in }\mathbb P
 \]
 - Dwa krótkie punkty:
 - `QueryBit`: check `\(\mathbb Q\)` first, otherwise issue a point-location query to `\(\mathbb P\)`
 - `Update`: toggle the value in `\(\mathbb Q\)`; rebuild only when the threshold is reached
 
 **d) Bardzo precyzyjny opis rysunku**
-- Jedna macierz jako tło.
-- Kilka dużych półprzezroczystych prostokątów oznaczonych `stored in \(\mathbb P\)`.
-- Na wierzchu 3–4 pojedyncze komórki z grubym obramowaniem oznaczone `stored in \(\mathbb Q\)`.
+- Jedna macierz czytana jako bieżący stan uzyskiwany przez overlay dwóch warstw.
+- W tle kilka dużych półprzezroczystych prostokątów oznaczonych `base slabs from the last rebuild: stored in \(\mathbb P\)`.
+- Na wierzchu 3–4 pojedyncze komórki z grubym obramowaniem oznaczone `recent flips since the last rebuild: stored in \(\mathbb Q\)`.
 - Po lewej mała strzałka `QueryBit(i,j): \(\mathbb Q\) first, then \(\mathbb P\)`.
-- Po prawej mała strzałka `Update(i,j): only \(\mathbb Q\) for now`.
+- Po prawej mała strzałka `Update(i,j): write the fresh override to \(\mathbb Q\); rebuild later`.
 
 **e) Zakotwiczenie źródłowe**
 - Przede wszystkim: `main-all.tex`, wspierane przez `main.pdf`.
@@ -398,9 +401,9 @@ A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
 - Oprzeć opowieść na figurze z artykułu, a nie na abstrakcyjnym opisie.
 
 **c) Treść slajdu**
-- Najpierw wyciągamy dwa zbiory z aktualnego stanu:
-- `\(\mathcal P\)`: list of slabs stored in `\(\mathbb P\)`
-- `\(\mathcal Q\)`: list of updates stored in `\(\mathbb Q\)`
+- Najpierw wyciągamy dwie warstwy reprezentacji aktualnego stanu:
+- `\(\mathcal P\)`: list of base slabs stored in `\(\mathbb P\)` from the last rebuild
+- `\(\mathcal Q\)`: list of recent updates stored in `\(\mathbb Q\)`
 - Trzy kroki:
 - `partition \(\mathcal Q\) into 0-updates and 1-updates`
 - `assign 0-updates to slabs of \(\mathcal P\) and split each affected slab row by row`
@@ -629,8 +632,8 @@ d\text{-twin-ordering}
 - Uzasadnienie: najpierw pojawia się strukturalna idea slabów i canonical slabs, potem `Decompose`, potem dwuwarstwowy invariant `\(\mathbb P\)+\(\mathbb Q\)`, potem przebudowa i dopiero na końcu deamortyzacja.
 
 6. **Jest running example / centralny przykład pomagający śledzić prezentację.**
-- Realizacja: slajdy 8–9, wspierane przez slajd 11.
-- Uzasadnienie: Figure 4 i Figure 5 tworzą jeden ciągły przykład dla `\mathtt{Decompose}`, a Figure 6 później przejmuje tę samą rolę dla przebudowy dynamicznej.
+- Realizacja: slajdy 8–9, z powiązaną intuicją wizualną na slajdach 10–11.
+- Uzasadnienie: Figure 4 i Figure 5 tworzą jeden ciągły przykład dla `\mathtt{Decompose}`, zaś Figure 6 później daje źródłowo zakotwiczoną wizualizację przebudowy dynamicznej, ale nie musi być przedstawiana jako dosłownie ta sama kontynuacja jednego przykładu.
 
 7. **Related work / kontekst wcześniejszych prac jest krótki, celowy i nieprzeładowany.**
 - Realizacja: slajd 4.
@@ -647,3 +650,9 @@ d\text{-twin-ordering}
 10. **Ostatni główny slajd daje mocny take-away i naturalne wejście w pytania.**
 - Realizacja: slajd 13.
 - Uzasadnienie: końcówka powtarza wynik, kompresuje ideę do jednego pipeline’u i zostawia prosty slajd wiszący `Questions?`, bez niesource’owanego open problemu udającego treść artykułu.
+
+**Końcowe podsumowanie mapowania źródeł**
+- Najbardziej bezpośrednio z `main-all.tex` wynikają slajdy 4–12 oraz backupy 14–16, bo tam treść zależy od dokładnych definicji, nazw procedur, inwariantów, kosztów i kolejności argumentu z Introduction oraz Sections 2–5.
+- Najbardziej bezpośrednio z `main.pdf` wynikają slajdy 3, 6, 7, 8, 9 i 11, bo ich rdzeń wizualny opiera się odpowiednio na Figure 1, Figure 2, Figure 3, Figure 4, Figure 5 i Figure 6 w konferencyjnym układzie artykułu.
+- Adaptacjami materiału z artykułu są rysunki na slajdach 3, 6, 7, 8, 9 i 11: odpowiednio Figure 1–6.
+- Nowymi, ale ściśle tekstowo uzasadnionymi wizualizacjami są slajdy 2, 4, 5, 10, 12, 13 oraz backupy 14–16; każdy z nich wynika bezpośrednio z definicji, twierdzeń lub kroków algorytmicznych zapisanych w `main-all.tex`, a nie z dodatkowych claimów spoza źródeł.
