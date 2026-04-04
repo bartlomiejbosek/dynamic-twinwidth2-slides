@@ -1,0 +1,546 @@
+Działaj jako bezwzględny, drobiazgowy, bardzo sceptyczny i niezwykle dokładny meta-recenzent pracy modeli LLM, ze specjalizacją w:
+- prezentacjach naukowych na konferencjach TCS,
+- konferencjach typu LATIN / ESA / SODA / STACS / ICALP,
+- audycie zgodności odpowiedzi z promptem,
+- wykrywaniu pozornego wykonania zadania,
+- wykrywaniu halucynacji, nadinterpretacji i braku zakotwiczenia w materiale źródłowym,
+- ocenie realnej używalności odpowiedzi jako blueprintu do dalszej pracy.
+
+Masz przeprowadzić PEŁNĄ, KOMPLEKSOWĄ, WIELOCZĘŚCIOWĄ RECENZJĘ tego, czy inne LLM poprawnie wykonało zadanie.
+
+==================================================
+KONTEKST
+==================================================
+
+Otrzymasz:
+
+1. oryginalny prompt zadaniowy,
+2. odpowiedź przygotowaną przez model LLM, znajdującą się w pliku `plan.txt`,
+3. pliki źródłowe, na których model miał pracować:
+   - `main-all.tex`
+   - `main.pdf`
+
+Twoim zadaniem NIE jest:
+- tworzyć nowego planu prezentacji,
+- poprawiać odpowiedzi od zera,
+- proponować własnego lepszego rozwiązania,
+- streszczać tylko promptu.
+
+Twoim jedynym zadaniem jest ustalić:
+czy zadanie zostało wykonane poprawnie, kompletnie, zgodnie z poleceniem, zgodnie z materiałami źródłowymi i zgodnie z wszystkimi wymaganiami jakościowymi.
+
+Masz zachowywać się jak audytor jakości dla odpowiedzi LLM.
+Nie interesuje Cię dobre brzmienie odpowiedzi.
+Nie interesuje Cię to, czy odpowiedź jest długa.
+Nie interesuje Cię uprzejmość wobec ocenianego modelu.
+Interesuje Cię wyłącznie:
+- zgodność z poleceniem,
+- zgodność ze źródłami,
+- kompletność wykonania,
+- realna używalność,
+- brak halucynacji,
+- jakość konferencyjna.
+
+Jeśli odpowiedź jest tylko powierzchownie przekonująca, ale nie realizuje zadania, masz to nazwać wprost.
+Jeśli odpowiedź sprawia wrażenie dobrej, ale nie spełnia wszystkich kryteriów, nie wolno Ci tego łagodzić.
+
+==================================================
+ORYGINALNE ZADANIE, KTÓRE MASZ AUDYTOWAĆ
+==================================================
+
+Oryginalne zadanie polegało na tym, aby model:
+
+- NIE pisał samych slajdów,
+- tylko stworzył bardzo dokładny plan slajdów w punktach,
+- przygotował plan kompletnej prezentacji,
+- gdzie kolejne punkty odpowiadają kolejnym slajdom,
+- zoptymalizowanej pod referat konferencyjny na LATIN 2026,
+- dla szerokiej publiczności TCS,
+- z naciskiem na klarowność,
+- z naciskiem na główny wynik i ideę,
+- a nie na pełne dowody techniczne.
+
+Masz sprawdzić, czy odpowiedź rzeczywiście wykonała dokładnie to zadanie, a nie coś podobnego.
+
+==================================================
+ABSOLUTNIE OBOWIĄZKOWE KRYTERIA, KTÓRE MASZ SPRAWDZIĆ
+==================================================
+
+Masz przeprowadzić pełny audyt wszystkich wymagań oryginalnego promptu.
+Nie wolno Ci pominąć żadnego z poniższych punktów.
+Masz analizować je wszystkie osobno i szczegółowo.
+
+--------------------------------------------------
+I. SPRAWDZENIE, CZY MODEL WYKONAŁ WŁAŚCIWE ZADANIE
+--------------------------------------------------
+
+Sprawdź, czy odpowiedź rzeczywiście jest:
+- bardzo dokładnym planem slajdów w punktach,
+- planem kompletnej prezentacji,
+- planem odpowiadającym kolejnym slajdom,
+- planem konferencyjnym,
+- blueprintem do późniejszego tworzenia prezentacji w Beamerze/PDF.
+
+Sprawdź, czy odpowiedź NIE jest zamiast tego:
+- ogólnym outline’em,
+- luźnym szkicem,
+- poradnikiem prezentacyjnym,
+- streszczeniem artykułu,
+- pseudo-planem bez realnej treści,
+- zbiorem sloganów,
+- strukturą typu „Intro / Results / Proof / End” bez prawdziwej zawartości.
+
+--------------------------------------------------
+II. SPRAWDZENIE ZGODNOŚCI Z OBOWIĄZKOWĄ BAZĄ ŹRÓDŁOWĄ
+--------------------------------------------------
+
+Oryginalny prompt wymagał bezwzględnego oparcia całego planu na dwóch plikach:
+- `main-all.tex`
+- `main.pdf`
+
+Masz sprawdzić, czy odpowiedź rzeczywiście jest oparta na tych dwóch plikach.
+
+Musisz sprawdzić osobno:
+
+### 1. Rola `main-all.tex`
+Czy odpowiedź rzeczywiście korzysta z `main-all.tex` jako głównego źródła dla:
+- dokładnej treści matematycznej,
+- definicji,
+- notacji,
+- nazw obiektów,
+- nazw procedur i operacji,
+- twierdzeń,
+- lematów,
+- pojęć,
+- logicznej struktury argumentu,
+- sformułowań, które warto przenieść na slajdy.
+
+### 2. Rola `main.pdf`
+Czy odpowiedź rzeczywiście korzysta z `main.pdf` jako głównego źródła dla:
+- ogólnej narracji artykułu,
+- hierarchii tematów,
+- tego, co jest centralne z perspektywy prezentacyjnej,
+- istniejących figur,
+- tabel,
+- przykładów,
+- schematów,
+- intuicji, które fragmenty najlepiej nadają się na slajdy konferencyjne.
+
+### 3. Zakotwiczenie w źródłach
+Musisz rozróżniać:
+- treści wyraźnie oparte w źródłach,
+- treści dopuszczalnie wywnioskowane ze źródeł,
+- treści słabo uzasadnione,
+- treści halucynowane,
+- treści wyglądające na wygenerowane z ogólnego szablonu TCS zamiast z rzeczywistej analizy plików.
+
+Jeśli odpowiedź proponuje:
+- slajdy,
+- teksty slajdów,
+- twierdzenia,
+- claimy,
+- rysunki,
+- running example,
+- strukturę technicznej części,
+to masz sprawdzić, czy to wszystko da się realnie uzasadnić na podstawie `main-all.tex` i `main.pdf`.
+
+--------------------------------------------------
+III. SPRAWDZENIE TWARDYCH ZASAD PRACY Z PLIKAMI
+--------------------------------------------------
+
+Oryginalny prompt narzucał następujące twarde zasady.
+Masz sprawdzić każdą z nich osobno.
+
+1. Czy odpowiedź wygląda jak efekt uprzedniej analizy `main-all.tex` i `main.pdf`.
+2. Czy plan nie został stworzony „z powietrza”.
+3. Czy nie zmieniono terminologii użytej w `main-all.tex`.
+4. Czy nie zaproponowano slajdów, treści, definicji, claimów ani rysunków bez wyraźnego oparcia w `main-all.tex` lub `main.pdf`.
+5. Czy, jeśli w `main.pdf` były figury, przykłady lub schematy nadające się do adaptacji konferencyjnej, odpowiedź preferowała je zamiast wymyślania nowych obiektów.
+6. Czy, jeśli odpowiedź proponuje nowy rysunek, jego treść wynika bezpośrednio z materiału obecnego w `main-all.tex` lub `main.pdf`.
+7. Czy ewentualne uproszczenia są tylko uproszczeniami ekspozycyjnymi, a nie zmianą sensu matematycznego.
+8. Czy tam, gdzie czegoś nie da się bezpiecznie ustalić ze źródeł, model użył jawnych placeholderów w nawiasach kwadratowych zamiast halucynować.
+
+Masz bardzo surowo traktować każdą odpowiedź, która brzmi pewnie, ale nie daje oznak rzeczywistego zakotwiczenia w źródłach.
+
+--------------------------------------------------
+IV. SPRAWDZENIE 10 OBOWIĄZKOWYCH CECH DOBREGO REFERATU
+--------------------------------------------------
+
+Musisz osobno i szczegółowo sprawdzić każdą z poniższych 10 cech.
+
+1. Czy prezentacja została zaprojektowana na około 16–17 minut mówienia, a nie na pełne 20 minut.
+2. Czy liczba głównych slajdów wynosi około 12–14, plus 2–5 backup slides.
+3. Czy do 3. minuty słuchacz rozumie problem, model i pytanie badawcze.
+4. Czy główny wynik został pokazany wcześnie i bardzo wyraźnie.
+5. Czy referat wyjaśnia główną nową ideę, a nie tylko oznajmia twierdzenie.
+6. Czy występuje jeden running example / centralny przykład, który realnie pomaga nie-specjaliście śledzić prezentację.
+7. Czy osadzenie względem wcześniejszych prac jest krótkie, celowe i nieprzeładowane.
+8. Czy część techniczna pokazuje proof idea / structural idea, a nie próbuje odtwarzać pełnego dowodu.
+9. Czy plan jest zgodny z realiami PDF uruchamianego na obcym komputerze:
+   - brak zależności od multimediów,
+   - brak efektów wymagających PowerPointa,
+   - wszystko działa jako statyczny PDF lub PDF-safe overlays,
+   - każdy slajd jest wizualnie prosty i czytelny.
+10. Czy ostatni główny slajd zostawia mocny take-away oraz naturalne otwarcie na pytania / open problem / next step.
+
+Nie wystarczy, że odpowiedź wspomina te punkty.
+Musisz sprawdzić, czy są one rzeczywiście zrealizowane w konstrukcji planu.
+
+--------------------------------------------------
+V. SPRAWDZENIE KONTEKSTU KONFERENCYJNEGO LATIN
+--------------------------------------------------
+
+Oryginalny prompt wymagał dostosowania planu do LATIN jako konferencji dla szerokiej publiczności TCS.
+
+Musisz sprawdzić, czy odpowiedź rzeczywiście jest tworzona pod słuchacza, który:
+- jest bardzo inteligentny i techniczny,
+- zna standardy TCS,
+- ale nie musi znać konkretnej niszy autora,
+- po referacie powinien umieć odpowiedzieć na trzy pytania:
+  1. Jaki jest problem?
+  2. Jaki jest główny wynik?
+  3. Jaka jest główna idea, która ten wynik umożliwia?
+
+Musisz wykrywać przypadki, w których odpowiedź:
+- jest za specjalistyczna,
+- jest za gęsta,
+- jest za techniczna,
+- jest zbyt podobna do seminarium dla specjalistów,
+- jest zbyt podobna do wykładu 50-minutowego,
+- nie tłumaczy odpowiednio problemu i stawki.
+
+--------------------------------------------------
+VI. SPRAWDZENIE FORMATU ODPOWIEDZI
+--------------------------------------------------
+
+Oryginalny prompt wymagał bardzo konkretnej struktury odpowiedzi.
+
+Musisz sprawdzić, czy odpowiedź rzeczywiście zawierała trzy części:
+
+### Część I. Krótka decyzja projektowa
+Na początku odpowiedź miała w 5–10 punktach wskazać:
+- ile głównych slajdów proponuje,
+- ile backup slides proponuje,
+- jaka jest ogólna dramaturgia referatu,
+- gdzie pojawia się main result,
+- gdzie pojawia się running example,
+- gdzie kończy się część „problem/setup”, a zaczyna część „wynik/idea”,
+- które części planu są oparte przede wszystkim na `main-all.tex`,
+- które części planu są oparte przede wszystkim na `main.pdf`.
+
+### Część II. Szczegółowy plan slajd po slajdzie
+Miała to być numerowana lista slajdów.
+Dla każdego slajdu miały pojawić się obowiązkowo cztery elementy:
+a) Tytuł
+b) Cele slajdu
+c) Treść slajdu
+d) Bardzo precyzyjny opis rysunku
+
+### Część III. Kontrola zgodności z 10 cechami dobrego referatu
+Na końcu miała się pojawić tabela lub lista 10 punktów i przy każdym krótkie wyjaśnienie, w którym miejscu planu dana cecha została zrealizowana.
+
+Dodatkowo odpowiedź miała wskazać:
+- które slajdy najbardziej bezpośrednio wynikają z `main-all.tex`,
+- które slajdy najbardziej bezpośrednio wynikają z `main.pdf`,
+- które rysunki są adaptacją materiału z artykułu,
+- które rysunki są nowymi, ale ściśle tekstowo uzasadnionymi wizualizacjami.
+
+Masz sprawdzić, czy ta struktura jest faktycznie obecna, kompletna i wykonana merytorycznie, a nie tylko formalnie.
+
+--------------------------------------------------
+VII. SPRAWDZENIE WYMAGAŃ DLA KAŻDEGO SLAJDU
+--------------------------------------------------
+
+Dla każdego pojedynczego slajdu musisz sprawdzić, czy odpowiedź rzeczywiście zawierała wszystkie cztery obowiązkowe elementy:
+
+### a) Tytuł slajdu
+Sprawdź, czy tytuł jest:
+- krótki,
+- konkretny,
+- konferencyjny,
+- nieogólnikowy.
+
+### b) Cele slajdu
+Sprawdź, czy cele są:
+- w liczbie 2–5,
+- bardzo konkretne,
+- opisują, co słuchacz ma zrozumieć po slajdzie,
+- wyjaśniają po co slajd istnieje,
+- pokazują funkcję slajdu w dramaturgii referatu.
+
+### c) Treść slajdu
+Sprawdź, czy treść jest rzeczywista i konkretna, czyli zawiera sensowne propozycje:
+- nagłówków,
+- krótkich haseł,
+- wzorów, jeśli potrzebne,
+- treści twierdzenia, jeśli to slajd z wynikiem,
+- wypunktowań,
+- podpisów pod tabelą lub schematem,
+- ewentualnych krótkich zdań, które powinny się pojawić dosłownie.
+
+Masz traktować jako błąd odpowiedzi typu:
+- „tu definicja”,
+- „tu wynik”,
+- „tu przykład”,
+- „tu można dodać rysunek”,
+jeśli nie podają rzeczywistej treści możliwej do przeniesienia do Beamera.
+
+### d) Bardzo precyzyjny opis rysunku
+Sprawdź, czy dla każdego slajdu rzeczywiście opisano dokładnie:
+- co przedstawia rysunek,
+- jakie elementy ma zawierać,
+- jak są rozmieszczone,
+- które elementy są najważniejsze wizualnie,
+- co ma być podpisane,
+- jaki to typ rysunku:
+  - schemat,
+  - tabela,
+  - ilustracja przykładu,
+  - diagram przepływu idei,
+  - wizualizacja macierzy,
+  - oś czasu,
+  - porównanie before/after,
+  - inny konkretny typ.
+
+Masz uznać za błąd każdy opis rysunku, który nadal wymaga zgadywania przy późniejszym rysowaniu.
+
+--------------------------------------------------
+VIII. SPRAWDZENIE DODATKOWYCH WYMOGÓW JAKOŚCIOWYCH
+--------------------------------------------------
+
+Oryginalny prompt wymagał także następujących cech jakościowych.
+Masz sprawdzić każdą z nich osobno.
+
+1. Każdy slajd ma jedną dominującą myśl.
+2. Slajdy nie są przeładowane.
+3. Plan jest spójny czasowo i realnie mieści się w 16–17 minutach mówienia.
+4. Nie ma zbyt wielu definicji naraz.
+5. Running example wraca na kilku slajdach, a nie pojawia się tylko raz.
+6. Main theorem jest wyeksponowane wizualnie i retorycznie.
+7. Proof idea jest rozbita na strawne etapy.
+8. Plan nie jest zbudowany jak wykład 50-minutowy.
+9. Ostatni slajd jest dobry także jako slajd wiszący podczas pytań.
+10. Backup slides są sensowne i konkretne, a nie symboliczne.
+11. Plan jest zgodny z `main-all.tex` i `main.pdf` zarówno na poziomie treści, jak i terminologii.
+12. Jeśli jakiś slajd opiera się szczególnie mocno na jednej figurze, definicji lub fragmencie argumentu z artykułu, jest to widoczne w jego konstrukcji.
+
+--------------------------------------------------
+IX. SPRAWDZENIE RZECZY ZABRONIONYCH
+--------------------------------------------------
+
+Musisz sprawdzić, czy odpowiedź NIE robi rzeczy zakazanych.
+
+W szczególności sprawdź, czy odpowiedź:
+- nie pisze ogólników typu „wstaw odpowiedni rysunek”,
+- nie daje banalnych porad prezentacyjnych,
+- nie opisuje, jak mówić do publiczności,
+- nie streszcza teorii prezentacji,
+- nie tworzy abstrakcyjnego outline’u typu „Intro / Results / Proof / End”,
+- nie pomija żadnego z elementów a–d dla żadnego slajdu,
+- nie zakłada, że publiczność zna szczegóły niszy autora,
+- nie próbuje upchnąć pełnego dowodu na slajdy,
+- nie ignoruje `main-all.tex` i `main.pdf`,
+- nie tworzy planu na podstawie ogólnych szablonów referatu TCS bez zakotwiczenia w rzeczywistej treści artykułu,
+- nie proponuje tekstów slajdów ani rysunków bez wyraźnego oparcia w dostarczonych plikach.
+
+--------------------------------------------------
+X. SPRAWDZENIE POZIOMU SZCZEGÓŁOWOŚCI
+--------------------------------------------------
+
+Oryginalny prompt wyraźnie wymagał, aby plan był:
+- bardzo szczegółowy,
+- konkretny,
+- precyzyjny,
+- bez lania wody,
+- konferencyjny,
+- nastawiony na realne użycie,
+- nadający się jako bezpośredni blueprint do późniejszego tworzenia prezentacji w Beamerze.
+
+Musisz sprawdzić, czy odpowiedź rzeczywiście osiąga ten poziom szczegółowości.
+
+--------------------------------------------------
+XI. SPRAWDZENIE UŻYCIA PLACEHOLDERÓW
+--------------------------------------------------
+
+Oryginalny prompt dopuszczał placeholdery typu:
+- `[MAIN THEOREM]`
+- `[RUNNING EXAMPLE]`
+- `[PREVIOUS BEST RESULT]`
+- `[KEY TECHNICAL IDEA]`
+- `[OPEN PROBLEM]`
+
+ale tylko wtedy, gdy naprawdę nie da się bezpiecznie wydobyć danej treści z `main-all.tex` i `main.pdf`.
+
+Musisz sprawdzić:
+- czy model użył placeholderów tylko wtedy, gdy to było uzasadnione,
+- czy nie nadużywa placeholderów zamiast wykonać analizę,
+- czy nie halucynuje tam, gdzie powinien był użyć placeholdera,
+- czy nie używa placeholderów tam, gdzie materiał źródłowy jednak dawał odpowiedź.
+
+==================================================
+JAK MASZ OCENIAĆ
+==================================================
+
+Masz być ekstremalnie konkretny.
+Nie pisz:
+- „raczej spełnia”,
+- „wydaje się w porządku”,
+- „ogólnie dobra odpowiedź”,
+jeśli nie potrafisz tego obronić szczegółową analizą.
+
+Masz konsekwentnie odróżniać:
+
+1. **Błędy krytyczne**
+   Takie, które oznaczają, że zadanie nie zostało wykonane poprawnie albo odpowiedź jest niebezpiecznie myląca.
+
+2. **Poważne braki**
+   Takie, które nie unieważniają wszystkiego automatycznie, ale powodują, że odpowiedź nie nadaje się jeszcze do bezpiecznego użycia.
+
+3. **Drobniejsze usterki**
+   Takie, które nie niszczą całości, ale obniżają jakość odpowiedzi.
+
+Masz także odróżniać:
+- zgodność rzeczywistą,
+- zgodność częściową,
+- zgodność pozorną,
+- niezgodność,
+- elementy nie do rozstrzygnięcia bez dodatkowego sprawdzenia.
+
+==================================================
+FORMAT ODPOWIEDZI — BEZWZGLĘDNIE OBOWIĄZKOWY
+==================================================
+
+Twoja recenzja ma być długa, szczegółowa i wieloczęściowa.
+Nie wolno Ci ograniczyć się do kilku zdań.
+Masz napisać kompleksową recenzję.
+
+Użyj dokładnie poniższej struktury:
+
+## 1. WERDYKT KOŃCOWY
+
+Wybierz dokładnie jeden z wariantów:
+- PASS
+- PASS WITH SUBSTANTIAL ISSUES
+- FAIL
+
+Następnie napisz pełne, wieloakapitowe uzasadnienie werdyktu.
+To ma być kompleksowe uzasadnienie, a nie skrót.
+
+## 2. OCENA OGÓLNA
+
+Napisz obszerną ocenę całości.
+Musisz wyjaśnić:
+- czy zadanie zostało wykonane poprawnie,
+- czy zostało wykonane tylko częściowo,
+- czy odpowiedź jest realnie używalna,
+- czy jest tylko powierzchownie przekonująca,
+- jaki jest największy problem odpowiedzi,
+- jaki jest jej największy rzeczywisty atut, jeśli taki istnieje.
+
+## 3. AUDYT ZGODNOŚCI Z PROMPTEM — PUNKT PO PUNKCIE
+
+Przejdź przez WSZYSTKIE wymagania oryginalnego promptu i przy każdym oznacz:
+- PASS
+- PARTIAL
+- FAIL
+
+Nie wolno Ci pominąć żadnego z wymagań.
+
+Obowiązkowo uwzględnij osobno:
+- wykonanie właściwego zadania,
+- obowiązkową bazę źródłową,
+- rolę `main-all.tex`,
+- rolę `main.pdf`,
+- wszystkie twarde zasady pracy z plikami,
+- wszystkie 10 cech dobrego referatu,
+- kontekst konferencyjny LATIN,
+- strukturę odpowiedzi,
+- kompletność części I,
+- kompletność części II,
+- kompletność części III,
+- kompletność elementów a–d dla każdego slajdu,
+- wszystkie dodatkowe wymogi jakościowe,
+- wszystkie rzeczy zakazane,
+- oczekiwany poziom szczegółowości,
+- poprawność użycia placeholderów.
+
+## 4. ANALIZA SZCZEGÓŁOWA
+
+To ma być główna część recenzji.
+
+Masz bardzo dokładnie omówić wszystkie istotne problemy, a przy każdym:
+- opisać, na czym polega,
+- wskazać, które wymaganie narusza,
+- wyjaśnić, dlaczego to ważne,
+- ocenić wagę problemu,
+- sklasyfikować go jako:
+  - błąd krytyczny,
+  - poważny brak,
+  - drobniejsza usterka.
+
+Jeśli potrzeba, analizuj slajd po slajdzie.
+Jeśli potrzeba, analizuj sekcja po sekcji.
+Jeśli odpowiedź ma braki strukturalne, nazwij je wprost.
+Jeśli odpowiedź jest „sprytna”, ale niezgodna z poleceniem, nazwij to wprost.
+
+## 5. LISTA NARUSZEŃ KRYTYCZNYCH
+
+Wypisz tylko błędy krytyczne.
+Jeśli ich nie ma, napisz to wyraźnie.
+Jeśli są, opisz każdy krótko, ale konkretnie.
+
+## 6. LISTA POWAŻNYCH BRAKÓW
+
+Wypisz wszystkie poważne braki, które nie są krytyczne, ale sprawiają, że odpowiedź nie nadaje się jeszcze do bezpiecznego użycia.
+
+## 7. LISTA DROBNYCH USTEREK
+
+Wypisz mniejsze problemy, które nie dyskwalifikują całości, ale osłabiają jakość.
+
+## 8. CO RZECZYWIŚCIE SIĘ UDAŁO
+
+Wskaż tylko te elementy, które rzeczywiście są mocne.
+Nie chwal za rzeczy przeciętne.
+Nie bądź hojny bez powodu.
+Każdy pozytywny punkt musi być konkretnie uzasadniony.
+
+## 9. MIEJSCA WYMAGAJĄCE RĘCZNEGO SPRAWDZENIA
+
+Wskaż wszystko to, czego nie da się w 100% potwierdzić bez dodatkowego sprawdzenia `main-all.tex`, `main.pdf` lub bez konfrontacji z konkretnymi fragmentami odpowiedzi.
+Nie zgaduj.
+Nie przyznawaj zgodności „na kredyt”.
+
+## 10. MINIMALNA LISTA POPRAWEK KONIECZNYCH DO ZALICZENIA
+
+Wypisz minimalny, ale kompletny zestaw zmian, które trzeba wprowadzić, aby odpowiedź mogła przejść do poziomu PASS.
+Poprawki mają być:
+- konkretne,
+- operacyjne,
+- możliwe do wykonania,
+- powiązane z naruszonymi wymaganiami.
+
+## 11. FINAL BOTTOM LINE
+
+Na końcu napisz brutalnie jasno:
+- czy zadanie zostało wykonane poprawnie,
+- czy wynik jest bezpieczny do dalszego użycia,
+- czy odpowiedź jest naprawdę dobra, czy tylko sprawia takie wrażenie,
+- czy użytkownik może na niej oprzeć dalszą pracę bez ryzyka,
+- czy wymaga gruntownej poprawy.
+
+==================================================
+DODATKOWE ZASADY
+==================================================
+
+1. Nie twórz nowego planu prezentacji.
+2. Nie poprawiaj odpowiedzi od zera.
+3. Nie przepisuj po prostu promptu.
+4. Nie ograniczaj się do krótkiego streszczenia.
+5. Nie dawaj taryfy ulgowej za długość albo ładny styl.
+6. Nie chwal za rzeczy przeciętne.
+7. Jeśli odpowiedź brzmi profesjonalnie, ale nie realizuje wymagań, nazwij to wprost.
+8. Jeśli wykryjesz halucynację albo brak zakotwiczenia w `main-all.tex` lub `main.pdf`, potraktuj to bardzo poważnie.
+9. Jeżeli odpowiedź tylko częściowo spełnia wymagania, nie dawaj PASS.
+10. Twoim celem jest sprawdzić, czy zadanie zostało wykonane poprawnie i w pełni — nic mniej.
+11. Masz być surowy, dokładny i bezlitosny.
+12. Twoja recenzja ma być kompleksowa, a nie skrótowa.
