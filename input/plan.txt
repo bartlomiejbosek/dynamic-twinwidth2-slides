@@ -3,7 +3,7 @@
 - Plan zakłada **13 głównych slajdów** oraz **3 backup slides**; to mieści się dokładnie w celu „12–14 + 2–5” i pozwala utrzymać gęstość typową dla 16–17 minut mówienia.
 - Ogólna dramaturgia jest czterofazowa: **(1)** szybkie ustawienie problemu i modelu na slajdach 1–4, **(2)** wczesne wyłożenie wyniku na slajdzie 5, **(3)** pokazanie głównej idei strukturalnej na slajdach 6–9, **(4)** pokazanie warstwy dynamicznej i deamortyzacji na slajdach 10–13.
 - **Main result** pojawia się na **slajdzie 5** i jest tam jedynym dominującym obiektem; wcześniejsze slajdy prowadzą wyłącznie do tego momentu.
-- **Running example** ma tworzyć jeden realnie ciągły wątek na **slajdach 8–12**: slajdy **8–9** obliczają canonical slab decomposition dla tej samej małej macierzy, **slajd 10** traktuje wynik ze slajdu 9 jako bazę w `\(\mathbb P\)` i dokłada pierwsze buffered flips w `\(\mathbb Q\)`, **slajd 11** pokazuje rebuilding na tej samej macierzy, a **slajd 12** replay tych samych update’ów w mechanizmie epok i snapshot copies.
+- **Running example** ma tworzyć jeden realnie ciągły wątek na **slajdach 8–12**: slajdy **8–9** adaptują **Figure 4–5** dla tej samej macierzy `4\times 4`, a od **slajdu 10** zamrażamy dokładnie bazę `\(\mathcal P=\{(2,2,1,1),(4,4,1,1),(2,4,2,3),(1,1,4,4),(3,4,4,4)\}\)` oraz dokładnie dwa buffered flips w ustalonej kolejności `\(u_1=(4,2):1\to 0\)`, `\(u_2=(1,2):0\to 1\)`; dzięki temu slajdy **10–12** są nową, ale ściśle tekstowo uzasadnioną kontynuacją Figure 4–5 / Section 4–5, a nie rzekomo gotową figurą z PDF.
 - Część **problem/setup** kończy się po **slajdzie 4**; **slajd 5** jest pomostem „wynik”, a część **wynik/idea** zaczyna się operacyjnie od **slajdu 6**.
 - Partie oparte przede wszystkim na **`main-all.tex`** to slajdy **4–12** oraz backupy **14–16**, bo tam kluczowe są dokładne definicje, nazwy procedur, inwarianty, granice asymptotyczne i logiczna kolejność argumentu.
 - Partie oparte przede wszystkim na **`main.pdf`** to wizualny kręgosłup slajdów **3, 6, 7, 8 i 9**, a dla **slajdu 11** także ważny wzorzec kompozycyjny przez **Figure 6**; tam warto możliwie wiernie adaptować **Figure 1–5**, zaś przy rebuildingu świadomie oprzeć nowy schemat na układzie z PDF zamiast udawać dosłowną kontynuację obcego przykładu.
@@ -361,10 +361,17 @@ A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
 
 **c) Treść slajdu**
 - Pierwsza linia:
-`Take the same \(4\times 4\) running example from slides 8–9 and let its canonical slab decomposition from slide 9 be the last rebuilt base state.`
+`Take exactly the same \(4\times 4\) matrix as in Figures 4–5; coordinates are \((i,j)\) = (row counted top-down, column counted left-to-right).`
+- Jawnie ustalona baza z końca slajdu 9:
+\[
+\mathcal P=\{(2,2,1,1),(4,4,1,1),(2,4,2,3),(1,1,4,4),(3,4,4,4)\}
+\]
 - Dwa duże boksy:
-- `\(\mathbb P\)`: static 2D orthogonal point location on the canonical slab decomposition built at the last rebuild / at some earlier moment, storing at most `\(4f_d(n+2)+4n\)` slabs
+- `\(\mathbb P\)`: static 2D orthogonal point location on the canonical slab decomposition stored at the last rebuild; in the running example it stores exactly the five slabs of `\(\mathcal P\)`
 - `\(\mathbb Q\)`: hash table of recent updates since that rebuild
+- Ustalona na resztę referatu zawartość bufora:
+- `first \(u_1=(4,2):1\to 0\), then \(u_2=(1,2):0\to 1\)`
+- `equivalently, \(\mathbb Q[(4,2)]=0\) and \(\mathbb Q[(1,2)]=1\)`
 - Próg bufora:
 \[
 |\mathbb Q| \le 8f_d(n+2)
@@ -373,9 +380,9 @@ A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
 `Here \(f_d\) is the same constant coming from the corner / canonical-slab bound.`
 - Jedna linia intuicji:
 `Current matrix = base representation in \(\mathbb P\) overlaid with the explicit overrides stored in \(\mathbb Q\).`
-- W running example zaznaczyć dwie świeże zmiany na tej samej macierzy:
-- `one 1\to 0 flip inside an old slab`
-- `one 0\to 1 flip outside the old slabs`
+- W running example role obu updates są już ustalone:
+- `\((4,2)\)` is a `1\to 0` flip inside the old slab `\((2,4,2,3)\)`
+- `\((1,2)\)` is a `0\to 1` flip outside all slabs of `\(\mathcal P\)`
 - Inwariant:
 \[
 (i,j)\in \mathbb Q \Rightarrow M[i,j]=\mathbb Q[i,j]
@@ -388,13 +395,20 @@ A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
 - `Update`: toggle the value in `\(\mathbb Q\)`; rebuild only when the threshold is reached
 
 **d) Bardzo precyzyjny opis rysunku**
-- Użyć dokładnie tej samej małej macierzy i tego samego kolorowania canonical slabs, które zamykają slajd 9.
-- Lewa część rysunku ma pokazywać bazę po ostatniej przebudowie: te same kolorowe canonical slabs z podpisem `base after last rebuild = \(\mathbb P\)`.
-- Na tej samej siatce nałożyć dokładnie dwa wyraźne overrides z `\(\mathbb Q\)`: jeden czerwony `1\to 0` w środku dawnego slaba i jeden zielony `0\to 1` poza dawnymi slabami.
-- Obok mały prostokąt `\(\mathbb Q\)` z dwiema pozycjami odpowiadającymi tym dwóm zaznaczonym komórkom.
+- Użyć dokładnie tej samej małej macierzy i tego samego kolorowania canonical slabs, które zamykają slajd 9; dodać małe etykiety wierszy `1,2,3,4` po lewej i kolumn `1,2,3,4` u góry, żeby współrzędne były dosłowne.
+- Lewa część rysunku ma pokazywać bazę po ostatniej przebudowie: dokładnie pięć canonical slabs z podpisem `base after last rebuild = \(\mathbb P\)`:
+- czerwony fill dla `\((2,2,1,1)\)`
+- niebieski fill dla `\((4,4,1,1)\)`
+- żółty fill dla `\((2,4,2,3)\)`
+- ciemnoszary fill dla `\((1,1,4,4)\)`
+- zielony fill dla `\((3,4,4,4)\)`
+- Na tej samej siatce nałożyć dokładnie dwa overrides z `\(\mathbb Q\)`, ale jako znaczniki, nie jako nowe fill colors:
+- w komórce `\((4,2)\)` narysować ciemnoczerwony znak `×` i mały podpis `u_1`; sama komórka ma pozostać biała, bo aktualna wartość to `0`
+- w komórce `\((1,2)\)` narysować ciemnozielony znak `+` i mały podpis `u_2`; sama komórka nie należy do żadnego starego slaba, więc jest to nowa `1`
+- Obok mały prostokąt `\(\mathbb Q\)` z dokładnie dwiema liniami, w tej kolejności: `\((4,2)\mapsto 0\)` oraz `\((1,2)\mapsto 1\)`.
 - Po lewej mała strzałka `QueryBit(i,j): \(\mathbb Q\) first, then \(\mathbb P\)`.
 - Po prawej mała strzałka `Update(i,j): write the fresh override to \(\mathbb Q\); rebuild later`.
-- Widz ma rozpoznać tę samą macierz co na slajdach 8–9, tylko z nową warstwą nadpisań.
+- Widz ma rozpoznać tę samą macierz co na slajdach 8–9, tylko z nową warstwą nadpisań; w szczególności ma być jednoznaczne, że `\((4,2)\)` leży wewnątrz starego żółtego slaba, a `\((1,2)\)` leży poza wszystkimi starymi slabami.
 
 **e) Zakotwiczenie źródłowe**
 - Przede wszystkim: `main-all.tex`, wspierane przez `main.pdf`.
@@ -402,7 +416,7 @@ A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
 - `main.pdf`: Section 4, gdzie ten sam inwariant i rozdział na dwie warstwy wyznaczają naturalny środek ciężkości narracji.
 
 **f) Status rysunku**
-- Nowy schemat syntetyzujący inwariant z dowodu Theorem 4 na kontynuacji tego samego running example ze slajdów 8–9; nie jest adaptacją figury z PDF, tylko ekspozycyjnym przerysowaniem treści tekstowej.
+- Slajdy 8–9 są adaptacją **Figure 4–5**, natomiast ten slajd i następne dwa są nową, ale ściśle tekstowo uzasadnioną kontynuacją tego samego przykładu: zachowują bazę ze slajdu 9 i ustalają konkretne updates `\(u_1=(4,2):1\to 0\)`, `\(u_2=(1,2):0\to 1\)` wyłącznie po to, by zwizualizować inwarianty z Theorem 4 i Theorem 5.
 
 11. **a) Tytuł**
 **Rebuilding \(\mathbb P\): 0-updates split slabs, uncovered 1-updates become \(1\times 1\) slabs**
@@ -415,7 +429,7 @@ A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
 
 **c) Treść slajdu**
 - Pierwsza linia:
-`Continue exactly the same \(4\times 4\) example: the base slabs are those stored in \(\mathbb P\) on slide 10, and the two highlighted flips are exactly the current contents of \(\mathbb Q\).`
+`Continue exactly the same \(4\times 4\) example: the base slabs are \(\mathcal P\) from slide 10 and the current buffer is exactly \(\mathcal Q=\{((4,2),0),((1,2),1)\}\).`
 - Najpierw wyciągamy dwie warstwy reprezentacji aktualnego stanu:
 - `\(\mathcal P\)`: list of base slabs stored in `\(\mathbb P\)` from the last rebuild
 - `\(\mathcal Q\)`: list of recent updates stored in `\(\mathbb Q\)`
@@ -423,22 +437,33 @@ A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
 - `partition \(\mathcal Q\) into 0-updates and 1-updates`
 - `assign 0-updates to slabs of \(\mathcal P\) and split each affected slab row by row`
 - `every uncovered 1-update becomes a \(1\times 1\) slab`
-- Dla running example nazwać jawnie role obu zaznaczonych zmian:
-- `the red 0-update cuts one old slab`
-- `the green 1-update becomes a new \(1\times 1\) slab unless it gets covered after splitting`
+- Dla running example rozpisać to literalnie:
+- `the unique 0-update is \((4,2)\mapsto 0\); it is assigned to the old slab \((2,4,2,3)\)`
+- `splitting \((2,4,2,3)\) row by row at row \(4\) and column \(2\) leaves exactly two non-empty pieces: \((2,3,2,3)\) and \((4,4,3,3)\)`
+- `the unique 1-update is \((1,2)\mapsto 1\); it lies outside all slabs of \(\mathcal P\), so it contributes the new singleton slab \((1,1,2,2)\)`
+- Zatem pośrednia dekompozycja używana do rebuildingu jest dokładnie:
+\[
+\mathcal K=\{(2,2,1,1),(4,4,1,1),(2,3,2,3),(4,4,3,3),(1,1,4,4),(3,4,4,4),(1,1,2,2)\}
+\]
 - Następnie:
 \[
 |\mathcal K| \le |\mathcal P| + 2|\mathcal Q|
 \]
 - I na końcu:
-`Run \(\mathtt{Decompose}(n,\mathcal K)\) on this same updated matrix and reinitialize \(\mathbb P\).`
+`Run \(\mathtt{Decompose}(4,\mathcal K)\) on this same updated matrix and reinitialize \(\mathbb P\) with`
+\[
+\mathcal R'=\{(2,2,1,1),(4,4,1,1),(1,3,2,2),(2,4,3,3),(1,1,4,4),(3,4,4,4)\}.
+\]
 
 **d) Bardzo precyzyjny opis rysunku**
-- Główny rysunek ma mieć trzy panele, wszystkie na tej samej siatce `4\times 4` co na slajdach 8–10.
-- Panel 1: dokładny stan ze slajdu 10, z podpisem `old \(\mathcal P\) + buffered \(\mathcal Q\)`.
-- Panel 2: pośrednia dekompozycja `\(\mathcal K\)` po rozcięciu slaba przez czerwony 0-update i dodaniu zielonego `\(1\times 1\)`; ten panel ma explicite pokazać, które kawałki powstały przez split.
-- Panel 3: nowa canonical slab decomposition tej samej macierzy po `\mathtt{Decompose}`.
-- Zachować te same kolory bazowych obszarów tam, gdzie geometria się nie zmienia, żeby oko widza śledziło ciągłość przykładu.
+- Główny rysunek ma mieć trzy panele, wszystkie na tej samej siatce `4\times 4` co na slajdach 8–10, z tymi samymi etykietami wierszy i kolumn.
+- Panel 1: dokładny stan ze slajdu 10, z podpisem `old \(\mathcal P\) + buffered \(\mathcal Q\)`; musi dosłownie powtórzyć pięć starych slabów, znak `×` w `\((4,2)\)` i znak `+` w `\((1,2)\)`, oraz małe pudełko `\(\mathbb Q\)` z wpisami `\((4,2)\mapsto 0\)`, `\((1,2)\mapsto 1\)`.
+- Panel 2: pośrednia dekompozycja `\(\mathcal K\)`; zachować niezmienione stare kolory dla `\((2,2,1,1)\)`, `\((4,4,1,1)\)`, `\((1,1,4,4)\)` i `\((3,4,4,4)\)`, natomiast dawny żółty slab `\((2,4,2,3)\)` zastąpić dokładnie dwoma żółto-pomarańczowymi kawałkami `\((2,3,2,3)\)` i `\((4,4,3,3)\)`. Komórka `\((4,2)\)` ma pozostać biała z ciemnoczerwonym `×`, a nowy singleton `\((1,1,2,2)\)` ma być narysowany jako osobny turkusowy `1\times 1` slab z małym ciemnozielonym `+`.
+- Pod panelem 2 dopisać małą literalną etykietę `\(\mathcal K=\{(2,2,1,1),(4,4,1,1),(2,3,2,3),(4,4,3,3),(1,1,4,4),(3,4,4,4),(1,1,2,2)\}\)`.
+- Panel 3: nowa canonical slab decomposition po `\mathtt{Decompose}`; pozostawić bez zmian czerwony `\((2,2,1,1)\)`, niebieski `\((4,4,1,1)\)`, ciemnoszary `\((1,1,4,4)\)` i zielony `\((3,4,4,4)\)`, ale zamiast panelu 2 narysować dokładnie dwa nowe pionowe canonical slabs:
+- turkusowo-fioletowy `\((1,3,2,2)\)`
+- żółto-pomarańczowy `\((2,4,3,3)\)`
+- W panelu 3 nie pokazywać już pudełka `\(\mathbb Q\)`; dla ciągłości wolno zostawić tylko bardzo cienkie, jaśniejsze znaczniki proweniencji: mały czerwony `×` w `\((4,2)\)` i mały zielony `+` w `\((1,2)\)`, ale muszą być wyraźnie słabsze niż na panelach 1–2, żeby nie sugerować, że `\mathbb Q` dalej istnieje po rebuildingu.
 - W małym rogu można dodać szary napis `layout inspired by Figure 6`, ale główny rysunek nie ma wyglądać jak wklejona Figure 6.
 
 **e) Zakotwiczenie źródłowe**
@@ -447,7 +472,7 @@ A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
 - `main.pdf`: Figure 6 i jej podpis, bo to jest najczytelniejszy gotowy wzorzec lewo-prawego układu przebudowy.
 
 **f) Status rysunku**
-- Nowy schemat syntetyzujący dowód Theorem 4 na kontynuacji tego samego running example ze slajdów 8–10; kompozycja może być wzorowana na **Figure 6**, ale nie jest to jej dosłowna adaptacja.
+- Nowy schemat syntetyzujący dowód Theorem 4 dla ustalonej kontynuacji przykładu z Figure 4–5; kompozycja może być wzorowana na **Figure 6**, ale nie jest to jej dosłowna adaptacja i musi używać dokładnie tej samej pary updates `\(u_1,u_2\)` co slajdy 10, 12 i 13.
 
 12. **a) Tytuł**
 **From amortized to worst-case: epochs and snapshot copies**
@@ -469,23 +494,29 @@ L = 8f_d(n+2)
 - `\(\mathbb A_i\)` answers queries during \(E_{2i}\) and \(E_{2i+1}\)
 - `during \(E_{2i-2}\), spread \(\mathtt{Init}(n,\mathcal K)\) over the whole epoch`
 - `during \(E_{2i-1}\), the next structure catches up by processing two updates while the previous one processes one`
+- Dla running example ustalić jawnie kolejność replayu:
+- `first replay \(u_1=(4,2):1\to 0\), then replay \(u_2=(1,2):0\to 1\)`
 - Jeden ważny dopisek:
 `Initialization needs uninterrupted access to the old state, so we keep two copies: \(\mathbb A_{i,0}\) active and \(\mathbb A_{i,1}\) as a frozen snapshot.`
 - Jedna krótka linia spinająca przykład:
-`In the running example, the next copy starts from the same pre-update base state as on slide 10 and catches up by replaying those same highlighted flips.`
+`In the running example, the frozen snapshot stores exactly the slide-9 base state, and the next copy catches up by replaying first \(u_1\) and then \(u_2\) until it matches the current state from slide 10 exactly.`
 - Na dole:
 `This is the de-amortization step behind Theorem 5, hence also behind the main theorem.`
 
 **d) Bardzo precyzyjny opis rysunku**
-- Pozioma oś czasu z epokami `E_0,E_1,E_2,E_3,\dots`.
+- Pozioma oś czasu ma pokazywać przede wszystkim dwa duże bloki: `E_{2i-2}` i `E_{2i-1}`; po lewej i po prawej mogą być tylko małe, przygaszone `…`, bez dodatkowych szczegółów.
 - Dwa poziome tory:
-- górny: `active structure`
-- dolny: `next structure`
-- Na górnym torze wstawić mały thumbnail tej samej macierzy `4\times 4` w jej bieżącym stanie po dwóch buffered flips ze slajdu 11.
-- Na dolnym torze pokazać trzy miniatury tej samej macierzy: najpierw stan bazowy sprzed tych flipów, potem etap `initialize`, potem etap `catch up`, w którym te same dwa zaznaczone flips są replayowane.
-- Obok mały osobny prostokąt podpisany `frozen snapshot copy`, zawierający dokładnie tę bazową wersję macierzy, z której startuje nowa kopia.
-- Nie więcej niż trzy kolory: aktywna, budowana, snapshot.
-- Najważniejsze jest, by wizualnie było jasne, że oba tory dotyczą tego samego obiektu, tylko na różnych etapach synchronizacji.
+- górny: `currently active structure`
+- dolny: `next structure being prepared`
+- Na górnym torze wstawić jeden thumbnail będący dosłowną kopią stanu ze slajdu 10: baza ze slajdu 9 plus ciemnoczerwony `×` w `\((4,2)\)` i ciemnozielony `+` w `\((1,2)\)`. Jeżeli jest miejsce, dodać miniaturowe pudełko `\(\mathbb Q\)` z wpisami `\((4,2)\mapsto 0\)`, `\((1,2)\mapsto 1\)`.
+- Na dolnym torze pokazać dokładnie cztery miniatury tej samej macierzy `4\times 4`, od lewej do prawej:
+- `snapshot/base`: dokładny stan ze slajdu 9, bez znaczników `u_1,u_2`
+- `after Init`: znowu dokładny stan ze slajdu 9, bo sama inicjalizacja jeszcze nie replayuje update’ów
+- `after replay \(u_1\)`: tylko komórka `\((4,2)\)` zmieniona na `0` i oznaczona czerwonym `×`; komórka `\((1,2)\)` nadal równa `0`
+- `after replay \(u_2\)`: dokładnie ten sam thumbnail co na górnym torze, z obiema zmianami obecnymi
+- Obok mały osobny prostokąt podpisany `frozen snapshot copy`, zawierający dokładnie tę samą bazową wersję macierzy co miniatura `snapshot/base`; dopisać małym drukiem `read-only during initialization`.
+- Kolory ram torów mogą kodować role (`active`, `next`, `snapshot`), ale wewnętrzne kolory slabów i znaczników `u_1,u_2` muszą pozostać identyczne jak na slajdach 10–11.
+- Najważniejsze jest, by wizualnie było jasne, że oba tory dotyczą tego samego obiektu i że catch-up replayuje dokładnie te same dwa updates w dokładnie tej samej kolejności.
 
 **e) Zakotwiczenie źródłowe**
 - Przede wszystkim: `main-all.tex`, wspierane przez `main.pdf`.
@@ -493,7 +524,7 @@ L = 8f_d(n+2)
 - `main.pdf`: Section 5, gdzie ten sam argument domyka narrację pracy po części amortized.
 
 **f) Status rysunku**
-- Nowy schemat syntetyzujący dowód Theorem 5: oś epok, catch-up i snapshot copies są wprost z tekstu, zaś użycie tej samej małej macierzy tylko utrzymuje ciągłość running example.
+- Nowy schemat syntetyzujący dowód Theorem 5: oś epok, catch-up i snapshot copies są wprost z tekstu, zaś użycie tej samej małej macierzy ma być dosłownym replayem wcześniej ustalonych `\(u_1=(4,2):1\to 0\)` i `\(u_2=(1,2):0\to 1\)`.
 
 13. **a) Tytuł**
 **Take-away**
@@ -512,17 +543,19 @@ d\text{-twin-ordering}
 \Rightarrow O_d(n)\text{ slabs}
 \Rightarrow O_d(n)\text{ canonical slabs}
 \Rightarrow \mathbb P+\mathbb Q
-\Rightarrow \text{worst-case via epochs + snapshot copy}
+\Rightarrow \text{worst-case via epochs + snapshot copies}
 \]
 - Na dole jedno krótkie zdanie:
 `Structural core: canonicalization. Dynamic core: buffered updates plus scheduled rebuilding.`
+- Mały dopisek przy boxie `\(\mathbb P+\mathbb Q\)`:
+`The thumbnail repeats the slide-10 active state: base slabs from slide 9 plus \(u_1=(4,2):1\to 0\) and \(u_2=(1,2):0\to 1\).`
 - Dolny pasek:
 `Questions?`
 
 **d) Bardzo precyzyjny opis rysunku**
 - Centralny poziomy pipeline z pięcioma prostokątami i strzałkami.
-- Prostokąty mają odpowiadać kolejno napisom: `d-twin-ordering`, `slabs`, `canonical slabs`, `\(\mathbb P+\mathbb Q\)`, `epochs + snapshot copy`.
-- W prostokącie `\(\mathbb P+\mathbb Q\)` umieścić mały thumbnail tej samej macierzy `4\times 4` z dwoma overrides ze slajdu 10, żeby domknąć running example także wizualnie.
+- Prostokąty mają odpowiadać kolejno napisom: `d-twin-ordering`, `slabs`, `canonical slabs`, `\(\mathbb P+\mathbb Q\)`, `epochs + snapshot copies`.
+- W prostokącie `\(\mathbb P+\mathbb Q\)` umieścić mały thumbnail będący dosłowną miniaturą aktywnego stanu ze slajdu 10 i z górnego toru slajdu 12: ta sama siatka `4\times 4`, te same bazowe kolory slabów, ciemnoczerwony `×` w `\((4,2)\)`, ciemnozielony `+` w `\((1,2)\)`, oraz jeśli miejsce pozwala to samo maleńkie pudełko `\(\mathbb Q\)` z wpisami `\((4,2)\mapsto 0\)`, `\((1,2)\mapsto 1\)`.
 - Ostatni prostokąt grubszy, z napisem `dynamic DS`.
 - Na samym dole jasnoszary pasek z napisem `Questions?`.
 - Slajd ma być prosty, symetryczny i dobrze wyglądać, gdy zostanie na ekranie po referacie.
@@ -533,7 +566,7 @@ d\text{-twin-ordering}
 - `main.pdf`: cały układ pracy od Introduction przez Figure 2–6 do Section 5, który naturalnie sugeruje taki końcowy pipeline.
 
 **f) Status rysunku**
-- Nowy schemat podsumowujący syntetyzujący rzeczywisty łańcuch wyników i konstrukcji w artykule; nie wprowadza żadnego nowego claimu ani żadnego niesource’owanego pytania końcowego.
+- Nowy schemat podsumowujący syntetyzujący rzeczywisty łańcuch wyników i konstrukcji w artykule; thumbnail w boxie `\(\mathbb P+\mathbb Q\)` musi być zsynchronizowany z dokładnie tym samym running example co na slajdach 10–12, a konkretnie ma powtarzać aktywny stan ze slajdu 10 / górnego toru slajdu 12, a nie przełączać się na któryś z pośrednich paneli rebuildingu ze slajdu 11.
 
 14. **a) Tytuł**
 **Backup: adhesive segment set**
