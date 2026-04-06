@@ -223,7 +223,7 @@ M \in \{0,1\}^{n\times n}
 - Wprowadzić tylko te symbole, które są niezbędne natychmiast: `O_i`, `C_i`, `B_i`; rolę `L_i` i bieżącego stanu `\mathbb S` potraktować jako mechanikę pomocniczą, a nie drugi temat slajdu.
 
 **c) Treść slajdu**
-- Krótkie formuły po lewej:
+- Po lewej jeden zwarty blok z trzema definicjami:
 \[
 O_i := \{[a,b] \mid (a,b,i,d')\in \mathcal K \text{ for some } d'\ge i\}
 \]
@@ -233,17 +233,16 @@ C_i := \{[a,b] \mid (a,b,c',i)\in \mathcal K \text{ for some } c'\le i\}
 \[
 B_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i+1}
 \]
-- Po prawej trzy punkty:
-- `state view: at the beginning of round \(i\), the structure represents \(\mathtt{strips}_i\); after the round, it represents \(\mathtt{strips}_{i+1}\)`
-- `use \(\mathtt{Containing}\) on \(C_i\) and \(\mathtt{Adjacent}\) on \(O_{i+1}\) to find the touched strips`
-- `after the corresponding \(\mathtt{Split}\) and \(\mathtt{Merge}\) operations, the touched strips that disappear form \(B_i\)`
+- Po prawej tylko dwa punkty:
+- `round \(i\) transforms \(\mathtt{strips}_i\) into \(\mathtt{strips}_{i+1}\)`
+- `only strips touched by slabs closing at \(i\) or starting at \(i+1\) matter; the ones that disappear are exactly \(B_i\)`
 - Na dole jedna linia:
-`This is the first half of \(\mathtt{Decompose}(n,\mathcal K)\).`
+`This is the first half of \(\mathtt{Decompose}(n,\mathcal K)\): identify which strips disappear in each round.`
 
 **d) Bardzo precyzyjny opis rysunku**
 - Adaptacja **Figure 4** prawie bez zmian.
 - U góry mała kolorowa macierz `4\times 4`.
-- Pod nią tabela z kolumnami `O_i`, `C_i`, `current strips`, `B_i`; jeśli miejsce pozwala, zostawić `L_i` jako wąską, przygaszoną kolumnę pośrednią.
+- Pod nią tabela z kolumnami `O_i`, `C_i`, `current strips`, `B_i`; nie eksponować `L_i` na tym slajdzie.
 - Graficznie wyróżnić wiersze `i=1` i `i=3`; pozostałe mogą być lekko przygaszone.
 - Obok tabeli pionowa czerwona linia symbolizująca aktualną kolumnę sweepa.
 
@@ -261,11 +260,10 @@ B_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i+1}
 \[
 A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
 \]
-- Potem cztery linie pseudokodu:
-- `initialize \(\mathsf{slab\_start}[1..n]=\perp\)`
-- `for each \((a,b)\in A_i\): set \(\mathsf{slab\_start}[a]=i\)`
-- `for each \((a,b)\in B_i\): output \((a,b,\mathsf{slab\_start}[a],i)\)`
-- `iterate \(i\) from left to right`
+- Potem trzy krótkie linie:
+- `\(\mathsf{slab\_start}[a]\) remembers where the current slab on row interval \([a,b]\) started`
+- `when \((a,b)\in A_i\), record start \(i\); when \((a,b)\in B_i\), output \((a,b,\mathsf{slab\_start}[a],i)\)`
+- `a final left-to-right sweep over \(A_i\) and \(B_i\) outputs all canonical slabs`
 - Na dole:
 \[
 \mathtt{Decompose}(n,\mathcal K)\text{ runs in }O(n+|\mathcal K|\log\log n)
@@ -308,16 +306,16 @@ A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
 \]
 - Trzy krótkie linie operacyjne:
 - `\(\mathtt{QueryBit}(i,j)\): first inspect \(\mathbb Q\); on miss ask \(\mathbb P\)`
-- `\(\mathtt{Update}(i,j)\): if \((i,j)\) is already in \(\mathbb Q\), flip the stored value; otherwise query \(\mathbb P\) and insert the negated current bit into \(\mathbb Q\)`
-- `when the buffer reaches the threshold, rebuild the base decomposition as in Theorem 4`
-- Mały dopisek o kosztach:
-`Successful dictionary access in \(\mathbb Q\) is \(O(1)\) expected, fallback point location in \(\mathbb P\) is \(O(\log\log n)\) worst case; together with thresholded rebuilding, this is the local picture behind Theorem 4's \(O(\log\log n)\) expected worst-case query bound and \(O(\log\log n)\) expected amortized update bound.`
+- `\(\mathtt{Update}(i,j)\): keep the newest explicit value in \(\mathbb Q\); on first touch, recover the old value from \(\mathbb P\)`
+- `when \(|\mathbb Q|=8f_d(n+2)\), rebuild the base decomposition and empty the buffer`
+- Na dole jedna linia:
+`This is the Theorem 4 picture: \(O(\log\log n)\) expected worst-case queries and \(O(\log\log n)\) expected amortized updates.`
 
 **d) Bardzo precyzyjny opis rysunku**
 - Lewa część rysunku ma wykorzystywać finalną macierz ze slajdu 9 / Figure 5 jako bazę `base canonical slabs in \(\mathbb P\)`; kolory canonical slabs pozostają identyczne jak na slajdzie 9.
-- Prawa część rysunku to pionowy box `recent overrides in \(\mathbb Q\)` z dokładnie dwiema symbolicznymi liniami: `recent 0-update` i `recent 1-update`; nie wpisywać literalnych współrzędnych ani nowych danych przykładowych.
-- Między boksem `\(\mathbb Q\)` a macierzą poprowadzić dwie cienkie strzałki do dwóch małych, nieopisanych markerów na siatce: czerwony pusty kwadrat ma oznaczać „base 1 turned into 0”, zielony pełny kwadrat ma oznaczać „base 0 turned into 1”.
-- Markery mają być wyłącznie symboliczne: nie zmieniają geometrii slabów na tym slajdzie i nie są podpisane żadnymi współrzędnymi.
+- Prawa część rysunku to mały box `recent explicit values in \(\mathbb Q\)` z dwoma pozycjami legendy: `buffered 0` i `buffered 1`; nie wpisywać literalnych współrzędnych ani nowego datasetu.
+- Jeśli pokazać markery na macierzy, to najwyżej 1–2 małe, nieopisane symbole override; mają być wyłącznie schematyczne i nie mogą sugerować konkretnej sekwencji aktualizacji.
+- Markery nie zmieniają geometrii slabów na tym slajdzie; mają tylko pokazać, że \(\mathbb Q\) nadpisuje pojedyncze komórki ponad bazą z \(\mathbb P\).
 - Pod całością umieścić wąski pasek z dwoma liniami inwariantu z części **c)**.
 - W rogu mały szary podpis: `new schematic based directly on Theorem 4; base picture reused from Figure 5`.
 
@@ -333,13 +331,13 @@ A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
 **c) Treść slajdu**
 - Pierwsza linia:
 `Rebuilding starts from the slabs stored in \(\mathbb P\) and from the buffered explicit values stored in \(\mathbb Q\).`
-- Trzy kroki:
+- Cztery krótkie kroki:
 - `partition \(\mathcal Q\) into 0-updates and 1-updates`
-- `assign 0-updates to slabs of \(\mathcal P\) and split each affected slab row by row`
+- `assign 0-updates to slabs of \(\mathcal P\); these are the only updates that force splitting inside old slabs`
+- `split each affected slab row by row and collect the untouched pieces`
 - `every uncovered 1-update becomes a \(1\times 1\) slab`
 - Potem:
-- `the row-by-row splitting step creates a new slab decomposition \(\mathcal K\) of the up-to-date matrix`
-- `each affected old slab contributes its untouched pieces, while uncovered 1-updates contribute singleton slabs`
+`The resulting family \(\mathcal K\) is already a slab decomposition of the up-to-date matrix.`
 - Nierówność, którą trzeba zapamiętać:
 \[
 |\mathcal K| \le |\mathcal P| + 2|\mathcal Q|
@@ -351,7 +349,7 @@ A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
 
 **d) Bardzo precyzyjny opis rysunku**
 - Użyć **dwóch dominujących paneli** plus **wąskiego prawego calloutu**.
-- Panel lewy: `old slabs in \(\mathbb P\) + buffered values in \(\mathbb Q\)`; pokazać kilka starych slabów i kilka pogrubionych komórek typu `0-update` / `1-update`, ale bez współrzędnych i bez własnego małego datasetu.
+- Panel lewy: `old slabs in \(\mathbb P\) + buffered values in \(\mathbb Q\)`; to ma być nowy schemat, nie literalna rekonstrukcja Figure 6. Pokazać kilka starych slabów i kilka pogrubionych komórek typu `0-update` / `1-update`, ale bez współrzędnych i bez własnego małego datasetu.
 - Panel środkowy: pośrednia dekompozycja `\(\mathcal K\)`; jeden dawny slab ma być rozcięty na kilka `split pieces`, a jedna niepokryta `1-update` ma być pokazana jako turkusowy singleton `1\times 1`.
 - Pod panelem środkowym tylko krótki podpis tekstowy: `build \(\mathcal K\) with old untouched pieces + split pieces + uncovered \(1\times 1\) slabs`.
 - Callout prawy: `run \(\mathtt{Decompose}\)` prowadzi do nowej canonical decomposition; wystarczy narysować 2–3 pionowe canonical slabs jako wyraźnie „nowe po recomputation”, resztę można zostawić jako przygaszone tło.
@@ -375,7 +373,7 @@ L = 8f_d(n+2)
 `One copy keeps answering updates, while the next copy is initialized in the background and then catches up.`
 - Krótki plan:
 - `partition all updates into epochs \(E_0,E_1,E_2,\ldots\) of length \(L\)`
-- `during \(E_{2i-2}\), spread \(\mathtt{Init}(n,\mathcal K)\) of the next structure over the whole epoch`
+- `during \(E_{2i-2}\), spread \(\mathtt{Init}(n,\mathcal K)\) of the next structure over the whole epoch; at the end it is exactly one epoch behind`
 - `during \(E_{2i-1}\), the next structure catches up by processing two updates while the previous one processes one`
 - `queries keep going to the currently active copy throughout`
 - Jeden ważny dopisek:
