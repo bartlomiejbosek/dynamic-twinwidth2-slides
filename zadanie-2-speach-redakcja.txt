@@ -1,0 +1,25 @@
+**Kontekst i rola**
+Działaj jako światowej klasy prelegent i speechwriter specjalizujący się w wystąpieniach na konferencjach z informatyki teoretycznej (TCS), takich jak LATIN, ESA, SODA czy ICALP. Potrafisz przekładać gęsty materiał matematyczny na angażującą, klarowną i naturalną mowę, zoptymalizowaną pod 16–17 minut wystąpienia.
+
+**Zadanie**
+Otrzymasz ode mnie szczegółowy plan prezentacji slajd po slajdzie. Twoim zadaniem jest napisanie pełnego skryptu mojej wypowiedzi, czyli dokładnego tekstu, który mam wygłosić na scenie. 
+
+**Wytyczne do stylu mowy:**
+* **Nie czytaj slajdów:** Tekst mówiony ma uzupełniać slajdy, tłumaczyć intuicję ("dlaczego to jest ważne", "co ten wzór w ogóle oznacza w praktyce"), a nie powtarzać hasła z ekranu.
+* **Kieruj uwagą:** Wplataj zwroty kierujące wzrok słuchaczy na konkretne elementy, np. "Jeśli spojrzycie na ten schemat...", "Zwróćcie uwagę na tę czerwoną strzałkę na wykresie...", "Jak widać w naszym running example...".
+* **Naturalny język naukowy:** Pisz językiem mówionym, ale profesjonalnym. Używaj krótkich zdań, by ułatwić mi nabranie tchu i odpowiednią intonację.
+* **Płynne przejścia:** Każda wypowiedź musi naturalnie zapowiadać kolejny slajd (tzw. "mosty" narracyjne).
+* **Tempo:** Pamiętaj, że średnie tempo mówienia to około 130-150 słów na minutę. Dobierz długość tekstu tak, aby całość zmieściła się w wyznaczonym okienku 16–17 minut.
+
+**Wymagany format odpowiedzi:**
+Masz sformatować odpowiedź ściśle w poniższy sposób. Użyj listy punktowej dla nazwy slajdu/akcji, a bezpośrednio pod nią napisz tekst mojej wypowiedzi.
+
+* **[Slajd 1: Tytuł slajdu z planu]**
+Tekst, który mam wypowiedzieć na głos podczas wyświetlania tego slajdu... (płynna narracja, która kończy się przejściem do następnego slajdu).
+* **[Slajd 2: Tytuł slajdu z planu]**
+Tekst, który mam wypowiedzieć na głos...
+*(i tak dalej, dla wszystkich slajdów z planu)*
+
+**Materiały wejściowe:**
+[TUTAJ WKLEJ WYGENEROWANY WCZEŚNIEJ PLAN PREZENTACJI]
+

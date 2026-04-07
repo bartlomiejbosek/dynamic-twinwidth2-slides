@@ -1,0 +1,88 @@
+Masz rację. W NotebookLM lepiej nie wrzucać jednego wielkiego promptu, tylko dawać **krótkie, twarde komentarze przypięte do konkretnych fragmentów**.
+
+Najlepszy układ to:
+
+1. jeden krótki komentarz globalny,
+2. potem osobne komentarze do tych miejsc, które naprawdę wymagają poprawy.
+
+Poniżej masz gotowe komentarze do wklejenia.
+
+## 1. Komentarz globalny
+
+Przypnij do początku `plan.txt` albo do nagłówka dokumentu:
+
+```text
+Poprawiaj wyłącznie błędne lub słabsze fragmenty tego planu. Nie przepisuj całości od zera. Zachowaj ogólną architekturę 13 głównych slajdów + 3 backup slides, theorem slide jako slajd 5, running example na slajdach 8–9, część dynamiczną na slajdach 10–12 i take-away na slajdzie 13. Wszystkie poprawki muszą być ściśle zakotwiczone w `main-all.tex` i `main.pdf`. Nie dodawaj nowych twierdzeń, definicji, figur ani przykładów, jeśli nie wynikają jasno ze źródeł. Ujednolić terminologię z artykułem. Szczególnie odchudź poznawczo slajdy 8–12, ale bez utraty sensu matematycznego. Dla każdego poprawianego miejsca podaj pełny poprawiony fragment gotowy do wklejenia.
+```
+
+## 2. Komentarz do Części I
+
+Przypnij do fragmentu „Część I. Krótka decyzja projektowa”:
+
+```text
+Wzmocnij ten fragment tak, aby rola źródeł była bardziej widoczna w samym tekście planu. Nie wystarczy ogólna deklaracja, że pewne slajdy są oparte na `main-all.tex` lub `main.pdf`. Doprecyzuj bardziej operacyjnie: które slajdy wynikają przede wszystkim z definicji / twierdzeń / procedur z `main-all.tex`, a które z figur i narracji `main.pdf`. Zostaw architekturę planu bez zmian. Nie rozwlekaj meta-komentarzy; popraw sam tekst tej sekcji.
+```
+
+## 3. Komentarz do slajdu 8
+
+Przypnij do slajdu 8:
+
+```text
+Ten slajd wymaga odchudzenia poznawczego. Zachowaj running example i sens pierwszego sweepa w `Decompose`, ale zmniejsz liczbę rzeczy wprowadzanych naraz. Każ slajdowi mieć jedną dominującą myśl: „co znika w rundzie i dlaczego to daje \(B_i\)”. Ogranicz liczbę symboli eksponowanych jednocześnie do absolutnego minimum. Jeżeli któraś definicja pomocnicza nie jest konieczna na slajdzie głównym, usuń ją stąd lub przenieś ciężar na opis rysunku / backup. Zachowaj pełny format: a) tytuł, b) cele, c) treść, d) bardzo precyzyjny opis rysunku.
+```
+
+## 4. Komentarz do slajdu 9
+
+Przypnij do slajdu 9:
+
+```text
+Ten slajd też wymaga uproszczenia pod szeroką publiczność LATIN. Zachowaj logiczne domknięcie running example, ale nie pozwól, by slajd wyglądał jak fragment 50-minutowego seminarium. Główna myśl ma brzmieć: „z \(A_i\) i \(B_i\) odzyskujemy canonical slabs”. Zostaw tylko te wzory i linie tekstu, które realnie pomagają zrozumieć mechanizm. Dopilnuj, by związek ze slajdem 8 był bardzo czytelny wizualnie i narracyjnie. Nie zmieniaj sensu matematycznego.
+```
+
+## 5. Komentarz do slajdu 10
+
+Przypnij do slajdu 10:
+
+```text
+Uprość ten slajd tak, aby miał jedną dominującą myśl: „dynamiczna struktura = baza P + bufor Q”. Zachowaj inwariant i sens QueryBit / Update, ale ogranicz tekst do minimum koniecznego na slajdzie głównym. Ujednolić notację z artykułem: jeśli w źródłach występują `P` i `Q`, nie przechodź na `\mathcal P` i `\mathcal Q`. Opis rysunku ma jasno mówić, że to jest statyczny, PDF-safe schemat możliwy do zrobienia w Beamerze bez zależności od animacyjnych sztuczek.
+```
+
+## 6. Komentarz do slajdu 11
+
+Przypnij do slajdu 11:
+
+```text
+To miejsce jest blisko przeciążenia. Popraw ten slajd tak, aby główna myśl była jedna: „jak z P i Q złożyć nową bazę przed ponownym Decompose”. Nie próbuj opowiedzieć wszystkich detali naraz. Zostaw tylko te kroki przebudowy, które są konieczne do zrozumienia idei. Cięższe szczegóły proceduralne zostaw backupowi, jeśli źródła to wspierają. Ujednolić terminologię z artykułem i dopilnuj, by nowy schemat był wyraźnie uzasadniony przez `main-all.tex` i kompozycyjnie przez `main.pdf`, a nie wymyślony dowolnie.
+```
+
+## 7. Komentarz do slajdu 12
+
+Przypnij do slajdu 12:
+
+```text
+Uczyń ten slajd lżejszym i bardziej konferencyjnym. Główna myśl ma być jedna: „jak przechodzimy z amortized do expected worst-case przez epochs i snapshot copies”. Nie upychaj zbyt wielu szczegółów harmonogramu naraz. Zostaw tylko to, co jest potrzebne, aby słuchacz zrozumiał ideę dwóch kopii i catch-up. Opis rysunku ma być maksymalnie prosty, PDF-safe i czytelny dla publiczności niespecjalistycznej w tej niszy.
+```
+
+## 8. Komentarz do notacji globalnej
+
+Przypnij do pierwszego miejsca, gdzie pojawia się `\mathcal P` / `\mathcal Q` albo inna niejednolita notacja:
+
+```text
+Ujednolić notację w całym planie do wersji zgodnej z artykułem. Nie zmieniaj arbitralnie nazw obiektów ani procedur. Jeśli źródła używają `P`, `Q`, `Decompose`, `canonical slab decomposition`, `adhesive segment set`, to trzymaj się dokładnie tych nazw. Popraw wszystkie mikro-odchylenia terminologiczne.
+```
+
+## 9. Komentarz do Części III
+
+Przypnij do „Część III. Kontrola zgodności z 10 cechami dobrego referatu”:
+
+```text
+Doprecyzuj tę sekcję tam, gdzie obecne uzasadnienia są zbyt deklaratywne. Szczególnie wzmocnij punkty dotyczące szerokiej publiczności LATIN, czytelności PDF-safe i kontroli przeciążenia slajdów 8–12. Nie zmieniaj listy 10 cech; popraw tylko te objaśnienia, które wymagają mocniejszego uzasadnienia w samym planie.
+```
+
+## 10. Najkrótsza wersja, gdy chcesz komentować tylko slajdy 8–12
+
+```text
+Popraw ten slajd tak, aby był lżejszy poznawczo, miał jedną dominującą myśl, pozostał w pełni zgodny z `main-all.tex` i `main.pdf`, nie dodawał nic spoza źródeł, był PDF-safe i bardziej odpowiedni dla szerokiej publiczności TCS na LATIN. Zachowaj sens matematyczny, ale usuń wszystko, co nie jest konieczne na slajdzie głównym. Podaj pełny poprawiony blok: a) tytuł, b) cele, c) treść, d) bardzo precyzyjny opis rysunku.
+```
+
+Mogę też przygotować **ultrakrótkie komentarze osobno dla slajdów 8, 9, 10, 11, 12**, po 1–2 zdania każdy, żeby łatwiej je wklejać w NotebookLM.
