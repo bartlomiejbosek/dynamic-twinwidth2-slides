@@ -1,0 +1,1105 @@
+\documentclass[runningheads]{llncs}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{comment}
+\usepackage{lmodern}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage[linesnumbered]{algorithm2e}
+\usepackage{todonotes}
+\usepackage{mathtools}
+\usepackage{arrayjob}
+\usepackage{array}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+\usepackage{xcolor,colortbl}
+\usepackage{hyperref}
+
+\usepackage[capitalize, nameinlink]{cleveref}
+
+
+
+
+\newcommand{\wn}[2][inline]{\todo[color=green!50,#1]{{\textbf{W:} #2}}}
+\newcommand{\bb}[2][inline]{\todo[color=blue!50,#1]{{\textbf{B:} #2}}}
+\renewcommand{\mp}[2][inline]{\todo[color=red!50,#1]{{\textbf{M:} #2}}}
+\newcommand{\az}[2][inline]{\todo[color=yellow!50,#1]{{\textbf{A:} #2}}}
+\newcommand{\jc}[2][inline]{\todo[color=brown!50,#1]{{\textbf{J:} #2}}}
+
+\newcommand{\Oh}{\mathcal{O}}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\renewcommand{\le}{\leqslant}
+\renewcommand{\ge}{\geqslant}
+\newcommand{\T}{\mathcal{T}}
+
+
+\title{Dynamiczne struktury danych dla macierzy twin-ordered}
+
+ \author{
+     Bartłomiej Bosek\inst{1,2}\thanks{\includegraphics[height=1.2em]{flags.jpg}
+     {\em{B. Bosek, W. Nadara, Mi. Pilipczuk, A. Zych-Pawlewicz:}}
+     Ta praca jest częścią projektu BOBR, który otrzymał finansowanie z Europejskiej Rady ds. Badań Naukowych (ERC) w ramach programu Unii Europejskiej „Horyzont 2020” w zakresie badań naukowych i innowacji (umowa grantowa nr 948057).} \and
+     Jadwiga Czyżewska\inst{2}\thanks{Praca wsparta przez Narodowe Centrum Nauki, grant SONATA BIS-12 nr 2022/46/E/ST6/00143.} \and
+     Evangelos Kipouridis\inst{3} \and
+     Wojciech Nadara\inst{2}\inst{\star} \and
+     Michał Pilipczuk\inst{2}\inst{\star} \and
+     Karol Węgrzycki\inst{3}\thanks{Praca wsparta przez 
+    Deutsche Forschungsgemeinschaft (DFG, Niemiecką Fundację Badawczą), grant nr
+    559177164.} \and
+     Anna Zych-Pawlewicz\inst{2}\inst{\star}
+ }
+
+ \authorrunning{B. Bosek, J. Czyżewska, E. Kipouridis, W. Nadara, M. Pilipczuk, K. Węgrzycki i A. Zych-Pawlewicz}
+
+ \institute{
+     Instytut Informatyki Teoretycznej, Uniwersytet Jagielloński, Kraków, Polska\\
+     \email{bartlomiej.bosek@uj.edu.pl} \and
+     Instytut Informatyki, Uniwersytet Warszawski, Polska\\
+     \email{\{j.czyzewska, w.nadara, michal.pilipczuk, anka\}@mimuw.edu.pl} \and
+     Instytut Informatyki im. Maxa Plancka, Saarland Informatics Campus, Niemcy\\
+     \email{\{kipouridis, kwegrzyc\}@mpi-inf.mpg.de}
+ }
+
+
+
+
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Przedstawiamy dynamiczną strukturę danych do reprezentowania binarnych macierzy $n\times n$,
+które są $d$-twin-ordered, dla ustalonego parametru $d$. Nasza struktura
+obsługuje zarówno zapytania o komórki, jak i aktualizacje pojedynczych komórek w $\Oh(\log \log n)$ oczekiwanym czasie najgorszego przypadku,
+używając przy tym
+$\Oh_d(n)$ pamięci; tutaj
+notacja $\Oh_d(\cdot)$ ukrywa stałą zależną od $d$.
+\keywords{Dynamiczne struktury danych, twin-width, macierz}
+\end{abstract}
+
+\clearpage
+\setcounter{page}{1}
+\newpage
+
+
+\section{Wprowadzenie}\label{sec:introduction}
+
+Pojęcie \emph{twin-width}, wprowadzone przez Bonneta, Kima, Thomass\'ego i Watriganta~\cite{tww1}, szybko wyłoniło się jako unifikujący parametr strukturalny dla grafów (zarówno rzadkich, jak i gęstych), macierzy oraz permutacji. Podstawowa idea twin-width, wyrażona poprzez leżące u jej podstaw pojęcie dekompozycji zwane {\em{ciągiem kontrakcji}}, polega na „składaniu” danej struktury (czy to grafu, macierzy, czy permutacji) przez iteracyjne scalanie elementów w coraz większe części. W~każdym momencie wymagamy, aby każda część miała jednorodną relację ze wszystkimi pozostałymi częściami, z wyjątkiem ograniczonej liczby wyjątków. Najlepsze możliwe ograniczenie na liczbę tych wyjątków jest właśnie twin-width. Pojęcie to ma zaskakująco szeroki zakres zastosowań: na przykład grafy bez ustalonego minora $H$ (dla ustalonego $H$), grafy o ograniczonej clique-width oraz permutacje wolne od wzorców mają ograniczone twin-width~\cite{tww1}.
+
+Pomimo że jest to pojęcie stosunkowo nowe, fundamentalny charakter twin-width został już dobrze zrozumiany. Twin-width ujawnia głębokie związki między strukturalną teorią grafów a algorytmiczną teorią modeli skończonych, zob. np.~\allowbreak\cite{tww-separable,tww8,tww4,tww1,tww-perm,tww-types,tww-stable,tww-tournaments,tww-distal}. W tym kierunku prawdopodobnie najważniejszym wynikiem jest twierdzenie Bonneta i in.~\cite{tww1}, stwierdzające, że problem sprawdzania modeli dla logiki pierwszego rzędu jest stałoparametrowo rozwiązywalny na klasach grafów o ograniczonym twin-width, o ile jako dane wejściowe podany jest odpowiedni ciąg kontrakcji. Kombinatoryczne aspekty twin-width badano w~\cite{tww2,tww7,tww4,tww6,tww-pchi,tww-qchi}, wśród wielu innych prac. Kilka dalszych zastosowań algorytmicznych można znaleźć w~\cite{tww5,tww-kern,tww-repr}.
+
+
+
+W tej pracy badamy binarne macierze o ograniczonym twin-width -- zdefiniujmy teraz to pojęcie dokładnie. Rozważamy macierz binarną $M$, tj. taką, której wpisy należą do $\{0,1\}$. Ciąg kontrakcji dla $M$ jest ciągiem par
+$$(\mathcal{R}_0, \mathcal{C}_0),\ (\mathcal{R}_1, \mathcal{C}_1), \dots ,\ (\mathcal{R}_p, \mathcal{C}_p),$$
+gdzie dla każdego $i=0,1,\dots, p$ zbiory $\mathcal{R}_i$ i $\mathcal{C}_i$ są odpowiednio podziałami wierszy i kolumn macierzy $M$ na bloki wierszy i bloki kolumn. Ponadto,
+\begin{itemize}
+	\item w $(\mathcal{R}_0, \mathcal{C}_0)$ każdy wiersz i każda kolumna należą do osobnego bloku;
+	\item w $(\mathcal{R}_p, \mathcal{C}_p)$ wszystkie wiersze należą do jednego bloku, a wszystkie kolumny należą do jednego bloku;
+	\item $(\mathcal{R}_i, \mathcal{C}_i)$ otrzymujemy z $(\mathcal{R}_{i-1}, \mathcal{C}_{i-1})$ przez scalenie albo dwóch kolejnych bloków wierszy w jeden blok wierszy, albo dwóch kolejnych bloków kolumn w jeden blok kolumn.
+\end{itemize}
+Przykład ciągu kontrakcji pokazano na rysunku~\ref{fig:contraction_sequence}.
+ Dla bloku wierszy $R\in \mathcal{R}$ i bloku kolumn $C\in \mathcal{C}$, {\em{strefa}} $M[R,C]$ jest podmacierzą złożoną ze wszystkich komórek leżących na przecięciu wierszy z $R$ i kolumn z $C$. Mówimy, że strefa jest {\em{niestała}}, jeśli zawiera zarówno wpis $0$, jak i wpis $1$. {\em{Szerokością}} ciągu kontrakcji jest najmniejsze $d$, takie że w każdym momencie ciągu, w każdym bloku wierszy i w każdym bloku kolumn występuje co najwyżej $d$ niestałych stref. Mówimy, że $M$ jest {\em{$d$-twin-ordered}}, jeśli dopuszcza ciąg kontrakcji o szerokości co najwyżej $d$, a że $M$ ma {\em{twin-width}} co najwyżej $d$, jeśli można przestawić wiersze i kolumny tak, aby otrzymać macierz $d$-twin-ordered. W całej pracy zakładamy, że porządek wierszy i kolumn jest ustalony, i zawsze zakładamy, że rozważana macierz jest~$d$-twin-ordered.
+\begin{figure}[h]
+	\newcommand{\g}{\cellcolor{blue!12!white}}
+	\setlength{\arrayrulewidth}{.15em}
+	\centering
+
+	\begin{tabular}{M{1em}|M{1em}|M{1em}|M{1em}|M{1em}}
+		
+			0 & 1 & 1 & 1 & 1 \\
+		\hline
+			0 & 0 & 0 & 0 & 1 \\
+		\hline
+			1 & 1 & 1 & 0 & 0 \\
+		\hline
+			1 & 1 & 1 & 0 & 1 \\
+		\hline
+			1 & 0 & 0 & 1 & 1 \\		
+	\end{tabular}
+	\hspace{0.5cm}
+	\begin{tabular}{M{1em}|M{1em}|M{1em}|M{1em}|M{1em}}
+		0 & 1 & 1 & 1 & 1 \\
+		\hline
+		0 & 0 & 0 & 0 & 1 \\
+		\hline
+		1 & 1 & 1 & 0 & \g 0 \\
+		1 & 1 & 1 & 0 & \g 1 \\
+		\hline
+		1 & 0 & 0 & 1 & 1 \\		
+	\end{tabular}
+	\hspace{0.5cm}
+	\begin{tabular}{M{1em}|M{1em} M{1em}|M{1em}|M{1em}}
+		0 & 1 & 1 & 1 & 1 \\
+		\hline
+		0 & 0 & 0 & 0 & 1 \\
+		\hline
+		1 & 1 & 1 & 0 & \g 0 \\
+		1 & 1 & 1 & 0 & \g 1 \\
+		\hline
+		1 & 0 & 0 & 1 & 1 \\		
+	\end{tabular}
+	\\
+	\vspace{0.5cm}
+	\begin{tabular}{M{1em}|M{1em} M{1em}|M{1em}|M{1em}}
+		0 & \g 1 & \g 1 & \g 1 & 1 \\
+		0 & \g 0 & \g 0 & \g 0 & 1 \\
+		\hline
+		1 & 1 & 1 & 0 & \g 0 \\
+		1 & 1 & 1 & 0 & \g 1 \\
+		\hline
+		1 & 0 & 0 & 1 & 1 \\		
+	\end{tabular}
+	\hspace{0.5cm}
+	\begin{tabular}{M{1em}|M{1em} M{1em}|M{1em} M{1em}}
+		0 & \g 1 & \g 1 & \g 1 & \g 1 \\
+		0 & \g 0 & \g 0 & \g 0 & \g 1 \\
+		\hline
+		1 & 1 & 1 & \g 0 & \g 0 \\
+		1 & 1 & 1 & \g 0 & \g 1 \\
+		\hline
+		1 & 0 & 0 & 1 & 1 \\		
+	\end{tabular}
+	\hspace{0.5cm}
+	\begin{tabular}{M{1em} M{1em} M{1em}|M{1em} M{1em}}
+		\g 0 & \g 1 & \g 1 & \g 1 & \g 1 \\
+		\g 0 & \g 0 & \g 0 & \g 0 & \g 1 \\
+		\hline
+		1 & 1 & 1 & \g 0 & \g 0 \\
+		1 & 1 & 1 & \g 0 & \g 1 \\
+		\hline
+		\g 1 & \g 0 & \g 0 & 1 & 1 \\		
+	\end{tabular}
+	\\
+	\vspace{0.5cm}
+	\begin{tabular}{M{1em} M{1em} M{1em} M{1em} M{1em}}
+		\g 0 & \g 1 & \g 1 & \g 1 & \g 1 \\
+		\g 0 & \g 0 & \g 0 & \g 0 & \g 1 \\
+		\hline
+		\g 1 & \g  1 & \g 1 & \g 0 & \g 0 \\
+		\g 1 & \g  1 & \g 1 & \g 0 & \g 1 \\
+		\hline
+		\g 1 & \g 0 & \g 0 & \g  1 & \g 1 \\		
+	\end{tabular}
+	\hspace{0.5cm}
+	\begin{tabular}{M{1em} M{1em} M{1em} M{1em} M{1em}}
+		\g 0 & \g 1 & \g 1 & \g 1 & \g 1 \\
+		\g 0 & \g 0 & \g 0 & \g 0 & \g 1 \\
+		\g 1 & \g  1 & \g 1 & \g 0 & \g 0 \\
+		\g 1 & \g  1 & \g 1 & \g 0 & \g 1 \\
+		\hline
+		\g 1 & \g 0 & \g 0 & \g  1 & \g 1 \\	
+	\end{tabular}
+	\hspace{0.5cm}
+	\begin{tabular}{M{1em} M{1em} M{1em} M{1em} M{1em}}
+		\g 0 & \g 1 & \g 1 & \g 1 & \g 1 \\
+		\g 0 & \g 0 & \g 0 & \g 0 & \g 1 \\
+		\g 1 & \g  1 & \g 1 & \g 0 & \g 0 \\
+		\g 1 & \g  1 & \g 1 & \g 0 & \g 1 \\
+		\g 1 & \g 0 & \g 0 & \g  1 & \g 1 \\	
+	\end{tabular}
+	\let\g\undefined
+	\caption{Ciąg kontrakcji szerokości $2$: jeśli scalamy dwa kolejne wiersze lub kolumny, usuwamy linię je rozdzielającą. Na przykład w pierwszym kroku scalamy trzeci i czwarty wiersz, a w drugim drugi i trzecią kolumnę. 
+		Niestałe strefy są pokolorowane: zauważmy, że w każdym momencie ciągu każdy blok wierszy i każdy blok kolumn zawiera co najwyżej dwie niestałe strefy.}
+	\label{fig:contraction_sequence}
+\end{figure}
+
+
+
+Związek między grafami a macierzami o ograniczonym twin-width leży u podstaw teorii twin-width i został zauważony już w oryginalnej pracy Bonneta i in.~\cite{tww1}. Później Bonnet, Giocanti, Ossona de Mendez, Simon, Thomass\'e i Toru\'nczyk badali twin-width macierzy z punktu widzenia kombinatorycznego i teoriomodelowego~\cite{tww4}, podczas gdy Bonnet, Giocanti, Ossona de Mendez i Thomass\'e analizowali algorytmiczne zastosowania twin-width do problemów takich jak mnożenie macierzy~\cite{tww5}. Perspektywa macierzowa odegrała również kluczową rolę w pracach nad $\chi$-ograniczonością grafów o ograniczonym twin-width~\cite{tww-pchi,tww-qchi}.
+
+Punktem wyjścia naszej pracy jest wynik Pilipczuka, Sokołowskiego i Zych-Pawlewicz~\cite{tww-repr}, którzy podeszli do macierzy o ograniczonym twin-width z perspektywy struktur danych, czyli {\em{zwartych reprezentacji}}. Dokładniej, zaprojektowali oni strukturę danych, która przechowuje binarną macierz $d$-twin-ordered $n\times n$ $M$, używając $\Oh_d(n)$\footnote{Notacja $\Oh_d(\cdot)$ ukrywa czynniki multiplikatywne, które mogą zależeć od $d$.} bitów (co jest asymptotycznie optymalne), jednocześnie obsługując zapytania o pojedynczy wpis w czasie $\Oh_d(\log \log n)$. Ich struktura danych jest jednak z gruntu statyczna: po zainicjalizowaniu na macierzy $M$ nie można jej łatwo modyfikować po aktualizacjach $M$. Naturalne jest więc pytanie, czy podobnie zwartą i efektywną strukturę danych można zaproponować także w ustawieniu dynamicznym, gdzie $M$ może być aktualizowana przy gwarancji, że zawsze pozostaje $d$-twin-ordered.
+
+
+\paragraph*{Nasze wyniki.} W tej pracy odpowiadamy na powyższe pytanie i przedstawiamy dynamiczną strukturę danych dla binarnych macierzy $d$-twin-ordered, która efektywnie obsługuje zarówno zapytania, jak i aktualizacje, przy gwarancji prawie liniowej złożoności pamięciowej. Formalnie pokazujemy następujące twierdzenie.
+
+
+\begin{theorem}\label{thm:main}
+	Niech $d\in \mathbb{N}$ oraz $M \in \{0,1\}^{n \times n}$ będzie macierzą binarną,
+	która jest aktualizowana w czasie przy gwarancji, że w każdej chwili jest
+	$d$-twin-ordered. Wówczas istnieje dynamiczna struktura
+	danych do utrzymywania $M$, która używa $\Oh_d(n)$ pamięci i obsługuje
+	następujące operacje:
+	\begin{itemize}
+		\item $\mathtt{Init}(n, \cal K)$: inicjalizuje strukturę danych
+		listą $\cal K$ rozłącznych prostokątów reprezentujących wszystkie jedynki
+		w $M$ w czasie $\Oh_d((n + |{\mathcal{K}}|) \log \log n)$.
+		\item $\mathtt{QueryBit}(i,j)$: zwraca
+		wpis $M[i, j]$ w $\Oh(\log \log n)$ oczekiwanym czasie najgorszego
+		przypadku.
+\item $\mathtt{Update}(i, j)$: odwraca wpis $M[i, j]$
+		w $\Oh(\log \log n)$ oczekiwanym czasie najgorszego przypadku.
+	\end{itemize}
+\end{theorem}
+
+W całej pracy działamy w standardowym modelu word RAM ze słowami
+długości $\Oh(\log n)$, a zatem złożoność pamięciowa $\Oh_d(n)$ oznacza przechowywanie
+macierzy przy użyciu \linebreak$\Oh_d(n \log n)$ bitów. 
+W ustawieniu statycznym
+Pilipczuk i in.~\cite{tww-repr} uzyskali reprezentację, która
+używa jedynie $\Oh_d(n)$ bitów, a więc nasz wynik zamienia niewielki wzrost złożoności pamięciowej na możliwość dynamicznej obsługi struktury danych.
+Zauważmy, że tylko złożoność pamięciowa struktury danych oraz
+czas jej inicjalizacji zależą od parametru $d$, podczas gdy
+ograniczenia na złożoność czasową wszystkich pozostałych operacji nie
+zawierają $d$.
+Idąc za~\cite{tww-repr}, dopuszczamy, aby nasza struktura danych była
+inicjalizowana zwartym opisem macierzy poprzez listę
+rozłącznych prostokątów obejmujących wszystkie wpisy $1$ (które formalnie definiujemy w Sekcji~\ref{sec:preliminaries} i nazywamy {\em{slabami}}); tak więc
+w szczególności można efektywnie zainicjalizować macierz gęstą. 
+Wiadomo (szczegóły zob. \cite[Lemma~10]{tww-repr}), że taki
+opis złożony z $\Oh_d(n)$ prostokątów można łatwo wyznaczyć
+z ciągu kontrakcji szerokości $d$.
+
+
+
+
+
+
+
+
+
+
+ 
+
+\section{Wstępne pojęcia}
+\label{sec:preliminaries}
+
+Wszystkie logarytmy w tej pracy są o podstawie $2$. Zakładamy standardowy model obliczeń RAM. Dla $a,b\in \mathbb{N}$ spełniających $a\leq b$ definiujemy {\em{odcinek}} $[a,b]\coloneqq \{a,a+1,\ldots,b\}$.
+
+\paragraph*{Macierze twin-ordered.}
+Podstawowa terminologia dotycząca macierzy, jak również definicja
+macierzy $d$-twin-ordered, zostały już omówione w
+Sekcji~\ref{sec:introduction}.
+W dalszej części pracy operujemy na binarnej macierzy $n\times n$ $M$,
+która w każdym momencie jest $d$-twin-ordered. Wpis macierzy $M$ w wierszu $i$ i kolumnie $j$ oznaczamy przez $M[i,j]$.
+
+
+
+
+W naszej strukturze danych w ogóle nie opieramy się na ciągach kontrakcji,
+lecz wykorzystujemy własności strukturalne macierzy $M$, wynikające z
+założenia, że jest ona $d$-twin-ordered. Aby sformułować te własności,
+potrzebujemy kilku definicji. Przypomnijmy, że {\em{blokiem (wierszy/kolumn)}} jest
+spójny zbiór wierszy/kolumn, zaś dla bloku wierszy $R$ i bloku
+kolumn $C$, {\em{strefa}} $M[R,C]$ jest podmacierzą złożoną ze wszystkich
+komórek na przecięciu $R$ i $C$.
+
+{\em{Narożnikiem}} w $M$ jest strefa $2\times 2$, której oba wiersze są różne i obie kolumny są różne. Mamy następujący fakt dotyczący liczby narożników w macierzy $d$-twin-ordered.
+
+\begin{lemma}[{\cite[Theorem 5 and Lemma~8]{tww-repr}}]\label{lem:mixzones}
+	Niech $f_d=\frac{16}
+{3}(2d + 3)^2 2^{4(2d+2)}$. Każda binarna macierz $d$-twin-ordered $n \times n$
+	zawiera co najwyżej $f_d \cdot (n+2) \in \Oh_d(n)$ narożników.
+\end{lemma}
+
+
+Na potrzeby tej pracy \emph{slab} w
+$M$ definiujemy jako strefę $M[R,C]$ całkowicie wypełnioną jedynkami, gdzie $R$ jest blokiem wierszy, a $C$ blokiem kolumn. Slab możemy również reprezentować jako
+$M[[a,b],[c,d]]$ by
+przez
+cztery współrzędne $(a,b,c,d)$, gdzie
+$a,b,c,d \in \{ 1, \ldots n \}$ oraz $a\leq b$ i $c\leq d$. W szczególności jest to reprezentacja, której używamy podczas pracy ze slabami w procedurach algorytmicznych.
+{\em{Dekompozycją slabową}} macierzy $M$
+jest zbiór $\mathcal{K}$ parami rozłącznych slabów w $M$
+taki, że poza slabami z $\mathcal{K}$ nie występuje żaden
+wpis $1$. Przykład pokazano na rysunku~\ref{fig:slab_decomposition_example_prelims}.
+
+\begin{figure}[h]
+    \newcommand{\h}{\cellcolor{red!22!white}}
+	\newcommand{\z}{\cellcolor{gray!22!white}}
+	\newcommand{\g}{\cellcolor{white!42!white}}
+	\newcommand{\y}{\cellcolor{yellow!62!white}}
+	\newcommand{\q}{\cellcolor{green!32!white}}
+	\newcommand{\e}{\cellcolor{black!32!white}}
+\renewcommand{\arraystretch}{1.2}
+	\centering
+	\begin{tabular}{|M{1em}|M{1em}|M{1em}|M{1em}|M{1em}|}
+		\hline
+		\g 0 & \y 1 & \y 1 & \g 0 & \z 1 \\
+		\hline
+		\g 0 & \g 0 & \g 0 & \g 0 & \z 1 \\
+		\hline
+		\g 0 & \q  1 & \q 1 & \q 1 & \g 0 \\
+		\hline
+		\h 1 & \h  1 & \h 1 & \g 0 & \e 1 \\
+		\hline
+		\h 1 & \h  1 & \h 1 & \g 0 & \e 1\\	
+		\hline
+	\end{tabular}
+	\let\h\undefined
+	\let\g\undefined
+	\let\z\undefined
+	\let\y\undefined
+	\let\e\undefined
+	\let\q\undefined
+	\caption{Dekompozycja slabowa macierzy w postaci zbioru $\mathcal{K} = \{M[[1,1], [2,3]],\ M[[1,2], [5,5]],\ M[[3,3], [2,4]],\ M[[4,5], [1,3]],\ M[[4,5], [5,5]]\}.$ Wszystkie slaby są zaznaczone różnymi kolorami.}
+	\label{fig:slab_decomposition_example_prelims}
+\end{figure}
+
+
+\begin{lemma}[{\cite[Lemma~10]{tww-repr}}]\label{lem:rectangles}
+Niech $M$ będzie binarną macierzą $n \times n$, która jest $d$-twin-ordered. Wówczas
+$M$ dopuszcza dekompozycję slabową $\mathcal{K}$ o
+$|\mathcal{K}| \leq d(2n-2)+1$.
+\end{lemma}
+
+Kończymy tę część podsumowaniem statycznej struktury danych opisanej przez Chana w~\cite{Chan2DPL}.
+Przeformułowujemy jego wynik w terminologii naszej pracy:
+\begin{theorem}[Chan~\cite{Chan2DPL}]\label{thm:Chan} Dany jest zbiór $N$ rozłącznych slabów o współrzędnych należących do $\{1,2,\dots, U\}$. Możemy zbudować strukturę danych o pamięci $\Oh(N)$, która dla danej pary $(i,j)$ zwraca slab zawierający $(i,j)$ lub informację, że taki slab nie istnieje, w czasie $\Oh(\log \log U)$. Czas preprocessingu wynosi $\Oh(N \log \log U)$.
+\end{theorem}
+Zapytanie opisane w treści Twierdzenia~\ref{thm:Chan} będziemy nazywać {\em{zapytaniem lokalizacji punktu}}, a strukturę danych {\em{statyczną dwuwymiarową ortogonalną strukturą lokalizacji punktu}}.
+
+\paragraph*{Słowniki.}
+W tej pracy intensywnie korzystamy ze słowników \emph{van Emde Boasa},
+zwanych także {drzewami van Emde Boasa}~\cite{VANEMDEBOAS197780}. Drzewo
+van Emde Boasa
+utrzymuje zbiór kluczy $S$, który jest podzbiorem
+dziedziny $\{ 1, \ldots, U \}$ dla $U\in \mathbb N$, obsługując następujące
+operacje:
+\begin{itemize}
+ \item $\mathtt{Insert}(\mathtt{x})$:
+    wstaw klucz $\mathtt{x}$ do $S$;
+ \item $\mathtt{Delete}(\mathtt{x})$: usuń klucz $\mathtt{x}$
+ ze zbioru $S$;
+ \item $\mathtt{Lookup}(\mathtt{x})$: sprawdź, czy $\mathtt{x}$
+ należy do utrzymywanego zbioru kluczy $S$;
+ \item $\mathtt{Successor}(\mathtt{x})$: znajdź najmniejszy klucz w
+ $S$ większy niż $\mathtt{x}$;
+ \item $\mathtt{Predecessor}(\mathtt{x})$: znajdź największy klucz
+ w $S$ mniejszy niż $\mathtt{x}$.
+\end{itemize}
+Wszystkie operacje działają w czasie najgorszego przypadku $\Oh(\log \log U)$, a
+wymagana
+pamięć wynosi $\Oh(U)$ \cite{VANEMDEBOAS197780}.
+
+Przypomnijmy, że {\em{odcinek}} $[a,b]$, dla $a,b \in \mathbb{N}, a~\leq b$, jest zdefiniowany jako
+zbiór kolejnych liczb naturalnych pomiędzy współrzędnymi $a$ i $b$:
+$[a,b]= \{a, a+1, \ldots, b-1, b \}$. Dwa odcinki $[a,b]$ i
+$[a',b']$ nazywamy
+{\em{sąsiednimi}}, jeśli zachodzi $b+1=a'$ lub $a-1=b'$.
+W następnym lemacie opisujemy modyfikację drzew van Emde Boasa, która daje
+nam strukturę danych do utrzymywania zbioru
+rozłącznych i niesąsiednich odcinków o współrzędnych z $\{ 1, \ldots, n \}$, którą będziemy nazywać {\em{adhesive segment set}}.
+
+
+\begin{lemma}\label{lem:segment_tree}
+Niech $n \in \mathbb{N}$. Istnieje struktura danych \emph{adhesive segment set}
+$\mathbb{S}$, która
+utrzymuje
+dynamiczny zbiór $S$
+parami rozłącznych i parami niesąsiednich odcinków,
+których współrzędne należą do $\{ 1, \ldots, n \}$.
+Struktura danych obsługuje
+następujące metody:
+\begin{itemize}
+	\item $\mathtt{Containing}([a,b])$: Zwraca odcinek
+	ze zbioru $S$, który zawiera
+	$[a,b]$, o ile taki istnieje. 
+	\item $\mathtt{Adjacent}([a,b])$: Zwraca (co najwyżej dwa)
+	odcinki ze zbioru $S$
+	sąsiednie z $[a,b]$.
+	\item $\mathtt{Disjoint}([a,b])$: Zwraca informację, czy $[a,b]$ jest rozłączny ze wszystkimi odcinkami w $S$.
+\item $\mathtt{Merge}([a,b])$: Jeśli $[a,b]$ nie jest rozłączny ze wszystkimi odcinkami w $S$, metoda nic nie robi, a w przeciwnym razie wykonuje następującą modyfikację. Jeśli $[a,b]$ nie jest sąsiedni z żadnym odcinkiem w $S$, metoda dodaje $[a,b]$ do $S$. Jeśli $[a,b]$ jest sąsiedni z jednym odcinkiem $s\in S$, metoda zastępuje $s$ przez $s'\coloneqq s\cup [a,b]$. Jeśli $[a,b]$ jest sąsiedni z dwoma odcinkami $s_1,s_2\in S$, metoda zastępuje $s_1$ i $s_2$ przez $s'\coloneqq [a,b] \cup s_1 \cup s_2$.
+\item $\mathtt{Split}([a,b])$: Jeśli $[a,b]$
+ jest zawarty
+ w pewnym odcinku $[a',b'] \in S$, metoda
+ zastępuje odcinek $[a',b']$ w
+ $S$ odcinkami $[a',a-1]$ oraz $[b+1,b']$. Jeśli którykolwiek z tych odcinków okaże się pusty, nie jest dodawany do $S$. Jeśli nie istnieje odcinek $[a',b']\in S$ zawierający $[a,b]$, metoda nic nie robi.
+\end{itemize}
+Struktura danych zajmuje $\Oh(n)$ pamięci, a wszystkie operacje
+działają w czasie najgorszego przypadku $\Oh(\log \log n)$. Strukturę danych można zainicjalizować na pustym $S$ w czasie $\Oh(n)$.
+\end{lemma}
+\begin{proof}
+Używamy słownika van Emde Boasa $\mathbb{D}$ o uniwersum $[1,n]$. W~$\mathbb{D}$
+przechowujemy współrzędne odcinków ze zbioru $S$. Dodatkowo dla każdej współrzędnej przechowujemy dodatkowy bit określający, czy jest to pierwsza, czy
+druga współrzędna. Te dodatkowe bity są przechowywane w statycznej tablicy o wpisach $[1,n]$: wpis $i$ przechowuje odpowiednią informację dla współrzędnej równej $i$.
+
+W celu implementacji $\mathtt{Containing}([a,b])$ wykonujemy
+$a'\coloneqq \mathtt{Predecessor}(a+1)$ oraz
+$b'\coloneqq \mathtt{Successor}(b-1)$ do $\mathbb{D}$. Następnie
+zwracamy $[a',b']$, pod warunkiem że $a'$ jest pierwszą współrzędną odcinka, $b'$ jest drugą współrzędną odcinka oraz $b'=\mathtt{Successor}(a')$; w przeciwnym razie w $S$ nie ma odcinka zawierającego $[a,b]$. Zapytania $\mathtt{Adjacent}([a,b])$ i $\mathtt{Disjoint}([a,b])$ implementuje się
+analogicznie.
+
+W celu implementacji $\mathtt{Merge}([a,b])$ najpierw sprawdzamy, czy $[a,b]$ jest rozłączny ze wszystkimi odcinkami w $S$, wywołując $\mathtt{Disjoint}([a,b])$. 
+Jeśli tak nie jest, nic nie robimy.
+W przeciwnym razie wykonujemy
+$a'\coloneqq\mathtt{Predecessor}(a)$ oraz
+$b'\coloneqq\mathtt{Successor}(b)$ do $\mathbb{D}$.
+Ponieważ $[a,b]$ jest rozłączny z odcinkami w $S$, $a'$ jest drugą
+współrzędną, a $b'$ pierwszą współrzędną pewnego odcinka w $S$. Jeśli $a'+1=a$,
+wykonujemy zapytanie $a'':=\mathtt{Predecessor}(a')$ do
+$\mathbb{D}$, aby znaleźć pierwszą współrzędną odcinka
+$[a'',a'] \in S$. Następnie usuwamy $a'$ z $\mathbb{D}$ i
+wstawiamy $b$, zaznaczając, że jest to druga współrzędna odcinka. 
+Następnie
+postępujemy z $b'$ w sposób analogiczny.
+
+W celu implementacji $\mathtt{Split}([a,b])$ wykonujemy
+$[a',b']=\mathtt{Containing}([a,b])$, aby znaleźć
+przedział
+$[a',b']\in S$ zawierający $[a,b]$. Jeśli taki przedział nie istnieje, nie ma nic do zrobienia.
+W przeciwnym razie wstawiamy do
+$\mathbb{D}$ klucz $a-1$, wskazujący, że jest to druga współrzędna,
+oraz wstawiamy klucz $b+1$ wskazujący, że jest to pierwsza współrzędna.
+\qed
+
+
+
+\end{proof}
+
+
+\begin{comment}
+W celu implementacji $\mathtt{Merge}([a,b],v)$ najpierw wstawiamy $a$ i $b$ do $\mathbb{D}$.
+Następnie wykonujemy
+$a':=\mathtt{Predecessor}(\mathtt{a})$ oraz
+$b':=\mathtt{Successor}(\mathtt{b})$ do $\mathbb{D}$.
+Ponieważ $[a,b]$ jest rozłączny z odcinkami w $S$, $a'$ jest drugą
+współrzędną, a $b'$ pierwszą współrzędną pewnego odcinka w $S$.
+Jeśli $a'+1=a$, wykonujemy zapytanie $a'':=\mathtt{Predecessor}(\mathtt{a'})$ do $\mathbb{D}$, aby znaleźć pierwszą współrzędną odcinka $[a'',a'$], ustawiamy $start = a''$ i usuwamy $a$ oraz $a'$ z $\mathbb{D}$. Z drugiej strony, jeśli $a'+1\ne a$, ustawiamy $start = a$. W tablicy mieszającej przypisujemy $start$ wartość $v$. Z $b'$ postępujemy w podobny sposób: jeśli $b'-1=b$", to wskazujemy $\mathtt{Successor}(\mathtt{b'})$ jako drugą współrzędną odcinka zaczynającego się w $start$, usuwamy $b$ i $b'$ z $\mathbb{D}$, a także usuwamy klucz $b'$ z tablicy mieszającej; jeśli $b'-1>b$, to wskazujemy $b$ jako drugą współrzędną odcinka zaczynającego się w $start$. 
+
+W celu implementacji $\mathtt{Containing}([a,b])$ wykonujemy
+$a':=\mathtt{Predecessor}(\mathtt{a+1})$ oraz
+$b':=\mathtt{Successor}(\mathtt{b-1})$ do $\mathbb{D}$. Następnie
+zwracamy $[a',b']$, jeśli odpowiada on rzeczywistemu odcinkowi.
+Zapytanie $\mathtt{Adjacent}([a,b])$ implementujemy
+wprost, wykonując zapytania $\mathtt{Containing}([a-1,a-1])$ i $\mathtt{Containing}([b+1,b+1])$.
+
+W celu implementacji $\mathtt{Split}([a,b],v)$ wykonujemy
+$[a',b']=\mathtt{Containing}([a,b])$, aby znaleźć
+przedział
+$[a',b']\in S$ zawierający $[a,b]$.
+Następnie, jeśli taki przedział istnieje, załóżmy że $a'<a$ oraz $b'>b$. Wstawiamy do
+$\mathbb{D}$ klucz $a-1$, wskazujący, że jest to druga współrzędna,
+oraz wstawiamy klucz $b+1$ wskazujący, że jest to pierwsza współrzędna.
+Ponadto przypisujemy $a'$ i $b+1$ do wartości $v$ przy użyciu tablicy mieszającej.
+Przypadki, w których $a'=a$ lub $b'=b$, traktujemy analogicznie.
+\end{comment}
+
+\begin{comment}
+Kończymy tę sekcję podsumowaniem struktury danych do
+statycznej ortogonalnej lokalizacji punktu 2D~\cite{Chan2DPL}, której zamierzamy
+używać jako czarnej skrzynki.
+\wn{To twierdzenie trzeba lepiej wyjaśnić. Nie mam pojęcia, czym jest „ortogonalny podział”, a chociaż mam pewne pojęcie, czym mogą być „zapytania lokalizacji punktu”, to i tak wolałbym, żeby zostało to explicite wyjaśnione.}
+\jc{Kończymy tę sekcję następującym twierdzeniem Chana, którego będziemy używać jako czarnej skrzynki.
+	\begin{theorem}[Chan~\cite{Chan2DPL}]\label{thm:Chan}Dla podziału macierzy $U\times U$ na $N$ stref możemy zbudować strukturę danych o pamięci $\Oh(N)$, która dla danej pary $(i,j)$ zwraca strefę zawierającą $M[i,j]$ w czasie $\Oh(\log \log U)$. Czas preprocessingu wynosi $\Oh(N \log \log U)$.
+	\end{theorem}
+Nazwijmy zapytanie opisane w treści Twierdzenia~\ref{thm:Chan} {\em{zapytaniem lokalizacji punktu}}, a strukturę danych {\em{statyczną dwuwymiarową ortogonalną strukturą lokalizacji punktu}}.
+}
+
+\begin{theorem}[Chan~\cite{Chan2DPL}]\label{thm:Chan2} Dany jest
+ortogonalny podział rozmiaru $N$, którego współrzędne pochodzą
+z $\{1, \ldots , U \}$; możemy
+zbudować strukturę danych o pamięci $\Oh(N)$, tak aby na zapytania
+lokalizacji punktu można było odpowiadać w czasie $\Oh(\log \log U)$.
+Czas preprocessingu wynosi $\Oh(N \log \log U)$.
+\end{theorem}
+\end{comment}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+\section{Kanoniczna dekompozycja slabowa}
+\label{sec:decomposition}
+
+
+Z Lematu~\ref{lem:rectangles} wiemy, że dla każdej macierzy $d$-twin-ordered $n \times n$ zawsze istnieje dekompozycja slabowa na $\Oh_d(n)$ slabów, co jest kluczową własnością naszej dynamicznej struktury danych. Musimy jednak podać efektywny algorytm obliczający taką dekompozycję. 
+W tej sekcji opisujemy kanoniczną dekompozycję slabową, czyli dekompozycję slabową o dodatkowych własnościach strukturalnych. Pozwala nam to użyć struktury danych adhesive segment set, opisanej w Lemacie~\ref{lem:segment_tree}, do obliczenia żądanej dekompozycji w Twierdzeniu~\ref{thm:canonical}.
+
+\newcommand{\strips}{\mathtt{strips}}
+
+Dekompozycja slabowa, którą chcemy obliczyć, jest w pewnym sensie kanoniczna. Aby ją opisać, potrzebujemy kilku definicji. Przypomnijmy, że $M$ jest binarną macierzą $n\times n$. Dla $i\in [1,n]$, {\em{$i$-stripem}} jest slab postaci $(a,b,i,i)$ dla pewnych $1\leq a\leq b\leq n$, taki że ani $(a-1,b,i,i)$, ani $(a,b+1,i,i)$ nie jest slabem. Innymi słowy, $i$-strip jest slabem szerokości $1$ zawartym w $i$-tej kolumnie, którego nie da się rozszerzyć w górę ani w dół, albo z powodu napotkania tam wpisu $0$, albo brzegu macierzy $M$. 
+Przez $\strips_i$ oznaczamy zbiór wszystkich $i$-stripów; oraz $\strips\coloneqq \bigcup_{1\leq i\leq n} \strips_i$ jest zbiorem wszystkich stripów. Na przykład, jeśli $(0, 1, 1, 0, 1, 0, 1, 1, 1)$ są kolejnymi wpisami $i$-tej kolumny macierzy, to zbiór $\strips_i$ jest równy $\{(2,3,i,i), (5,5, i, i), (7,9, i,i)\}$.
+
+Mówimy, że stripy $(a,b,i,i)\in \strips_i$ oraz $(a,b,j,j)\in \strips_j$ są {\em{rodzeństwem}}, jeśli dla każdego $k\in [i,j]$ mamy $(a,b,k,k)\in \strips_k$.
+Zauważmy, że relacja bycia rodzeństwem jest relacją równoważności na $\strips$. Klasy abstrakcji tej relacji nazywamy {\em{kanonicznymi slabami}}; utożsamiamy każdy kanoniczny slab z jego sumą, która zawsze jest slabem w $M$. Zauważając, że każdy strip należy dokładnie do jednego kanonicznego slaba, definiujemy {\em{kanoniczną dekompozycję slabową}} macierzy $M$ jako rodzinę wszystkich kanonicznych slabów macierzy $M$. Przykłady kanonicznej dekompozycji slabowej pokazano na rysunku~\ref{fig:slab_decomposition_example}.
+
+\begin{figure}[h]
+    \newcommand{\h}{\cellcolor{red!22!white}}
+	\newcommand{\z}{\cellcolor{gray!22!white}}
+	\newcommand{\g}{\cellcolor{blue!42!white}}
+	\newcommand{\y}{\cellcolor{yellow!62!white}}
+	\newcommand{\q}{\cellcolor{green!32!white}}
+	\newcommand{\e}{\cellcolor{black!32!white}}
+	\renewcommand{\arraystretch}{1.2}
+	\centering
+	\begin{tabular}{|M{1em}|M{1em}|M{1em}|M{1em}|M{1em}|}
+		\hline
+		\q 1 & \z 1 & \g 1 & \h 1 & \h 1 \\
+		\hline
+		   0 & \z 1 &    0 & \h 1 & \h 1 \\
+		\hline
+		\e 1 & \z 1 &    0 &    0 & 0 \\
+		\hline
+		\e 1 & \z 1 & \y 1 & \y 1 & \y 1 \\
+		\hline
+		\e 1 &    0 &    0 &    0 &  0 \\	
+		\hline	
+	\end{tabular}
+	\hspace{0.5cm}
+	\begin{tabular}{|M{1em}|M{1em}|M{1em}|M{1em}|M{1em}|}
+		\hline
+		   0 & \y 1 & \y 1 & 0 & 0 \\
+		\hline
+		   0 & \y 1 & \y 1 & 0 & 0 \\
+		\hline
+		\e 1 & \y 1 & \y  1 & \h  1 & 0 \\
+		\hline
+		\e 1 & \y 1 & \y 1 & \h 1 & 0 \\
+		\hline
+		 0 &    0 &    0 &    0 &  0 \\		
+		\hline
+	\end{tabular}
+	
+	\let\h\undefined
+	\let\g\undefined
+	\let\z\undefined
+	\let\y\undefined
+	\let\e\undefined
+	\let\q\undefined
+	\caption{Kanoniczna dekompozycja slabowa macierzy -- wszystkie kanoniczne slaby są zaznaczone różnymi kolorami. Zauważmy, że w drugiej macierzy dekompozycja slabowa może zawierać tylko dwa slaby $(3,4,1,4)$, $(1,2, 2,3)$, podczas gdy w kanonicznej dekompozycji slabowej potrzebne są trzy slaby.}
+	\label{fig:slab_decomposition_example}
+\end{figure}
+
+W następnym lemacie pokazujemy, że kanoniczna dekompozycja slabowa macierzy $d$-twin-ordered jest zawsze mała.
+
+\begin{lemma}\label{lem:canonical-small}
+	Niech $\cal R$ będzie kanoniczną dekompozycją slabową binarnej macierzy $n\times n$ $M$, która jest $d$-twin-ordered. Wówczas $|{\cal R}|\leq 4 f_d \cdot (n+2)+4n \in \Oh_d(n)$, gdzie $f_d$ jest 
+	stałą zależną od $d$, zdefiniowaną w Lemacie~\ref{lem:mixzones}.
+\end{lemma}
+\begin{proof}
+	Niech $(a,b,c,d)$ będzie kanonicznym slabem w $M$ takim, że $1<a\leq b< n$ oraz $1<c\leq d<n$.
+	Naszym celem jest pokazanie, że $(a,b,c,d)$ musi przecinać narożnik w $M$. To dowiedzie tezy, ponieważ może istnieć co najwyżej $4n$ kanonicznych slabów spełniających $a=1$ lub $b=n$ lub $c=1$ lub $d=n$, podczas gdy liczba narożników w $M$ jest co najwyżej $f_d(n+2)$ na mocy Lematu~\ref{lem:mixzones}, a każdy narożnik w $M$ może przecinać co najwyżej $4$ slaby z $\cal R$.
+	
+	Niech $Z=M[[a,b],[d+1,d+1]]$.
+	Ponieważ $(a,b,c,d)$ jest kanonicznym slabem, mamy $(a,b,d+1,d+1)\notin \strips_{d+1}$; to znaczy, $Z$ nie jest $(d+1)$-stripem. Jeśli $Z$ zawiera zarówno wpis $0$, jak i wpis $1$, to strefa $M[[a,b],[d,d+1]]$ musi zawierać narożnik przecinający $(a,b,c,d)$. Jeśli wszystkie wpisy $Z$ są równe $1$ (tj. $Z$ jest slabem), to z faktów $(a,b,d,d)\in \strips_d$ oraz $(a,b,d+1,d+1)\notin \strips_{d+1}$ wynika, że jedna ze stref $M[[a-1,a],[d,d+1]]$ lub $M[[b,b+1],[d,d+1]]$ musi być narożnikiem przecinającym $(a,b,c,d)$. Wreszcie, jeśli wszystkie wpisy $Z$ są równe $0$, to zarówno $M[[a-1,a],[d,d+1]]$, jak i $M[[b,b+1],[d,d+1]]$ są narożnikami przecinającymi $(a,b,c,d)$.
+\qed
+\end{proof}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Przedstawiamy teraz algorytm, który oblicza kanoniczną dekompozycję slabową zadanej binarnej macierzy $M$. Algorytm zakłada, że $M$ jest podana na wejściu przez pewną dekompozycję slabową, niekoniecznie kanoniczną.
+
+
+\begin{theorem}\label{thm:canonical}
+Istnieje algorytm $\mathtt{Decompose}(n,\mathcal{K})$, który
+mając daną
+binarną macierz $n \times n$ $M$ zadaną przez jej dekompozycję slabową
+$\mathcal{K}$, oblicza kanoniczną dekompozycję slabową $\mathcal{R}$ macierzy
+$M$ w czasie $\Oh(n+|\mathcal{K}|\log \log n)$.
+\end{theorem}
+\begin{proof}
+	Przypomnijmy, że dla $i\in [1,n]$ zbiór $\strips_i$ jest zbiorem wszystkich $i$-stripów macierzy $M$. Dla wygody w obrębie tego dowodu traktujemy elementy $\strips_i$ jako odcinki; to znaczy $[a,b]\in \strips_i$ wtedy i tylko wtedy, gdy $(a,b,i,i)$ jest $i$-stripem.
+	
+	Naszym pierwszym celem jest obliczenie, dla każdego $i\in [1,n]$, zbiorów
+	$A_i=\strips_i\setminus \strips_{i-1}$ oraz $B_i\coloneqq \strips_i\setminus \strips_{i+1}$,
+	gdzie umownie $\strips_0 = \strips_{n+1}=\emptyset$. 
+	Z definicji wynika, że każdy kanoniczny slab musi zaczynać się pewnym stripem należącym do $A_i$ i kończyć stripem należącym do $B_j$ dla pewnych $i\leq j$, $i,j\in [1,n]$. 
+	Dlatego najpierw opiszemy, jak obliczyć zbiory $A_i$ i $B_i$ dla $i \in [1, n]$ z danej dekompozycji slabowej, a następnie wyjaśnimy, jak uzyskać z nich kanoniczną dekompozycję slabową.
+	
+	Zacznijmy od obliczenia dla każdego $i\in [1,n]$ zbiorów {\em{segmentów otwierających}} i {\em{segmentów zamykających}} dekompozycji $\cal K$ w kolumnie $i$. 
+	\[O_i\coloneqq \{[a,b]~|~(a,b,i,d)\in {\cal K} \textrm{ dla pewnego $d\geq i$}\};\] \[C_i\coloneqq \{[a,b]~|~(a,b,c,i)\in {\cal K} \textrm{ dla pewnego $c\leq i$}\}.\]
+	
+	Zbiory $O_i$ i $C_i$ można łatwo utworzyć w czasie $\Oh(n + |\cal K|)$, najpierw inicjalizując je wszystkie jako puste listy wiązane, a następnie iterując po wszystkich elementach $(a, b, c, d) \in \cal K$ i dopisując $[a, b]$ do $O_c$ oraz $C_d$. Zauważmy, że w szczególności zachodzi $\sum_{i=1}^n (|O_i|+|C_i|)\leq 2|\cal K|$.
+	
+	Opiszemy teraz, jak za pomocą {\em{przemiatania}} zbioru stripów z lewej do prawej można obliczyć zbiory $B_i$ dla $i\in [1,n]$. Ilustrujemy tę procedurę na rysunku~\ref{fig:computing_B_i}.
+	Inicjalizujemy strukturę danych adhesive segment set $\mathbb{S}$ z uniwersum $[1,n]$. Następnie iterujemy po wszystkich indeksach kolumn $i\in [1,n]$, utrzymując następujący niezmiennik: po $i$-tej iteracji zbiór odcinków przechowywanych w $\mathbb{S}$ jest równy $\strips_{i+1}$. Iterację inicjalizujemy, wywołując $\mathtt{Merge}(s)$ dla każdego $s\in O_1$ (co zawsze dodaje odcinek do struktury, ponieważ są one parami rozłączne, i ewentualnie scala go z sąsiednimi odcinkami); tak więc po tej operacji $\mathbb{S}$ przechowuje dokładnie $\strips_1$, a zatem niezmiennik jest spełniony dla $i=0$. W $i$-tej iteracji musimy zastosować aktualizacje do $\mathbb{S}$ tak, aby przechowywany zbiór odcinków został zmieniony z $\strips_i$ na $\strips_{i+1}$, a jednocześnie obliczyć zbiór $B_i=\strips_i\setminus \strips_{i+1}$. Zaczynamy od skonstruowania listy $L$ wszystkich odcinków z $\strips_i$, które mogą zostać dotknięte przez aktualizację. Są to:
+	\begin{itemize}
+		\item wszystkie przedziały $s\in \strips_i$ zawierające pewien $s'\in C_i$, oraz
+		\item wszystkie przedziały $s\in \strips_i$ sąsiednie z pewnym $s'\in O_{i+1}$.
+	\end{itemize}
+	Listę $L$ można skonstruować w czasie $\Oh((|C_i|+|O_{i+1}|)\log \log n)$, wywołując w naszej strukturze danych $\mathbb{S}$ procedurę $\mathtt{Containing}(s')$ dla każdego $s'\in C_i$ oraz $\mathtt{Adjacent}(s')$ dla każdego $s'\in O_{i+1}$, a następnie umieszczając wszystkie otrzymane odcinki na liście $L$. Zauważmy, że wszelkie duplikaty w $L$ możemy odfiltrować, używając dodatkowej statycznej tablicy boolowskiej o wpisach $[1,n]$, w której zaznaczamy dolne końce odcinków już dodanych do $L$; kolejną próbę wstawienia już wstawionego odcinka ignorujemy. Z konstrukcji wynika, że $|L|\leq |C_i|+2|O_{i+1}|$. Po skonstruowaniu $L$ wykonujemy następującą aktualizację z $\strips_i$ do $\strips_{i+1}$. Najpierw wywołujemy $\mathtt{Split}(s)$ dla każdego $s\in C_i$, usuwając go ze struktury. Następnie wywołujemy $\mathtt{Merge}(s)$ dla każdego $s\in O_{i+1}$, dodając go do struktury.
+	
+	Na koniec obliczamy $B_i=\strips_i\setminus \strips_{i+1}$, iterując po wszystkich $s\in L$ i sprawdzając, za pomocą metody $\mathtt{Containing}(s)$, czy $s$ nadal należy do $\strips_{i+1}$. Zbiór $B_i$ składa się ze wszystkich odcinków $s\in L$, które nie przechodzą tego testu.
+	
+	\begin{figure}[h]
+		\centering
+		\newcommand{\h}{\cellcolor{red!22!white}}
+		\newcommand{\z}{\cellcolor{gray!22!white}}
+		\newcommand{\g}{\cellcolor{blue!42!white}}
+		\newcommand{\y}{\cellcolor{yellow!62!white}}
+		\newcommand{\q}{\cellcolor{green!32!white}}
+		\newcommand{\e}{\cellcolor{black!32!white}}
+		\renewcommand{\arraystretch}{1.2}
+		\centering
+		\begin{tabular}{|M{1em}|M{1em}|M{1em}|M{1em}|}
+			\hline
+			0 & 0 & 0 & \e 1 \\
+			\hline
+			\h 1 & \h 1 & \h 1 & 0 \\
+			\hline
+			0 & \y 1 & \y 1 & \y 1 \\
+			\hline
+			\g 1 & \g 1 & \g 1 & \g 1 \\
+			\hline
+		\end{tabular}
+	
+		\vspace{3mm}	
+		\small
+		\begin{tabular}{|c|c|c|c|c|c|}
+			\hline
+			  & $O_i$ & $C_i$ & $\strips$ in $\mathbb{S}_i$  & $L_i$ & $B_i$  \\
+			\hline
+			$i=1$ & $\{[2,2], [4,4]\}$ & $\varnothing$ & $\{[2,2], [4,4]\}$ &$\{[2,2], [4,4]\}$ & $\{[2,2], [4,4]\}$  \\
+			\hline
+			$i=2$ & $\{[3,3]\}$ & $\varnothing$ & $\{[2,4]\}$ & $\varnothing$ & $\varnothing$ \\
+			\hline
+			$i=3$ & $\varnothing$ & $\{[2,2]\}$ & $\{[2,4]\}$ & $\{[1,1], [2,2]\}$ & $\{[2,4]\}$ \\
+			\hline
+			$i=4$ &  $\{[1,1]\}$ &  $\{[1,1], [3,3], [4,4]\}$ &  $\{[1,1], [3,4]\}$ & $\{[1,1], [3,3], [4,4]\}$ & $\{[1,1], [3,4]\}$ \\	
+			\hline	
+		\end{tabular}
+		
+		\let\h\undefined
+		\let\g\undefined
+		\let\z\undefined
+		\let\y\undefined
+		\let\e\undefined
+		\let\q\undefined
+		\caption{Ilustracja pierwszej części algorytmu obliczającego kanoniczną dekompozycję slabową. Macierz jest dana przez kolekcję slabów (zaznaczonych różnymi kolorami): $\mathcal{K}=\{(2,2,1,3),(3,3, 2,4), (4,4, 1,4), (1,1, 4,4)\}$. W tabeli używamy notacji odcinkowej wprowadzonej na początku dowodu. Zbiór $L$ obliczony w $i$-tej rundzie oznaczono tutaj przez $L_i$, a $\mathbb{S}_i$ oznacza zbiór odcinków należących do $\mathbb{S}$ na początku $i$-tej rundy -- zgodnie z naszym niezmiennikiem zbiór ten jest równy $\strips_i$.}
+		\label{fig:computing_B_i}
+	\end{figure}	
+	
+	Zauważmy, że $i$-ta iteracja zajmuje czas $\Oh((|C_i|+|O_{i+1}|)\log \log n)$, a więc cała opisana wyżej procedura działa łącznie w czasie $\Oh(n+|{\cal K}|\log \log n)$.
+	
+	Wykonując symetryczne przemiatanie od prawej do lewej, możemy obliczyć zbiory $A_i=\strips_i\setminus \strips_{i-1}$ dla wszystkich $i\in [1,n]$ w tej samej złożoności czasowej. Zauważmy, że zachodzi $\sum_{i=1}^n (|A_i|+|B_i|)\leq 3\sum_{i=1}^n (|C_i|+|O_i|)\leq \Oh(|\cal K|)$.
+	
+	Po obliczeniu zbiorów $A_i$ i $B_i$ dla każdego $i\in [1,n]$ wykonujemy końcowe przemiatanie, które oblicza kanoniczną dekompozycję slabową $\cal R$. W tym celu tworzymy pomocniczą tablicę $\mathsf{slab\_start}[1..n]$ i inicjalizujemy ją wartościami $\perp$. Dla każdego kanonicznego slaba $(a, b, c, d)$ mamy $[a, b] \in A_c$, $[a, b] \in B_d$ oraz nie istnieje para $(i, j)$ taka, że $i \in [c+1, d]$ i $[a, j] \in A_i$, ani para $(i, j)$ taka, że $i \in [c, d-1]$ i $[a, j] \in B_i$.
+	
+	Przemiatanie macierzy wykonujemy od lewej do prawej, to znaczy iterujemy po $i$ od $1$ do $n$ i dla każdej wartości $i$ robimy co następuje.
+	Najpierw dla każdego $(a, b) \in A_i$ zapisujemy $\mathsf{slab\_start}[a] = i$. Następnie dla każdego $(a, b) \in B_i$ tworzymy kanoniczny slab $(a, b, \mathsf{slab\_start}[a], i)$. Chociaż technicznie nie jest to wymagane, dla spójności możemy również ustawić $\mathsf{slab\_start}[a] = \perp$, aby zaznaczyć, że kanoniczny slab mający jeden ze swoich narożników w $(a, \mathsf{slab\_start}[a])$ został już ukończony.
+	
+	
+	
+
+	\begin{figure}[h]
+		\centering
+			\begin{tabular}{|c|c|c|c|c|}
+			\hline
+			& $A_i$ & $B_i$ & $\mathsf{slab\_start}_i$ & slaby dodane w $i$-tej rundzie \\
+			\hline
+			$i=1$ & $\{[2,2], [4,4]\}$  & $\{[2,2], [4,4]\}$ & $[\perp, 1, \perp, 1]$ & $(2,2,1,1),\ (4,4,1,1)$\\
+			\hline
+			$i=2$ & $\{[2,4]\}$ &  $\varnothing$ & $[\perp, 2, \perp, \perp]$ & \\
+			\hline
+			$i=3$ & $\varnothing$ & $\{[2,4]\}$ & $[\perp, 2, \perp, \perp]$ & $(2,4, 2,3)$\\
+			\hline
+			$i=4$ & $\{[1,1], [3,4]\}$ & $\{[1,1], [3,4]\}$ & $[4, \perp, 4, \perp]$ & $(1,1,4,4),\ (3,4, 4,4)$\\
+			\hline
+		\end{tabular}
+	
+		\vspace{0.3cm}
+		\centering
+		\newcommand{\h}{\cellcolor{red!22!white}}
+		\newcommand{\z}{\cellcolor{gray!22!white}}
+		\newcommand{\g}{\cellcolor{blue!42!white}}
+		\newcommand{\y}{\cellcolor{yellow!62!white}}
+		\newcommand{\q}{\cellcolor{green!32!white}}
+		\newcommand{\e}{\cellcolor{black!32!white}}
+		\renewcommand{\arraystretch}{1.2}
+		\centering
+		\begin{tabular}{|M{1em}|M{1em}|M{1em}|M{1em}|}
+			\hline
+			0 & 0 & 0 & \e 1 \\
+			\hline
+			\h 1 & \y 1 & \y 1 & 0 \\
+			\hline
+			0 & \y 1 & \y 1 & \q 1 \\
+			\hline
+			\g 1 & \y 1 & \y 1 & \q 1 \\
+			\hline
+		\end{tabular}
+
+		\let\h\undefined
+		\let\g\undefined
+		\let\z\undefined
+		\let\y\undefined
+		\let\e\undefined
+		\let\q\undefined
+		\caption{Druga część algorytmu obliczającego kanoniczną dekompozycję slabową. Zbiory są obliczone dla macierzy podanej na rysunku~\ref{fig:computing_B_i}. $\mathsf{slab\_start}_i$ oznacza stan tablicy $\mathsf{slab\_start}$ po przetworzeniu $A_i$, ale przed przetworzeniem $B_i$. Macierz przedstawia kanoniczną dekompozycję slabową -- każdy slab jest zaznaczony innym kolorem.}
+		\label{fig:canonical_slab_decomposition_procedure}
+	\end{figure}
+	
+	Łatwo zauważyć, że zbiór $\cal R$ obliczony na końcu iteracji jest dokładnie kanoniczną dekompozycją slabową macierzy $M$. Ponadto końcowe przemiatanie konstruujące $\cal R$ działa w czasie $\Oh(n+|{\cal K}|)$.
+	\qed
+\end{proof}
+
+\begin{comment}
+\begin{proof}
+Zaczynamy od rozłożenia slabów z $\mathcal{K}$ na
+odcinki. Jeśli zinterpretujemy indeksy kolumn jako kroki czasu od $1$ do $n$, możemy reprezentować
+ każdy slab $M[[a,b],[c,d]]\in \cal K$ przez jego
+segment otwierający $[a,b]$ w chwili $c$ oraz segment zamykający
+$[a,b]$ w chwili $d$.
+Inicjalizujemy
+$n$ {\em{kubełków}} $\{ O_i \}_{i \in \{ 1, \ldots, n \}}$,
+odpowiadających segmentom otwierającym, oraz $n$ kubełków
+$\{ C_i \}_{i \in \{ 1, \ldots, n \}}$, odpowiadających
+segmentom zamykającym. Dodatkowo,
+dla wygody wprowadzamy kubełek $O_{n+1}=\emptyset$,
+który pozostaje pusty przez całą procedurę.
+Dla każdego slaba
+$M[[a,b],[c,d]] \in \mathcal{K}$ dodajemy odcinek $[a,b]$ do $O_{i}$
+oraz do $C_{j}$, aby reprezentować fakt, że prostokąt otwiera się w kolumnie $i$ i
+zamyka się w kolumnie $j$. Ponieważ prostokąty w $\mathcal{K}$ nie przecinają się,
+to samo dotyczy odcinków wewnątrz kubełków. Sortujemy odcinki w każdym
+kubełku według współrzędnych $y$. Następnie scalamy wszystkie sąsiednie
+odcinki wewnątrz kubełków. Wszystko to można wykonać w czasie
+$\Oh(n+|\mathcal{K}|)$, używając sortowania przez zliczanie wszystkich odcinków
+przed przypisaniem ich do kubełków, a następnie przypisując je w porządku posortowanym.
+
+\wn{Dlaczego $l$ występuje przed $k$ (wielokrotnie w tych akapitach), skoro dotychczas było odwrotnie?}
+Aby przejść dalej, dla każdego $i \in \{1,\ldots,n \}$ definiujemy
+pionowe stripy kolumny $i$, oznaczane jako
+$\mathtt{strips}_i$. Dokładniej, $\mathtt{strips}_i$
+jest zbiorem maksymalnych ze względu na inkluzję odcinków $[l,k]$,
+takich że $l,k \in \{ 1, \ldots, n \}$ oraz
+$M[\{ i \}, \{ l, \ldots, k \} ]$ jest prostokątem (tj. jest
+całkowicie
+wypełniony jedynkami).
+Następnie inicjalizujemy strukturę drzewa odcinkowego $\mathbb{S}$
+zbiorem $\mathtt{strips}_1$. Zauważmy, że $\mathtt{strips}_1=O_1$.
+Iterujemy po indeksach
+kolumn $i \in \{ 1, \ldots, n \}$. Używając
+struktury drzewa odcinkowego $\mathbb{S}$, w każdym kroku $i$ iteracji
+efektywnie modyfikujemy $\mathbb{S}$ tak, aby reprezentowała $\mathtt{strips}_{i+1}$.
+Główna idea tej modyfikacji jest następująca.
+Jeśli strip $s \in \mathbb{S}$ pozostaje niezmieniony od
+kolumny $i$ do kolumny $i+1$, tj.
+$s \in \mathtt{strips}_i \cap \mathtt{strips}_{i+1}$,
+po prostu pozostawiamy go w $\mathbb{S}$.
+Jeśli strip $s \in \mathbb{S}$
+ulega zmianie, wykrywamy to przy użyciu kubełków $C_i$ oraz $O_{i+1}$.
+W takim przypadku rozcinamy i scalamy strip
+odpowiednio, kierując się odcinkami z $C_i$ oraz $O_{i+1}$.
+Ponieważ na końcu musimy zwrócić dekompozycję na prostokąty,
+każdy odcinek $s \in \mathbb{S}$ przechowuje związaną z nim wartość $v_s$.
+Wartość $v_s$ jest najmniejszym $j$, takim że
+$s \in \mathtt{strips}_j \cap \ldots \cap \mathtt{strips}_i$.
+Wartość ta reprezentuje więc
+współrzędną początkową
+prostokąta, który należy odciąć, gdy strip
+odpowiadający $s$ ulegnie zmianie. Gdy wykryjemy, że $s=[k,l]$
+zmienia się w inny strip, dodajemy do
+$\mathcal{R}$ prostokąt $(v_s,i,k,l)$.
+
+
+
+Opisujemy teraz algorytm realizujący powyższą ideę.
+Najpierw inicjalizujemy strukturę danych adhesive segment set $\mathbb{S}$, a dla każdego odcinka $s\in O_1=\strips_1$ wywołujemy metodę
+$\mathtt{Merge}(s,1)$ na $\mathbb{S}$. Zajmuje to czas $\Oh(|O_1| \log \log n)$.
+
+Następnie iterujemy po indeksach kolumn $i \in \{ 1, \ldots, n \}$ i dla
+każdego $i$ stosujemy następującą procedurę.
+Iterujemy po $C_i$ i $O_{i+1}$ oraz wykrywamy wszystkie odcinki
+w $\mathbb{S}$, które albo zawierają pewien odcinek z
+$C_i$, albo są sąsiednie z odcinkiem z $O_{i+1}$.
+Można to osiągnąć, wykonując zapytanie $\mathtt{Containing}(s)$
+do $\mathbb{S}$ dla każdego odcinka $s \in C_i$, a następnie
+wykonując zapytanie $\mathtt{Adjacent}(s)$ do $\mathbb{S}$ dla
+każdego odcinka $s \in O_{i+1}$.
+Wykryte odcinki
+gromadzimy na posortowanej liście $L$ (wraz z ich wartościami).
+Zajmuje to czas
+$\Oh((|C_i|+|O_{i+1}|)\log \log n)$.
+
+Następnie iterujemy po $s \in C_i$ i wykonujemy
+operację $\mathtt{Split}(s,i+1)$ na $\mathbb{S}$.
+Następnie iterujemy po $s \in O_{i+1}$ i wykonujemy $\mathtt{Merge}(s,i+1)$.
+Na koniec dla każdego odcinka $s=[k,l] \in L$ oraz odpowiadającej mu wartości
+$v_s$, również zapisanej w $L$, sprawdzamy, czy $s \in \mathbb{S}$. Jeśli nie, to
+dodajemy $(v_s,i,k,l)$ do $\mathcal{R}$. Jeśli tak,
+modyfikujemy wartość odpowiadającego odcinka w $\mathbb{S}$ na
+$v_s$.
+
+Całkowity czas działania jest ograniczony z góry przez
+$\sum_{i=1}^n (1+\Oh((|O_i|+|C_i|)\log \log n)) =
+\Oh(n+|\mathcal{K}|\log \log n)$.
+\end{proof}
+\end{comment}
+
+Łącząc Lemat~\ref{lem:canonical-small} i Twierdzenie~\ref{thm:canonical}, otrzymujemy następujący wniosek.
+
+\begin{corollary}\label{cor:canonical}
+	Jeśli $M$ jest binarną macierzą $n\times n$ $d$-twin-ordered, a $\cal K$ jest dekompozycją slabową macierzy $M$, to algorytm $\mathtt{Decompose}(n,\mathcal{K})$ oblicza w czasie $\Oh(n+|\mathcal{K}|\log \log n)$ kanoniczną dekompozycję slabową $M$ złożoną z
+	$4 f_d (n+2)+4n \in \Oh_d(n)$ slabów.
+\end{corollary}
+ 
+\section{Struktura danych z amortyzacją}
+\label{sec:amortized}
+
+W tej sekcji przedstawiamy słabszy wariant struktury danych obiecanej w Twierdzeniu~\ref{thm:main}, w którym dopuszczamy amortyzowany czas działania aktualizacji. Strukturę tę zdeamortyzujemy standardowymi metodami w Sekcji~\ref{sec:wcase}.
+
+
+\begin{theorem}\label{thm:amortized}
+Istnieje struktura danych $\mathbb{A}$, która utrzymuje
+binarną macierz $d$-twin-ordered $n\times n$ $M$,
+obsługując następujące operacje:
+\begin{enumerate}
+ \item $\mathtt{Init}(n, \cal K)$: inicjalizuje strukturę danych
+ dekompozycją slabową $\cal K$ macierzy $M$ w
+ oczekiwanym czasie $\Oh((n + |{\cal K}|) \log \log n)$.
+ \item $\mathtt{QueryBit}(i,j)$: zwraca wpis $M[i, j]$ w
+ oczekiwanym czasie najgorszego przypadku $\Oh(\log \log n)$.
+ \item $\mathtt{Update}(i, j)$: odwraca wpis $M[i, j]$ w
+ oczekiwanym czasie amortyzowanym $\Oh(\log \log n)$.
+\end{enumerate}
+Struktura danych $\mathbb{A}$ używa $\Oh_d(n)$ pamięci.
+\end{theorem}
+
+\begin{proof}
+Struktura danych $\mathbb{A}$ wewnętrznie utrzymuje:
+\begin{enumerate}
+ \item statyczną dwuwymiarową ortogonalną strukturę lokalizacji punktu daną przez Twierdzenie~\ref{thm:Chan}, oznaczaną przez $\mathbb{P}$, przechowującą co najwyżej
+ $4 f_d(n+2)+4n \in \Oh_d(n)$ slabów, których wszystkie współrzędne należą do zakresu
+ $\{ 1, \ldots, n \}$; oraz
+ \item słownik $\mathbb{Q}$ (zaimplementowany jako tablica mieszająca), w którym
+ klucze pochodzą
+ z uniwersum
+ $\{1, \ldots, n \}\times [1,n]$, wartości są
+ boolowskie,
+ a liczba elementów, które zostaną dodane, jest ograniczona przez
+ $8 f_d(n+2) \in \Oh_d(n)$. Zakładamy standardową implementację
+ tablicy
+ mieszającej, której pamięć jest liniowa względem liczby dodanych elementów
+ i która ma stały oczekiwany czas zapytania.
+\end{enumerate}
+
+Intuicja stojąca za utrzymywaniem $\mathbb{P}$ i $\mathbb{Q}$
+jest następująca: $\mathbb{P}$ przechowuje dekompozycję slabową macierzy $M$
+obliczoną w pewnym momencie w przeszłości. Gdy nadejdą kolejne aktualizacje,
+zamiast natychmiast przeliczać dekompozycję slabową,
+przechowujemy aktualizacje w $\mathbb{Q}$ tak długo, jak rozmiar
+$\mathbb{Q}$ jest ograniczony przez $8 f_d(n+2)$. Dopiero gdy rozmiar
+$\mathbb{Q}$ osiągnie tę wartość, przeliczamy aktualną
+dekompozycję slabową
+macierzy $M$ i przechowujemy ją w $\mathbb{P}$. Pozwala to
+zamortyzować koszt rekonstrukcji.
+Po każdej aktualizacji utrzymujemy zatem następujący niezmiennik:
+Jeśli $(i, j) \in \mathbb{Q}$, to $M[i, j] = \mathbb{Q}[i, j]$.
+W przeciwnym razie $M[i, j]=1$ wtedy i tylko wtedy, gdy $(i, j)$ należy do jednego ze
+slabów przechowywanych w $\mathbb{P}$.
+
+\paragraph*{Inicjalizacja:} Metoda $\mathtt{Init}(n, \cal K)$ wykonuje następujące kroki.
+Najpierw inicjalizuje pusty słownik $\mathbb{Q}$. Następnie
+stosuje algorytm $\mathtt{Decompose}(n,\mathcal{K})$ z Twierdzenia~\ref{thm:canonical}, aby uzyskać kanoniczną
+dekompozycję slabową $\cal R$ macierzy $M$. Działa to w czasie
+$\Oh(n+|\mathcal{K}| \log \log n)$, a na mocy
+Lematu~\ref{lem:canonical-small} mamy $|\mathcal{R}| \leq 4 f_d(n+2)+4n \in \Oh_d(n)$.
+Kończymy przez zainicjalizowanie
+$\mathbb{P}$ strukturą $\cal R$ w czasie $\Oh_d(n \log \log n)$.
+Całkowity czas inicjalizacji wynosi zatem
+$\Oh((n + |{\cal K}|) \log \log n)$.
+
+\paragraph*{Zapytanie:}
+Metoda $\mathtt{QueryBit}(i,j)$ wyszukuje $(i,j)$ w $\mathbb{Q}$
+i przy udanym wyszukaniu zwraca wartość $(i,j)$.
+Zajmuje to $\Oh(1)$ oczekiwanego czasu najgorszego przypadku.
+Jeśli wyszukiwanie się nie powiedzie, do
+struktury lokalizacji punktu $\mathbb{P}$ wysyłane jest zapytanie lokalizacji punktu $(i,j)$. Zajmuje to
+$\Oh(\log \log n)$ czasu najgorszego przypadku. Jeśli zapytanie lokalizacji punktu
+kończy się sukcesem, zwracamy $1$, a w przeciwnym razie zwracamy $0$.
+
+\paragraph*{Aktualizacja:}
+Metoda $\mathtt{Update}(i, j)$ wyszukuje $(i,j)$ w
+$\mathbb{Q}$. Jeśli je znajdzie, neguje jego wartość.
+Zajmuje to stały czas w oczekiwaniu.
+W przeciwnym razie wykonuje zapytanie lokalizacji punktu $(i,j)$ do $\mathbb{P}$
+($\Oh(\log \log n)$ czasu najgorszego przypadku)
+i dodaje $(i,j)$ do $\mathbb{Q}$ z zanegowanym wynikiem zapytania
+(stały czas w oczekiwaniu).
+Na koniec,
+jeśli rozmiar $\mathbb{Q}$ osiągnie ograniczenie $8 f_d(n+2)$,
+metoda
+przelicza $\mathbb{P}$ i ustawia $\mathbb{Q}$ jako pusty, aby
+pomieścić następne $8 f_d(n+2)$ aktualizacji.
+Opisujemy teraz proces ponownego obliczania $\mathbb{P}$ (ilustrację zawiera rysunek~\ref{fig:amortized_procedure}).
+
+W istocie ponowne obliczenie $\mathbb{P}$ sprowadza się do znalezienia
+dekompozycji slabowej $\cal K$, która opisuje
+macierz $M$ po wprowadzeniu wszystkich aktualizacji przechowywanych w $\mathbb{Q}$.
+Gdy mamy już taką dekompozycję $\cal K$,
+używamy metody $\mathtt{Decompose}(n,\cal K)$, aby obliczyć
+kanoniczną dekompozycję $\mathcal{R}$ w czasie
+$\Oh(n+|\mathcal{K}| \log \log n)$ na mocy
+Twierdzenia~\ref{thm:canonical}. Ponieważ na podstawie Lematu~\ref{lem:canonical-small} mamy $|{\cal R}|\leq 4 f_d(n+2)+4n \in \Oh_d(n)$, możemy następnie ponownie zainicjalizować $\mathbb{P}$ strukturą ${\cal R}$
+w czasie $\Oh_d(n \log \log n)$, na mocy Twierdzenia~\ref{thm:Chan}.
+Przejdźmy więc do opisu, jak znaleźć dekompozycję
+$\cal K$ o dostatecznie małym rozmiarze, mając daną listę slabów $\mathcal{P}$
+z $\mathbb{P}$ (którą można obliczyć przy ostatnim przeliczeniu
+$\mathbb{P}$ i przechowywać od tamtej pory aż do teraz) oraz listę
+aktualizacji $\cal Q$ z $\mathbb{Q}$, którą można wyekstrahować z
+$\mathbb{Q}$ w czasie proporcjonalnym do rozmiaru $\mathbb{Q}$,
+ograniczonego przez $8 f_d(n+2)$.
+
+\begin{figure}
+	\newcommand{\h}{\cellcolor{red!22!white}}
+	\newcommand{\z}{\cellcolor{gray!22!white}}
+	\newcommand{\g}{\cellcolor{blue!42!white}}
+	\newcommand{\y}{\cellcolor{yellow!62!white}}
+	\newcommand{\q}{\cellcolor{green!32!white}}
+	\newcommand{\e}{\cellcolor{black!32!white}}
+	\renewcommand{\arraystretch}{1.2}
+	\centering
+	\begin{tabular}{|M{1em}|M{1em}|M{1em}|M{1em}|M{1em}|}
+		\hline
+		0 & {\bf 0} & 0 & \e 1 & 0\\
+		\hline
+		0 & 0 & 0 & \e 1 & 0 \\
+		\hline
+		\g 1 & \g 1 & \y 1 & 0 & 0 \\
+		\hline
+		\g 1 & \g 1 & \y 1 & {\bf 0} & \q 1 \\
+		\hline
+		\g 1 & \g {\bf 1} & 0 & \h 1 & \q 1 \\
+		\hline
+	\end{tabular}
+	\hspace{0.5cm}
+	\begin{tabular}{|M{1em}|M{1em}|M{1em}|M{1em}|M{1em}|}
+		\hline
+		0 & \z 1 & 0 & \e 1 & 0\\
+		\hline
+		0 & 0 & 0 & \e 1 & 0 \\
+		\hline
+		\g 1 & \y 1 & \y 1 & 0 & 0 \\
+		\hline
+		\g 1 & \y 1 & \y 1 & \h 1 & \h 1 \\
+		\hline
+		\g 1 &  0 & 0 & \h 1 & \h 1 \\
+		\hline
+	\end{tabular}
+	\let\h\undefined
+	\let\g\undefined
+	\let\z\undefined
+	\let\y\undefined
+	\let\e\undefined
+	\let\q\undefined
+	\caption{Kolekcja slabów w $\cal P$ oraz aktualizacje w $\cal Q$ (oznaczone pogrubionymi wartościami). Na drugim rysunku pokazano kanoniczną dekompozycję slabową po ponownym obliczeniu.}
+	\label{fig:amortized_procedure}
+\end{figure}
+
+Aktualizacje w $\cal Q$ można podzielić na aktualizacje do $0$, tj.
+wpisy $(i,j)$ w ${\cal Q}$, których wartość wynosi $0$, oraz
+aktualizacje do $1$, tj. wpisy $(i,j)$ w $\cal Q$, których wartość wynosi $1$.
+Najpierw sortujemy $\cal Q$ leksykograficznie w czasie $\Oh(|{\cal Q}|)$.
+Używając $\mathbb{P}$, przypisujemy aktualizacje do $0$
+do slabów z $\cal P$, które je zawierają.
+W rezultacie każdemu slabowi $P \in \mathcal{P}$ przypisana jest lista
+$L_P$ aktualizacji do $0$ z $\cal Q$, z których każda jest zawarta w $P$,
+posortowana leksykograficznie.
+Następnie dla każdego
+slaba $P \in \mathcal{P}$ iterujemy
+po $L_P$, sukcesywnie dzieląc $P$ na mniejsze
+slaby.
+Listę $L_P$ będziemy przetwarzać partiami, przy czym każda partia odpowiada
+aktualizacjom z $L_P$ o tej samej pierwszej współrzędnej.
+Niech zatem $L_i$ będzie posortowaną listą
+drugich współrzędnych aktualizacji z $L_P$ o pierwszej
+współrzędnej $i$.
+Zauważmy, że $(i,k) \in P$ dla każdego $k \in L_i$.
+Niech $P=(a,b,c,d)$.
+Dla każdego $i \in \{ 1, \ldots, n \}$ takiego, że $L_i \neq \emptyset$,
+postępujemy następująco.
+
+
+Najpierw dzielimy slab $P$ na trzy slaby:
+$P[<i] = (a,i-1,c,d)$,
+$P[i]=(i,i,c,d)$, oraz
+$P[>i]= (i+1,b,c,d)$. Slab $P[<i]$, jeśli jest
+niepusty, zostaje bezpośrednio dodany do $\mathcal{K}$, ponieważ
+nie ma w nim aktualizacji, które należałoby przetworzyć. Musimy teraz
+podzielić $P[i]$ na mniejsze slaby zgodnie z $L_i$, a następnie przechodzimy do
+przetwarzania
+$P\coloneqq P[>i]$ w następnym kroku iteracji. Pozostaje
+wyjaśnić, jak $P[i]$ jest dzielony względem $L_i$. Odbywa się to
+w bardzo prosty sposób: jeśli $L_i=\{ k_1,\ldots,k_\ell \}$ przy $k_1\leq \ldots\leq k_\ell$, to
+dzielimy $P[i]$ na
+$P_0[i]=(i,i,c,k_1-1), P_2[i]=(i,i,k_1+1,k_2-1),
+\ldots P_{\ell}[i]=(i,i,k_\ell+1,d)$, a następnie dodajemy każdy niepusty
+slab
+spośród $P_0[i],P_1[i], \ldots, P_\ell[i]$ do $\mathcal{K}$.
+Cały ten krok iteracji zajmuje czas $\Oh(|L_i|)$ i
+tworzy $\Oh(|L_i|)$ nowych slabów dodawanych do $\cal K$.
+
+Po zakończeniu przetwarzania aktualizacji do $0$ z $\mathcal{Q}$
+musimy jeszcze przetworzyć aktualizacje do $1$. Dla
+każdej aktualizacji do $1$ w $\mathcal{Q}$ najpierw używamy
+struktury $\mathbb{P}$, aby sprawdzić, czy dana aktualizacja jest zawarta
+w pewnym slabie przechowywanym w $\mathbb{P}$. Jeśli tak, ignorujemy ją,
+w przeciwnym razie dodajemy do $\cal K$ slab $1 \times 1$ o
+współrzędnych przetwarzanej aktualizacji.
+
+Cała procedura dodaje do $\cal K$ co najwyżej
+$|\mathcal{P}|+2|\mathcal{Q}| \leq 4 f_d(n+2)+4n + 16 f_d(n+2)$ slabów.
+Zatem procedura $\mathtt{Decompose}(n,\cal K)$
+działa w czasie $\Oh(( f_d (n+2))\log \log n)$, a $\mathbb{P}$
+może zostać również ponownie zainicjalizowane w czasie $\Oh(( f_d (n+2))\log \log n)$.
+Po zamortyzowaniu na $8 f_d(n+2)$ aktualizacjach daje to
+oczekiwany amortyzowany czas $\Oh(\log \log n)$ na jedną operację aktualizacji.
+\qed\end{proof}
+ 
+\section{Deamortyzacja}
+\label{sec:wcase}
+
+W tej sekcji pokazujemy, jak zdeamortyzować strukturę danych
+z
+Twierdzenia~\ref{thm:amortized}. Dokładniej, dowodzimy następującego stwierdzenia, które natychmiast implikuje Twierdzenie~\ref{thm:main}.
+
+\begin{theorem}\label{thm:wc}
+Istnieje struktura danych $\mathbb{W}$, która utrzymuje
+binarną macierz $d$-twin-ordered $n\times n$ $M$,
+obsługując następujące operacje:
+\begin{enumerate}
+ \item $\mathtt{Init}(n, \cal K)$: inicjalizuje strukturę danych
+ dekompozycją slabową $\cal K$ macierzy $M$ w
+ czasie $\Oh((n + |{\cal K}|) \log \log n)$.
+ \item $\mathtt{QueryBit}(i,j)$: zwraca wpis $M[i, j]$ w
+ oczekiwanym czasie najgorszego przypadku $\Oh(\log \log n)$.
+ \item $\mathtt{Update}(i, j)$: odwraca wpis $M[i, j]$ w
+ oczekiwanym czasie najgorszego przypadku $\Oh(\log \log n)$.
+\end{enumerate}
+Struktura danych $\mathbb{W}$ używa $\Oh_d(n)$ pamięci.
+\end{theorem}
+\begin{proof}
+Stosujemy standardową technikę deamortyzacji do struktury danych
+$\mathbb{A}$ z Twierdzenia~\ref{thm:amortized}. Dla uproszczenia prezentacji najpierw przedstawiamy nieco wadliwszą, prostszą wersję argumentu, a następnie wyjaśniamy, na czym polegał problem i jak go naprawić.
+
+Niech $L=8 f_d(n+2)$ będzie ograniczeniem na rozmiar $\mathbb{Q}$ z Twierdzenia~\ref{thm:amortized}; podzielmy wszystkie aktualizacje na epoki po $L$ aktualizacji. Oznaczmy $i$-tą epokę przez $E_i$, przy czym pierwszą epoką jest~$E_0$. Dla każdego poprawnego $i \ge 1$ zdefiniujmy strukturę danych $\mathbb{A}_i$, która będzie istnieć przez epoki $E_{2i-2}, E_{2i-1}, E_{2i}, E_{2i+1}$, oraz strukturę danych $\mathbb{A}_0$, która będzie istnieć przez epoki $E_0$ i $E_1$ (w szczególności w dowolnym momencie czasu będą istniały tylko dwie różne struktury danych). Struktura danych $\mathbb{A}_0$ zostanie zainicjalizowana wywołaniem $\mathtt{Init}(n, \cal K)$ i będzie odpowiedzialna za odpowiadanie na zapytania w epokach $E_0$ i $E_1$. Struktura danych $\mathbb{A}_i$ dla $i \ge 1$ będzie inicjalizowana w trakcie epok $E_{2i-2}$ i $E_{2i-1}$ oraz będzie odpowiedzialna za odpowiadanie na zapytania w epokach $E_{2i}$ i $E_{2i+1}$. Na początku epoki $E_{2i-2}$ uruchamiamy $\mathtt{Init}(n, \cal K)$, gdzie $\cal K$ jest dekompozycją slabową uzyskaną z bieżącego stanu $\mathbb{A}_{i-1}$, podobnie jak w przypadku ponownego przeliczania struktury danych w dowodzie Twierdzenia~\ref{thm:amortized}. Mamy $|\mathcal{K}| = \Oh(L)$, a więc to wywołanie zajmuje łącznie czas $\Oh(L \log \log n)$. Zatem możemy rozłożyć tę pracę na $L$ aktualizacji epoki $E_{2i-2}$, dodając do każdej aktualizacji narzut $\Oh(\log \log n)$ czasu najgorszego przypadku. Na końcu $E_{2i-2}$ wywołanie $\mathtt{Init}(n, \cal K)$ będzie zakończone, ale $\mathbb{A}_i$ będzie w konsekwencji opóźniona względem bieżącego stanu o $L$ aktualizacji, ponieważ jej stan odzwierciedla macierz $M$ sprzed epoki $E_{2i-2}$. W trakcie epoki $E_{2i-1}$ struktura danych $\mathbb{A}_i$ nadrabia zaległość, przetwarzając dwie aktualizacje wtedy, gdy $\mathbb{A}_{i-1}$ przetwarza jedną. Zwiększa to pracę na każdą aktualizację tylko o stały czynnik bezwzględny. Na końcu $E_{2i-1}$ struktura $\mathbb{A}_i$ nadrobiła zaległość do bieżącego stanu i jest gotowa przejąć rolę struktury danych, która faktycznie odpowiada na napływające zapytania.
+
+Powyższy opis był nieco wadliwy, ponieważ wywołanie $\mathtt{Init}(n, \cal K)$ inicjalizujące $\mathbb{A}_{i}$ musi znać $\cal K$. Jednak utworzenie $\mathbb{A}_i$ zajmuje $\Oh(|\mathcal{K}|) = \Oh(L)$ czasu i wymaga nieprzerwanego dostępu do wewnętrznych danych $\mathbb{A}_{i-1}$. Jednocześnie $\mathbb{A}_{i-1}$ musi odpowiadać na nowe zapytania, począwszy od epoki $E_{2i-2}$, a więc nie może zapewnić nieprzerwanego dostępu do swoich wewnętrznych struktur $\mathbb{P}$ i $\mathbb{Q}$ na potrzeby utworzenia $\cal K$. Sztuczka pozwalająca obejść ten problem polega na utworzeniu dwóch kopii każdej struktury danych --- $\mathbb{A}_{i, 0}$ oraz $\mathbb{A}_{i, 1}$. Do momentu rozpoczęcia epoki $E_{2i}$ są one inicjalizowane w taki sam sposób, jak $\mathbb{A}_i$ w poprzednim opisie. Jednak w tym momencie $\mathbb{A}_{i, 0}$ przejmuje odpowiedzialność za odpowiadanie na nadchodzące aktualizacje (a więc wymaga zmian w swoich danych wewnętrznych), podczas gdy $\mathbb{A}_{i, 1}$ nie przetwarza żadnych aktualizacji i pełni rolę migawki $\mathbb{A}_i$ po jej pełnej inicjalizacji, udostępniając się strukturze $\mathbb{A}_{i+1}$, która wymagała nieprzerwanego dostępu do $\mathbb{A}_i$ podczas swojej inicjalizacji.
+\qed
+\end{proof}
+
+ 
+\bibliographystyle{splncs04}
+\bibliography{references}
+
+\end{document}
