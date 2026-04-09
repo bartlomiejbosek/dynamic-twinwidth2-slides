@@ -1,88 +1,250 @@
-Masz rację. W NotebookLM lepiej nie wrzucać jednego wielkiego promptu, tylko dawać **krótkie, twarde komentarze przypięte do konkretnych fragmentów**.
+Działaj jako bezwzględny, bardzo dokładny i skrajnie ostrożny agent edytujący plik LaTeX Beamera dla prezentacji TCS.
 
-Najlepszy układ to:
+MASZ EDYTOWAĆ PLIK:
+- `slides/presentation.tex`
 
-1. jeden krótki komentarz globalny,
-2. potem osobne komentarze do tych miejsc, które naprawdę wymagają poprawy.
+MASZ KORZYSTAĆ JAKO ŹRÓDŁA PRAWDY Z:
+- `main-all.tex` — źródło definicji, notacji, twierdzeń, asymptotyk, nazw procedur, rozróżnień typu \mathbb P/\mathbb Q versus \mathcal P/\mathcal Q
+- `main.pdf` — źródło figur, układów przykładów, logiki narracyjnej i tego, co naprawdę jest pokazane na rysunkach
+- `plan.txt` — źródło docelowej struktury slajdów, ich roli i precyzyjnych wymagań wizualnych
+- `presentation.pdf` — źródło aktualnego stanu renderu, które trzeba porównać ze źródłami i poprawić
 
-Poniżej masz gotowe komentarze do wklejenia.
+==================================================
+CEL
+==================================================
 
-## 1. Komentarz globalny
+Twoim jedynym celem jest NANIEŚĆ POPRAWKI NA `slides/presentation.tex` tak, aby usunąć wszystkie błędy merytoryczne, wizualne, notacyjne, logiczne i wykonawcze w aktualnej prezentacji.
 
-Przypnij do początku `plan.txt` albo do nagłówka dokumentu:
+Nie twórz nowego decku od zera.
+Nie zmieniaj ogólnej dramaturgii referatu, jeśli nie jest to konieczne.
+Nie psuj slajdów, które już są dobre.
+Nie halucynuj nowej matematyki.
+Nie dopisuj własnych danych do przykładów, jeśli nie wynikają one ze źródeł.
+Masz działać chirurgicznie, ale skutecznie.
 
-```text
-Poprawiaj wyłącznie błędne lub słabsze fragmenty tego planu. Nie przepisuj całości od zera. Zachowaj ogólną architekturę 13 głównych slajdów + 3 backup slides, theorem slide jako slajd 5, running example na slajdach 8–9, część dynamiczną na slajdach 10–12 i take-away na slajdzie 13. Wszystkie poprawki muszą być ściśle zakotwiczone w `main-all.tex` i `main.pdf`. Nie dodawaj nowych twierdzeń, definicji, figur ani przykładów, jeśli nie wynikają jasno ze źródeł. Ujednolić terminologię z artykułem. Szczególnie odchudź poznawczo slajdy 8–12, ale bez utraty sensu matematycznego. Dla każdego poprawianego miejsca podaj pełny poprawiony fragment gotowy do wklejenia.
-```
+==================================================
+NAJWAŻNIEJSZA ZASADA
+==================================================
 
-## 2. Komentarz do Części I
+PRIORYTETEM JEST ZGODNOŚĆ ZE ŹRÓDŁAMI ORAZ WEWNĘTRZNA SPÓJNOŚĆ SLAJDÓW.
 
-Przypnij do fragmentu „Część I. Krótka decyzja projektowa”:
+Jeśli:
+- aktualny `slides/presentation.tex` jest sprzeczny z `plan.txt`,
+- albo jest sprzeczny z `main-all.tex`,
+- albo jest sprzeczny z `main.pdf`,
+- albo tekst slajdu nie zgadza się z rysunkiem,
+- albo rysunek nie przedstawia tego, co podpisuje tekst,
 
-```text
-Wzmocnij ten fragment tak, aby rola źródeł była bardziej widoczna w samym tekście planu. Nie wystarczy ogólna deklaracja, że pewne slajdy są oparte na `main-all.tex` lub `main.pdf`. Doprecyzuj bardziej operacyjnie: które slajdy wynikają przede wszystkim z definicji / twierdzeń / procedur z `main-all.tex`, a które z figur i narracji `main.pdf`. Zostaw architekturę planu bez zmian. Nie rozwlekaj meta-komentarzy; popraw sam tekst tej sekcji.
-```
+to masz to poprawić.
 
-## 3. Komentarz do slajdu 8
+Nie bronisz starej wersji.
+Nie zachowujesz błędów tylko dlatego, że „już są”.
+Masz naprawić deck.
 
-Przypnij do slajdu 8:
+==================================================
+TWARDE ZAKAZY
+==================================================
 
-```text
-Ten slajd wymaga odchudzenia poznawczego. Zachowaj running example i sens pierwszego sweepa w `Decompose`, ale zmniejsz liczbę rzeczy wprowadzanych naraz. Każ slajdowi mieć jedną dominującą myśl: „co znika w rundzie i dlaczego to daje \(B_i\)”. Ogranicz liczbę symboli eksponowanych jednocześnie do absolutnego minimum. Jeżeli któraś definicja pomocnicza nie jest konieczna na slajdzie głównym, usuń ją stąd lub przenieś ciężar na opis rysunku / backup. Zachowaj pełny format: a) tytuł, b) cele, c) treść, d) bardzo precyzyjny opis rysunku.
-```
+1. NIE wypisuj całego poprawionego `slides/presentation.tex` na stdout.
+2. NIE twórz alternatywnej wersji w odpowiedzi tekstowej.
+3. NIE pisz eseju o tym, co zamierzasz zrobić.
+4. NIE zmieniaj nazw twierdzeń, definicji, procedur ani asymptotyk, jeśli źródła tego nie wymagają.
+5. NIE wprowadzaj nowych przykładów liczbowych ani nowych współrzędnych tam, gdzie plan wyraźnie tego zabrania.
+6. NIE zamieniaj slajdów głównych w backupy ani odwrotnie.
+7. NIE usuwaj backup slides.
+8. NIE używaj placeholderów tam, gdzie źródła dają konkretną treść.
+9. NIE zostawiaj komentarzy typu TODO / FIXME / debug w finalnym pliku.
+10. NIE zostawiaj kodu TikZ, który rysuje elementy poza ramą figury albo poza macierzą, jeśli to nie jest celowe i opisane.
 
-## 4. Komentarz do slajdu 9
+==================================================
+OBOWIĄZKOWA PROCEDURA PRACY
+==================================================
 
-Przypnij do slajdu 9:
+Wykonaj dokładnie ten workflow:
 
-```text
-Ten slajd też wymaga uproszczenia pod szeroką publiczność LATIN. Zachowaj logiczne domknięcie running example, ale nie pozwól, by slajd wyglądał jak fragment 50-minutowego seminarium. Główna myśl ma brzmieć: „z \(A_i\) i \(B_i\) odzyskujemy canonical slabs”. Zostaw tylko te wzory i linie tekstu, które realnie pomagają zrozumieć mechanizm. Dopilnuj, by związek ze slajdem 8 był bardzo czytelny wizualnie i narracyjnie. Nie zmieniaj sensu matematycznego.
-```
+KROK 1. Przeczytaj i porównaj:
+- `slides/presentation.tex`
+- `presentation.pdf`
+- `plan.txt`
+- `main-all.tex`
+- `main.pdf`
 
-## 5. Komentarz do slajdu 10
+KROK 2. Zidentyfikuj wszystkie realne błędy w `slides/presentation.tex`, ale poprawiaj tylko błędy rzeczywiste:
+- błędy merytoryczne,
+- błędy notacji,
+- błędy zgodności z planem,
+- błędy zgodności ze źródłami,
+- błędy rysunków,
+- błędy podpisów,
+- błędy layoutu, jeśli powodują nieczytelność lub fałszują przekaz.
 
-Przypnij do slajdu 10:
+KROK 3. Edytuj bezpośrednio plik `slides/presentation.tex`.
 
-```text
-Uprość ten slajd tak, aby miał jedną dominującą myśl: „dynamiczna struktura = baza P + bufor Q”. Zachowaj inwariant i sens QueryBit / Update, ale ogranicz tekst do minimum koniecznego na slajdzie głównym. Ujednolić notację z artykułem: jeśli w źródłach występują `P` i `Q`, nie przechodź na `\mathcal P` i `\mathcal Q`. Opis rysunku ma jasno mówić, że to jest statyczny, PDF-safe schemat możliwy do zrobienia w Beamerze bez zależności od animacyjnych sztuczek.
-```
+KROK 4. Po poprawkach skompiluj prezentację do PDF.
 
-## 6. Komentarz do slajdu 11
+KROK 5. Obejrzyj wynikowy PDF slajd po slajdzie i sprawdź:
+- czy wszystko się kompiluje bez błędów,
+- czy nie ma urwanych elementów,
+- czy żadne kolorowe pola nie wychodzą poza macierze,
+- czy podpisy odpowiadają temu, co widać,
+- czy kolory i przykłady są spójne między slajdami 8–9,
+- czy slajdy 10–12 nie halucynują danych,
+- czy slajd 13 nadal jest dobrym hanging slide,
+- czy backupy są czytelne.
 
-Przypnij do slajdu 11:
+KROK 6. Jeśli po kompilacji coś nadal jest błędne, popraw ponownie `slides/presentation.tex` i jeszcze raz skompiluj.
 
-```text
-To miejsce jest blisko przeciążenia. Popraw ten slajd tak, aby główna myśl była jedna: „jak z P i Q złożyć nową bazę przed ponownym Decompose”. Nie próbuj opowiedzieć wszystkich detali naraz. Zostaw tylko te kroki przebudowy, które są konieczne do zrozumienia idei. Cięższe szczegóły proceduralne zostaw backupowi, jeśli źródła to wspierają. Ujednolić terminologię z artykułem i dopilnuj, by nowy schemat był wyraźnie uzasadniony przez `main-all.tex` i kompozycyjnie przez `main.pdf`, a nie wymyślony dowolnie.
-```
+==================================================
+MUST-FIX: BŁĘDY, KTÓRE NA PEWNO TRZEBA NAPRAWIĆ
+==================================================
 
-## 7. Komentarz do slajdu 12
+A. SLAJD 6 — SLABS
+To jest błąd pewny.
+Obecny rysunek ma artefakt: część różowego slabu wychodzi poza macierz.
+To jest niedopuszczalne.
 
-Przypnij do slajdu 12:
+Masz:
+- całkowicie naprawić rysunek na slajdzie 6,
+- sprawić, by wszystkie pokazane slaby były w 100% zawarte w granicach macierzy,
+- sprawić, by rysunek dokładnie odpowiadał wypisanej dekompozycji slabów:
+  - M[[1,1],[2,3]]
+  - M[[1,2],[5,5]]
+  - M[[3,3],[2,4]]
+  - M[[4,5],[1,3]]
+  - M[[4,5],[5,5]]
+- sprawić, by kolory, prostokąty i siatka były czyste i jednoznaczne,
+- usunąć wszelki debugowy lub „tymczasowy” kod TikZ.
 
-```text
-Uczyń ten slajd lżejszym i bardziej konferencyjnym. Główna myśl ma być jedna: „jak przechodzimy z amortized do expected worst-case przez epochs i snapshot copies”. Nie upychaj zbyt wielu szczegółów harmonogramu naraz. Zostaw tylko to, co jest potrzebne, aby słuchacz zrozumiał ideę dwóch kopii i catch-up. Opis rysunku ma być maksymalnie prosty, PDF-safe i czytelny dla publiczności niespecjalistycznej w tej niszy.
-```
+Jeśli trzeba, przerysuj slajd 6 od nowa.
+Ważniejsza jest poprawność niż zachowanie starego kodu.
 
-## 8. Komentarz do notacji globalnej
+B. SLAJD 7 — CANONICAL SLABS
+To jest błąd krytyczny wykonawczo.
+Aktualny slajd jest niespójny i był już wskazywany jako bezsensowny:
+- tekst na dole nie zgadza się z figurą,
+- obecna figura nie realizuje poprawnie idei „coarser slab decomposition” vs „canonical slab decomposition”,
+- w szczególności wszystkie kolorowe obszary mają być prawdziwymi osiowo wyrównanymi prostokątami odpowiadającymi slabom,
+- nie wolno zostawić żadnego obszaru, który wizualnie nie jest prostokątem,
+- podpisy muszą odpowiadać dokładnie temu, co faktycznie pokazuje rysunek.
 
-Przypnij do pierwszego miejsca, gdzie pojawia się `\mathcal P` / `\mathcal Q` albo inna niejednolita notacja:
+Masz naprawić slajd 7 tak, aby był jednocześnie:
+- zgodny z `plan.txt`,
+- zgodny z logiką Figure 3 z `main.pdf`,
+- wewnętrznie spójny.
 
-```text
-Ujednolić notację w całym planie do wersji zgodnej z artykułem. Nie zmieniaj arbitralnie nazw obiektów ani procedur. Jeśli źródła używają `P`, `Q`, `Decompose`, `canonical slab decomposition`, `adhesive segment set`, to trzymaj się dokładnie tych nazw. Popraw wszystkie mikro-odchylenia terminologiczne.
-```
+Jeżeli najprostsza droga do zgodności wymaga przerysowania całej figury na slajdzie 7 — zrób to.
 
-## 9. Komentarz do Części III
+Minimalne wymagania dla finalnej wersji slajdu 7:
+- narracja ma jasno pokazywać, dlaczego „jakaś” slab decomposition nie wystarcza i dlaczego potrzebna jest canonical slab decomposition,
+- jeśli pokazujesz porównanie dwóch dekompozycji, to obie muszą dotyczyć dokładnie tej samej macierzy,
+- wszystkie kolorowe regiony mają być prostokątami,
+- podpisy pod panelami mają być semantycznie poprawne,
+- wzrokowo ma być oczywiste, co jest wersją niekanoniczną / grubszą, a co kanoniczną / bardziej rozbitą,
+- nierówność
+  |\mathcal R| \le 4f_d(n+2)+4n
+  ma pozostać poprawna i czytelna.
 
-Przypnij do „Część III. Kontrola zgodności z 10 cechami dobrego referatu”:
+C. OGÓLNA ZGODNOŚĆ FIGUR ZE ŹRÓDŁAMI
+Masz sprawdzić wszystkie slajdy z rysunkami i poprawić każdy, który:
+- nie zgadza się z `main.pdf`,
+- nie zgadza się z `plan.txt`,
+- ma wewnętrzną sprzeczność tekst–rysunek,
+- jest matematycznie mylący.
 
-```text
-Doprecyzuj tę sekcję tam, gdzie obecne uzasadnienia są zbyt deklaratywne. Szczególnie wzmocnij punkty dotyczące szerokiej publiczności LATIN, czytelności PDF-safe i kontroli przeciążenia slajdów 8–12. Nie zmieniaj listy 10 cech; popraw tylko te objaśnienia, które wymagają mocniejszego uzasadnienia w samym planie.
-```
+To dotyczy szczególnie:
+- slajdu 3 (Figure 1 adaptation),
+- slajdu 6 (Figure 2 adaptation),
+- slajdu 7 (Figure 3 / idea canonicality),
+- slajdów 8–9 (Figure 4–5 running example),
+- slajdów 10–12 (nowe schematy oparte na Theorem 4 i Theorem 5),
+- backupu 16.
 
-## 10. Najkrótsza wersja, gdy chcesz komentować tylko slajdy 8–12
+D. SPÓJNOŚĆ NOTACJI
+Masz ujednolicić i sprawdzić całą notację:
+- \mathbb{P}, \mathbb{Q} jako struktury danych,
+- \mathcal{P}, \mathcal{Q}, \mathcal{K}, \mathcal{R} jako rodziny slabów / listy update’ów / dekompozycje,
+- \mathtt{Decompose}, \mathtt{Init}, \mathtt{QueryBit}, \mathtt{Update},
+- \strips_i, A_i, B_i, O_i, C_i,
+- f_d,
+- L = 8f_d(n+2).
 
-```text
-Popraw ten slajd tak, aby był lżejszy poznawczo, miał jedną dominującą myśl, pozostał w pełni zgodny z `main-all.tex` i `main.pdf`, nie dodawał nic spoza źródeł, był PDF-safe i bardziej odpowiedni dla szerokiej publiczności TCS na LATIN. Zachowaj sens matematyczny, ale usuń wszystko, co nie jest konieczne na slajdzie głównym. Podaj pełny poprawiony blok: a) tytuł, b) cele, c) treść, d) bardzo precyzyjny opis rysunku.
-```
+Jeżeli gdziekolwiek aktualny kod używa mylącej lub niespójnej notacji, popraw to.
 
-Mogę też przygotować **ultrakrótkie komentarze osobno dla slajdów 8, 9, 10, 11, 12**, po 1–2 zdania każdy, żeby łatwiej je wklejać w NotebookLM.
+E. SŁAJDY 8–9 — RUNNING EXAMPLE
+Masz sprawdzić, czy slajdy 8 i 9 są naprawdę dwiema połówkami tego samego przykładu.
+W szczególności:
+- ta sama macierz,
+- te same kolory,
+- spójny styl tabel,
+- brak niepotrzebnych symboli na slajdzie 8,
+- czytelne przejście z B_i do A_i / slab_start,
+- brak przeładowania.
+
+Nie zmieniaj tego przykładu arbitralnie.
+Masz zachować jego rolę jako centralnego running example.
+
+F. SŁAJDY 10–12 — NOWE SCHEMATY
+Masz zachować te slajdy jako ogólne schematy, ale dopilnować, by nie halucynowały literalnych danych.
+
+W szczególności:
+- slajd 10 ma pokazywać bazę w \mathbb{P} oraz override’y w \mathbb{Q} bez sugerowania konkretnej wymyślonej sekwencji update’ów,
+- slajd 11 ma pokazywać rebuilding z Theorem 4, ale nie może udawać literalnej rekonstrukcji Figure 6,
+- slajd 12 ma pokazywać epoki i snapshot copies zgodnie z Theorem 5 i opisem z `main-all.tex`.
+
+Masz sprawdzić, czy obecna wersja nie mówi za dużo albo za mało.
+Jeśli trzeba, popraw tekst i/lub rysunki.
+
+G. CZYTELNOŚĆ I PDF-SAFETY
+Masz usunąć lub poprawić wszelkie problemy typu:
+- tekst zbyt mały,
+- zbyt ciasne tabele,
+- napisy wchodzące na siebie,
+- elementy wystające poza slajd,
+- zbyt ciężki wizualnie układ,
+- rzeczy, które dobrze wyglądają tylko w kodzie, ale źle w PDF.
+
+==================================================
+CO MASZ ZACHOWAĆ
+==================================================
+
+Zachowaj, o ile nie są błędne:
+- liczbę slajdów: 13 głównych + 3 backup,
+- ogólną dramaturgię decku,
+- wczesny theorem slide,
+- running example na slajdach 8–9,
+- ogólną ideę slajdów 10–12,
+- backup slides 14–16,
+- styl prosty, PDF-safe, beamerowy.
+
+==================================================
+DEFINITION OF DONE
+==================================================
+
+Zadanie jest zakończone dopiero wtedy, gdy wszystkie poniższe warunki są spełnione jednocześnie:
+
+1. `slides/presentation.tex` kompiluje się bez błędów.
+2. Wynikowy PDF nie ma widocznych błędów geometrycznych ani layoutowych.
+3. Slajd 6 nie ma żadnego elementu wychodzącego poza macierz.
+4. Slajd 7 jest w pełni sensowny: figura, podpisy i treść slajdu zgadzają się ze sobą.
+5. Żaden slajd nie halucynuje matematyki ani danych wizualnych.
+6. Notacja jest spójna w całym decku.
+7. Slajdy 8–9 są wizualnie i merytorycznie spójnym running example.
+8. Slajdy 10–12 są ogólnymi schematami ściśle uzasadnionymi przez źródła.
+9. Backupi nadal są konkretne i poprawne.
+10. Finalny deck jest bezpieczny do pokazania na LATIN.
+
+==================================================
+FORMAT TWOJEGO KOŃCOWEGO RAPORTU
+==================================================
+
+Po zakończeniu pracy NIE wypisuj całego pliku.
+Zwróć tylko krótki raport w tej strukturze:
+
+1. `DONE` albo `NOT DONE`
+2. lista slajdów, które zmieniłeś
+3. jednozdaniowy opis każdej zmiany
+4. czy PDF skompilował się poprawnie
+5. czy po renderze widzisz jeszcze jakiekolwiek nierozwiązane problemy
+
+Jeśli cokolwiek nadal jest niepewne, napisz to wprost.
+Nie udawaj, że jest idealnie, jeśli nie jest.

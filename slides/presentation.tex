@@ -12,7 +12,7 @@
 \usepackage{mathtools}
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows.meta,calc,fit,decorations.pathreplacing,backgrounds}
-\usepackage{xcolor}
+\usepackage[table]{xcolor}
 \usepackage{array}
 \usepackage{booktabs}
 
@@ -29,11 +29,18 @@
 \definecolor{slab3}{RGB}{200,230,180}
 \definecolor{slab4}{RGB}{245,225,160}
 \definecolor{slab5}{RGB}{210,195,230}
+\definecolor{updatezero}{RGB}{176,52,54}
+\definecolor{updateone}{RGB}{48,140,97}
+\definecolor{splitpiece}{RGB}{118,188,228}
+\definecolor{coarsefill}{RGB}{218,223,233}
 
 \setbeamercolor{block title}{bg=darkblue!15,fg=darkblue}
 \setbeamercolor{block body}{bg=darkblue!5}
 \setbeamercolor{block title alerted}{bg=darkred!15,fg=darkred}
 \setbeamercolor{block body alerted}{bg=darkred!5}
+
+\newcommand{\fillslab}[6]{\fill[#1,opacity=0.58] ({#4-1},{#6-#3}) rectangle ({#5},{#6+1-#2});}
+\newcommand{\drawslab}[6]{\draw[#1,very thick] ({#4-1},{#6-#3}) rectangle ({#5},{#6+1-#2});}
 
 \title{Dynamic data structures for twin-ordered matrices}
 \subtitle{Queries and updates in $\Oh(\log\log n)$ expected worst-case time}
@@ -258,48 +265,42 @@ $|\mathcal{K}| \leq d(2n-2)+1$
 {\small Every $d$-twin-ordered matrix admits an $\Oh_d(n)$-size rectangle description of all ones.}
 
 \bigskip
-\begin{columns}
-\begin{column}{0.45\textwidth}
+\begin{columns}[T]
+\begin{column}{0.42\textwidth}
 \centering
-% Figure 2 adaptation: 5x5 matrix with colored slabs
 \begin{tikzpicture}[scale=0.55]
-\def\M{
-{0,1,1,0,1},
-{0,0,0,0,1},
-{0,1,1,1,0},
-{1,1,1,0,1},
-{1,1,1,0,1}}
-% Draw slabs first
-\fill[slab4,opacity=0.6] (1,3) rectangle (3,4); % [1,1],[2,3]
-\fill[slab2,opacity=0.6] (4,3) rectangle (5,4); % [1,2],[5,5] row1
-\fill[slab2,opacity=0.6] (4,2) rectangle (5,3); % [1,2],[5,5] row2
-\fill[slab3,opacity=0.6] (1,1) rectangle (4,2); % [3,3],[2,4]
-\fill[slab1,opacity=0.6] (0,0) rectangle (3,1); % [4,5],[1,3] row5
-\fill[slab1,opacity=0.6] (0,-1) rectangle (3,0); % [4,5],[1,3] row4... 
-% Redo properly with row 0 at top
-% Let me just place values
-\foreach \r [count=\ri from 0] in \M {
-\foreach \v [count=\ci from 0] in \r {
-\node[font=\scriptsize] at (\ci+0.5,4.5-\ri) {\v};
-}}
-% Slab outlines
-\draw[slab4,very thick] (1,3) rectangle (3,4);
-\draw[slab2,very thick] (4,2) rectangle (5,4);
-\draw[slab3,very thick] (1,1) rectangle (4,2);
-\draw[slab1,very thick] (0,0) rectangle (3,1);
-\draw[slab1!60!black,very thick] (0,-1) rectangle (3,0);
-% Hmm, indexing is tricky. Let me simplify.
+\fillslab{slab4}{1}{1}{2}{3}{5}
+\fillslab{slab2}{1}{2}{5}{5}{5}
+\fillslab{slab3}{3}{3}{2}{4}{5}
+\fillslab{slab1}{4}{5}{1}{3}{5}
+\fillslab{slab5}{4}{5}{5}{5}{5}
+\foreach \r/\d [count=\ri from 0] in {
+0/{0,1,1,0,1},
+1/{0,0,0,0,1},
+2/{0,1,1,1,0},
+3/{1,1,1,0,1},
+4/{1,1,1,0,1}}{
+  \foreach \v [count=\ci from 0] in \d {
+    \node[font=\scriptsize] at (\ci+0.5,4.5-\ri) {\v};
+  }
+}
 \draw[step=1,gray!50] (0,0) grid (5,5);
 \draw[thick] (0,0) rectangle (5,5);
+\drawslab{slab4}{1}{1}{2}{3}{5}
+\drawslab{slab2}{1}{2}{5}{5}{5}
+\drawslab{slab3}{3}{3}{2}{4}{5}
+\drawslab{slab1}{4}{5}{1}{3}{5}
+\drawslab{slab5}{4}{5}{5}{5}{5}
 \end{tikzpicture}
 \end{column}
-\begin{column}{0.5\textwidth}
+\begin{column}{0.54\textwidth}
 {\small
-Slab decomposition of the example:\\[4pt]
-$M\bigl[[1,1],[2,3]\bigr]$\\
-$M\bigl[[1,2],[5,5]\bigr]$\\
-$M\bigl[[3,3],[2,4]\bigr]$\\
-$M\bigl[[4,5],[1,3]\bigr]$, \;$M\bigl[[4,5],[5,5]\bigr]$
+\textbf{Figure 2 example:}\\[4pt]
+$\mathcal{K}=\{$\\
+\hspace*{1em}$M\bigl[[1,1],[2,3]\bigr],\ M\bigl[[1,2],[5,5]\bigr],$\\
+\hspace*{1em}$M\bigl[[3,3],[2,4]\bigr],$\\
+\hspace*{1em}$M\bigl[[4,5],[1,3]\bigr],\ M\bigl[[4,5],[5,5]\bigr]$\\
+$\}$\\[4pt]
 
 \medskip
 Each slab stored as four coordinates $(a,b,c,d)$.
@@ -310,60 +311,85 @@ Each slab stored as four coordinates $(a,b,c,d)$.
 
 %% ============== SLIDE 7: Canonical slabs ==============
 \begin{frame}{Canonical slabs: the normalization step}
+\vspace{-0.2em}
+{\small
 \begin{itemize}
+\setlength\itemsep{0.15em}
 \item An $i$-\emph{strip}: a maximal all-ones slab of width 1 in column $i$
 \item $\strips_i$: the set of all $i$-strips
 \item \emph{Siblings}: strips with the same row interval persisting through consecutive columns
 \end{itemize}
+}
 
-\begin{alertblock}{}
-A \emph{canonical slab} is the union of one sibling class; each strip belongs to exactly one canonical slab.
-\end{alertblock}
+\begin{beamercolorbox}[wd=\textwidth,sep=0.65ex,rounded=true]{block body alerted}
+\footnotesize A \emph{canonical slab} is the union of one sibling class; each strip belongs to exactly one canonical slab.
+\end{beamercolorbox}
 
+\vspace{-0.2em}
 \[
-|\mathcal{R}| \leq 4f_d(n+2)+4n \in \Oh_d(n)
+|\mathcal{R}| \leq 4f_d(n+2)+4n
 \]
-{\small Canonical slabs are still only $\Oh_d(n)$. \quad ($f_d$: constant from the corner bound.)}
+{\footnotesize Canonical slabs are still only $\Oh_d(n)$, where $f_d$ is the constant from the corner bound.}
 
-\bigskip
+{\scriptsize Same matrix on both sides: the left decomposition is valid, but it merges different sibling classes.}
+
+\smallskip
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
 \centering
-\begin{tikzpicture}[scale=0.48]
-% Left: coarser decomposition (Figure 3 right matrix)
-\begin{scope}
-\node[above,font=\small] at (2.5,5.2) {coarser slab decomp.};
+\begin{tikzpicture}[scale=0.29]
+\node[above,font=\footnotesize] at (2.5,5.08) {coarser slab decomposition};
+\fillslab{coarsefill}{3}{4}{1}{4}{5}
+\fillslab{slab4}{1}{2}{2}{3}{5}
 \foreach \r/\d [count=\ri from 0] in {
-0/{0,1,1,0,0},1/{0,1,1,0,0},2/{1,1,1,1,0},3/{1,1,1,1,0},4/{0,0,0,0,0}}{
-\foreach \v [count=\ci from 0] in \d {
-\node[font=\tiny] at (\ci+0.5,4.5-\ri) {\v};
-}}
-\fill[slab3,opacity=0.4] (0,1) rectangle (4,3);
-\fill[slab4,opacity=0.4] (1,2) rectangle (3,5);
+0/{0,1,1,0,0},
+1/{0,1,1,0,0},
+2/{1,1,1,1,0},
+3/{1,1,1,1,0},
+4/{0,0,0,0,0}}{
+  \foreach \v [count=\ci from 0] in \d {
+    \node[font=\tiny] at (\ci+0.5,4.5-\ri) {\v};
+  }
+}
 \draw[step=1,gray!50] (0,0) grid (5,5);
 \draw[thick] (0,0) rectangle (5,5);
-\end{scope}
-% Right: canonical
-\begin{scope}[shift={(7,0)}]
-\node[above,font=\small] at (2.5,5.2) {canonical slab decomp.};
-\foreach \r/\d [count=\ri from 0] in {
-0/{0,1,1,0,0},1/{0,1,1,0,0},2/{1,1,1,1,0},3/{1,1,1,1,0},4/{0,0,0,0,0}}{
-\foreach \v [count=\ci from 0] in \d {
-\node[font=\tiny] at (\ci+0.5,4.5-\ri) {\v};
-}}
-\fill[slab5,opacity=0.5] (0,1) rectangle (1,3);
-\fill[slab4,opacity=0.5] (1,1) rectangle (3,5);
-\fill[slab1,opacity=0.5] (3,1) rectangle (4,3);
-\draw[step=1,gray!50] (0,0) grid (5,5);
-\draw[thick] (0,0) rectangle (5,5);
-\end{scope}
+\draw[coarsefill!70!black,very thick] (0,1) rectangle (4,3);
+\draw[slab4!70!black,very thick] (1,3) rectangle (3,5);
 \end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.29]
+\node[above,font=\footnotesize] at (2.5,5.08) {canonical slab decomposition};
+\fillslab{slab5}{3}{4}{1}{1}{5}
+\fillslab{slab4}{1}{4}{2}{3}{5}
+\fillslab{slab1}{3}{4}{4}{4}{5}
+\foreach \r/\d [count=\ri from 0] in {
+0/{0,1,1,0,0},
+1/{0,1,1,0,0},
+2/{1,1,1,1,0},
+3/{1,1,1,1,0},
+4/{0,0,0,0,0}}{
+  \foreach \v [count=\ci from 0] in \d {
+    \node[font=\tiny] at (\ci+0.5,4.5-\ri) {\v};
+  }
+}
+\draw[step=1,gray!50] (0,0) grid (5,5);
+\draw[thick] (0,0) rectangle (5,5);
+\drawslab{slab5}{3}{4}{1}{1}{5}
+\drawslab{slab4}{1}{4}{2}{3}{5}
+\drawslab{slab1}{3}{4}{4}{4}{5}
+\end{tikzpicture}
+\end{column}
+\end{columns}
 \end{frame}
 
 %% ============== SLIDE 8: Running example part I ==============
 \begin{frame}{Running example, part I: left-to-right sweep for $B_i$}
-\begin{columns}[T]
-\begin{column}{0.42\textwidth}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.34\textwidth}
 \vspace{-0.2cm}
-{\small Definitions:}
+{\footnotesize Definitions:}
 \[
 O_i \coloneqq \{[a,b] \mid (a,b,i,d')\in\mathcal{K},\; d'\!\geq\! i\}
 \]
@@ -375,8 +401,9 @@ B_i \coloneqq \strips_i \setminus \strips_{i+1}
 \]
 
 \medskip
-{\small
+{\footnotesize
 \begin{itemize}
+\setlength\itemsep{0.2em}
 \item Round $i$ transforms $\strips_i$ into $\strips_{i+1}$
 \item Only strips touched by slabs closing/opening matter; disappearing ones form $B_i$
 \end{itemize}
@@ -385,10 +412,9 @@ B_i \coloneqq \strips_i \setminus \strips_{i+1}
 \smallskip
 {\footnotesize First half of $\mathtt{Decompose}(n,\mathcal{K})$: identify which strips disappear each round.}
 \end{column}
-\begin{column}{0.56\textwidth}
+\begin{column}{0.64\textwidth}
 \centering
-% Figure 4: 4x4 matrix
-\begin{tikzpicture}[scale=0.50]
+\begin{tikzpicture}[scale=0.54]
 \foreach \r/\d [count=\ri from 0] in {
 0/{0,0,0,1},1/{1,1,1,0},2/{0,1,1,1},3/{1,1,1,1}}{
 \foreach \v [count=\ci from 0] in \d {
@@ -401,22 +427,28 @@ B_i \coloneqq \strips_i \setminus \strips_{i+1}
 \fill[slab5,opacity=0.4] (3,3) rectangle (4,4); % (1,1,4,4)
 \draw[step=1,gray!50] (0,0) grid (4,4);
 \draw[thick] (0,0) rectangle (4,4);
+\draw[darkred,very thick] (3,-0.18) -- (3,4.18);
+\node[darkred,font=\scriptsize] at (3,4.38) {$i$};
 \end{tikzpicture}
 
 \smallskip
-% Table
-{\tiny
+{\scriptsize
+\renewcommand{\arraystretch}{1.08}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{c|c|c|c|c}
- & $O_i$ & $C_i$ & strips in $\mathbb{S}$ & $B_i$\\
+ & $O_i$ & $C_i$ & current strips $(=\strips_i)$ & $B_i$\\
 \hline
+\rowcolor{slab4!18}
 $i\!=\!1$ & $\{[2,2],[4,4]\}$ & $\varnothing$ & $\{[2,2],[4,4]\}$ & $\{[2,2],[4,4]\}$\\
 \hline
 $i\!=\!2$ & $\{[3,3]\}$ & $\varnothing$ & $\{[2,4]\}$ & $\varnothing$\\
 \hline
+\rowcolor{slab1!12}
 $i\!=\!3$ & $\varnothing$ & $\{[2,2]\}$ & $\{[2,4]\}$ & $\{[2,4]\}$\\
 \hline
 $i\!=\!4$ & $\{[1,1]\}$ & $\{[1,1],[3,3],[4,4]\}$ & $\{[1,1],[3,4]\}$ & $\{[1,1],[3,4]\}$\\
 \end{tabular}
+}
 }
 \end{column}
 \end{columns}
@@ -424,141 +456,218 @@ $i\!=\!4$ & $\{[1,1]\}$ & $\{[1,1],[3,3],[4,4]\}$ & $\{[1,1],[3,4]\}$ & $\{[1,1]
 
 %% ============== SLIDE 9: Running example part II ==============
 \begin{frame}{Running example, part II: from $A_i, B_i$ to canonical slabs}
-Symmetric sweep right-to-left gives:
+\begin{columns}[T]
+\begin{column}{0.37\textwidth}
+{\scriptsize Symmetric sweep from right to left gives}
 \[
 A_i \coloneqq \strips_i \setminus \strips_{i-1}
 \]
 
-\smallskip
+\vspace{-0.4em}
+\footnotesize
 \begin{itemize}
+\setlength\itemsep{0.2em}
 \item $\mathsf{slab\_start}[a]$ remembers where the current slab on row interval $[a,b]$ started
-\item When $(a,b)\in A_i$: record start $i$. \;\; When $(a,b)\in B_i$: output $(a,b,\mathsf{slab\_start}[a],i)$
+\item If $(a,b)\in A_i$, record start $i$; if $(a,b)\in B_i$, output $(a,b,\mathsf{slab\_start}[a],i)$
 \item A final left-to-right sweep over $A_i$ and $B_i$ outputs all canonical slabs
 \end{itemize}
 
-\[
-\mathtt{Decompose}(n,\mathcal{K}) \text{ runs in } \Oh(n+|\mathcal{K}|\log\log n)
-\]
-{\small The output is the canonical slab decomposition $\mathcal{R}$.}
+{\scriptsize Runtime: $\mathtt{Decompose}(n,\mathcal{K})=\Oh(n+|\mathcal{K}|\log\log n)$.}
 
-\bigskip
+\smallskip
+{\scriptsize Output: canonical slab decomposition $\mathcal{R}$.}
+\end{column}
+\begin{column}{0.61\textwidth}
 \centering
-{\tiny
+{\scriptsize
+\renewcommand{\arraystretch}{1.04}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{c|c|c|c|c}
- & $A_i$ & $B_i$ & $\mathsf{slab\_start}_i$ & slabs added\\
+ & $A_i$ & $B_i$ & $\mathsf{slab\_start}_i$ & slabs added in round $i$\\
 \hline
-$i\!=\!1$ & $\{[2,2],[4,4]\}$ & $\{[2,2],[4,4]\}$ & $[\bot,1,\bot,1]$ & $(2,2,1,1),\;(4,4,1,1)$\\
+\rowcolor{slab4!18}
+$i\!=\!1$ & $\{[2,2],[4,4]\}$ & $\{[2,2],[4,4]\}$ & $[\bot,1,\bot,1]$ & $(2,2,1,1),\ (4,4,1,1)$\\
 \hline
 $i\!=\!2$ & $\{[2,4]\}$ & $\varnothing$ & $[\bot,2,\bot,\bot]$ & \\
 \hline
+\rowcolor{slab1!12}
 $i\!=\!3$ & $\varnothing$ & $\{[2,4]\}$ & $[\bot,2,\bot,\bot]$ & $(2,4,2,3)$\\
 \hline
-$i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\{[1,1],[3,4]\}$ & $[4,\bot,4,\bot]$ & $(1,1,4,4),\;(3,4,4,4)$\\
+$i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\{[1,1],[3,4]\}$ & $[4,\bot,4,\bot]$ & $(1,1,4,4),\ (3,4,4,4)$\\
 \end{tabular}
+}
 }
 
 \smallskip
-\begin{tikzpicture}[scale=0.42]
+\begin{tikzpicture}[scale=0.35]
+\fillslab{slab1}{2}{2}{1}{1}{4}
+\fillslab{slab2}{4}{4}{1}{1}{4}
+\fillslab{slab4}{2}{4}{2}{3}{4}
+\fillslab{slab5}{1}{1}{4}{4}{4}
+\fillslab{slab3}{3}{4}{4}{4}{4}
 \foreach \r/\d [count=\ri from 0] in {
-0/{0,0,0,1},1/{1,1,1,0},2/{0,1,1,1},3/{1,1,1,1}}{
-\foreach \v [count=\ci from 0] in \d {
-\node[font=\scriptsize] at (\ci+0.5,3.5-\ri) {\v};
-}}
-% Canonical slabs: (2,2,1,1) (4,4,1,1) (2,4,2,3) (1,1,4,4) (3,4,4,4)
-\fill[slab1,opacity=0.4] (0,2) rectangle (1,3); % (2,2,1,1)
-\fill[slab2,opacity=0.4] (0,0) rectangle (1,1); % (4,4,1,1)
-\fill[slab4,opacity=0.4] (1,1) rectangle (3,3); % (2,4,2,3)
-\fill[slab5,opacity=0.4] (3,3) rectangle (4,4); % (1,1,4,4)
-\fill[slab3,opacity=0.4] (3,0) rectangle (4,2); % (3,4,4,4)
+0/{0,0,0,1},
+1/{1,1,1,0},
+2/{0,1,1,1},
+3/{1,1,1,1}}{
+  \foreach \v [count=\ci from 0] in \d {
+    \node[font=\scriptsize] at (\ci+0.5,3.5-\ri) {\v};
+  }
+}
 \draw[step=1,gray!50] (0,0) grid (4,4);
 \draw[thick] (0,0) rectangle (4,4);
+\drawslab{slab1}{2}{2}{1}{1}{4}
+\drawslab{slab2}{4}{4}{1}{1}{4}
+\drawslab{slab4}{2}{4}{2}{3}{4}
+\drawslab{slab5}{1}{1}{4}{4}{4}
+\drawslab{slab3}{3}{4}{4}{4}{4}
 \end{tikzpicture}
+\end{column}
+\end{columns}
 \end{frame}
 
 %% ============== SLIDE 10: Amortized structure ==============
 \begin{frame}{Amortized structure: $\mathbb{P}$ for slabs, $\mathbb{Q}$ for recent flips}
 
-{\small Take the canonical slab decomposition from slide~9 as the last rebuilt base in $\mathbb{P}$; all newer updates are kept in $\mathbb{Q}$.}
+{\footnotesize Take the final canonical slab decomposition from slide~9 as the last rebuilt base stored in $\mathbb{P}$; all newer updates are kept only symbolically in $\mathbb{Q}$.}
+
+\smallskip
+\begin{columns}[T]
+\begin{column}{0.44\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.50]
+\node[font=\scriptsize\bfseries] at (2,4.85) {base canonical slabs in $\mathbb{P}$};
+\fillslab{slab1}{2}{2}{1}{1}{4}
+\fillslab{slab2}{4}{4}{1}{1}{4}
+\fillslab{slab4}{2}{4}{2}{3}{4}
+\fillslab{slab5}{1}{1}{4}{4}{4}
+\fillslab{slab3}{3}{4}{4}{4}{4}
+\foreach \r/\d [count=\ri from 0] in {
+0/{0,0,0,1},
+1/{1,1,1,0},
+2/{0,1,1,1},
+3/{1,1,1,1}}{
+  \foreach \v [count=\ci from 0] in \d {
+    \node[font=\scriptsize] at (\ci+0.5,3.5-\ri) {\v};
+  }
+}
+\draw[step=1,gray!50] (0,0) grid (4,4);
+\draw[thick] (0,0) rectangle (4,4);
+\drawslab{slab1}{2}{2}{1}{1}{4}
+\drawslab{slab2}{4}{4}{1}{1}{4}
+\drawslab{slab4}{2}{4}{2}{3}{4}
+\drawslab{slab5}{1}{1}{4}{4}{4}
+\drawslab{slab3}{3}{4}{4}{4}{4}
+\draw[updatezero,line width=1.1pt,rounded corners=1pt] (1,2) rectangle (2,3);
+\draw[updateone,line width=1.1pt,rounded corners=1pt] (3,2) rectangle (4,3);
+\node[draw,rounded corners,fill=gray!6,align=left,font=\scriptsize,anchor=north west] at (4.55,3.95) {$\mathbb{Q}$ keeps only overrides\\[3pt]
+\tikz{\draw[updatezero,line width=1pt,rounded corners=1pt] (0,0) rectangle (0.22,0.22);}~buffered $0$\\[2pt]
+\tikz{\draw[updateone,line width=1pt,rounded corners=1pt] (0,0) rectangle (0.22,0.22);}~buffered $1$};
+\end{tikzpicture}
+
+\smallskip
+{\tiny\color{gray} New schematic based directly on Theorem~4; base picture reused from Figure~5.}
+\end{column}
+\begin{column}{0.54\textwidth}
+{\small \textbf{$\mathbb{P}$:} static 2D orthogonal point location on the canonical slab decomposition stored at the last rebuild.}
 
 \medskip
-\begin{columns}[T]
-\begin{column}{0.48\textwidth}
-\begin{block}{$\mathbb{P}$: static point location}
-{\small Stores the canonical slab decomposition computed at last rebuild. Answers point location in $\Oh(\log\log n)$.}
-\end{block}
+{\small \textbf{$\mathbb{Q}$:} dictionary of explicit cell values for the updates buffered since that rebuild.}
 
-\begin{block}{$\mathbb{Q}$: update dictionary}
-{\small Hash table of explicit cell values buffered since the last rebuild.}
-\end{block}
-\end{column}
-\begin{column}{0.48\textwidth}
+\medskip
 {\small Buffer threshold:}
 \[
 |\mathbb{Q}| \leq 8f_d(n+2)
 \]
-
-{\small Invariant:}
-\begin{align*}
-(i,j)\in\mathbb{Q} &\Rightarrow M[i,j]=\mathbb{Q}[i,j]\\
-(i,j)\notin\mathbb{Q} &\Rightarrow M[i,j]=1 \iff (i,j)\in\text{slab of }\mathbb{P}
-\end{align*}
 \end{column}
 \end{columns}
 
-\bigskip
-\begin{itemize}
-\item $\mathtt{QueryBit}(i,j)$: first check $\mathbb{Q}$; on miss, ask $\mathbb{P}$
-\item $\mathtt{Update}(i,j)$: keep newest value in $\mathbb{Q}$; on first touch, recover old value from $\mathbb{P}$
-\item When $|\mathbb{Q}|=8f_d(n+2)$: rebuild the base decomposition and empty the buffer
-\end{itemize}
-
 \smallskip
-{\small\color{gray} Theorem~4: $\Oh(\log\log n)$ expected worst-case queries and $\Oh(\log\log n)$ expected amortized updates.}
+{\footnotesize \textbf{Invariant:} $(i,j)\in\mathbb{Q} \Rightarrow M[i,j]=\mathbb{Q}[i,j]$. \;
+$(i,j)\notin\mathbb{Q} \Rightarrow M[i,j]=1 \iff (i,j)$ lies in a base slab of $\mathbb{P}$.}
+
+\medskip
+{\scriptsize $\mathtt{QueryBit}(i,j)$ first checks $\mathbb{Q}$ and asks $\mathbb{P}$ on a miss. \;
+$\mathtt{Update}(i,j)$ stores the newest explicit value in $\mathbb{Q}$; on first touch it queries $\mathbb{P}$ to recover the old value. When $|\mathbb{Q}|=8f_d(n+2)$, rebuild the base decomposition and empty the buffer.}
+
+{\tiny\color{gray} Theorem~4: $\Oh(\log\log n)$ expected worst-case queries and $\Oh(\log\log n)$ expected amortized updates.}
 \end{frame}
 
 %% ============== SLIDE 11: Rebuilding ==============
 \begin{frame}{Rebuilding $\mathbb{P}$: 0-updates split slabs, uncovered 1-updates become $1\!\times\!1$ slabs}
 
-{\small Rebuilding starts from slabs in $\mathbb{P}$ and buffered values in $\mathbb{Q}$.}
+{\scriptsize Rebuilding starts from slabs $\mathcal{P}$ extracted from $\mathbb{P}$ and explicit updates $\mathcal{Q}$ extracted from $\mathbb{Q}$.}
 
-\medskip
+\smallskip
 \begin{columns}[T]
-\begin{column}{0.55\textwidth}
-{\small Four steps:}
+\begin{column}{0.49\textwidth}
+\scriptsize
+\textbf{Four steps:}
 \begin{enumerate}
+\setlength\itemsep{0.05em}
 \item Partition $\mathcal{Q}$ into 0-updates and 1-updates
-\item Assign 0-updates to slabs of $\mathcal{P}$ that contain them
-\item Split each affected slab row-by-row; collect untouched pieces
+\item Assign 0-updates to slabs of $\mathcal{P}$
+\item Split each affected slab row-by-row; keep untouched pieces
 \item Every uncovered 1-update becomes a $1\!\times\!1$ slab
 \end{enumerate}
 
-\medskip
-{\small The resulting family $\mathcal{K}$ is a slab decomposition of the current matrix.}
-\[
-|\mathcal{K}| \leq |\mathcal{P}|+2|\mathcal{Q}|
-\]
-{\small Then run $\mathtt{Decompose}(n,\mathcal{K})$ to get the new canonical decomposition.}
+\smallskip
+{\scriptsize The resulting family $\mathcal{K}$ is already a slab decomposition of the current matrix, with $|\mathcal{K}| \leq |\mathcal{P}|+2|\mathcal{Q}|$.}
+
+{\scriptsize Then run $\mathtt{Decompose}(n,\mathcal{K})$ to get the new canonical decomposition.}
 \end{column}
-\begin{column}{0.42\textwidth}
+\begin{column}{0.49\textwidth}
 \centering
-\begin{tikzpicture}[scale=0.6,font=\scriptsize]
-% Old slabs panel
-\node[draw,rounded corners,minimum width=2.8cm,minimum height=1.6cm,fill=slab2!30] (old) at (0,2.5) {};
-\node[above,font=\scriptsize\bfseries] at (old.north) {old slabs in $\mathcal{P}$};
-\node at (0,2.7) {\tiny colored rectangles};
-\node[red,font=\tiny] at (0,2.2) {\tiny + 0-upd / 1-upd in $\mathcal{Q}$};
+\begin{tikzpicture}[scale=0.29,font=\scriptsize]
+\node[font=\tiny\bfseries] at (2.5,5.05) {old $\mathbb{P}$ + new $\mathbb{Q}$};
+\fillslab{slab5}{3}{5}{1}{2}{5}
+\fillslab{slab4}{3}{4}{3}{3}{5}
+\fillslab{slab1}{4}{5}{4}{5}{5}
+\draw[step=1,gray!45] (0,0) grid (5,5);
+\draw[thick] (0,0) rectangle (5,5);
+\drawslab{slab5}{3}{5}{1}{2}{5}
+\drawslab{slab4}{3}{4}{3}{3}{5}
+\drawslab{slab1}{4}{5}{4}{5}{5}
+\draw[updatezero,line width=1.1pt,rounded corners=1pt] (2,2) rectangle (3,3);
+\draw[updatezero,line width=1.1pt,rounded corners=1pt] (3,1) rectangle (4,2);
+\draw[updateone,line width=1.1pt,rounded corners=1pt] (4,2) rectangle (5,3);
+\node[font=\tiny,align=center,anchor=north] at (2.5,-0.1) {base + overrides};
 
-% Intermediate K
-\node[draw,rounded corners,minimum width=2.8cm,minimum height=1.3cm,fill=slab3!30] (mid) at (0,0.3) {};
-\node[above,font=\scriptsize\bfseries] at (mid.north) {intermediate $\mathcal{K}$};
-\node[font=\tiny] at (0,0.3) {split pieces + $1\!\times\!1$ slabs};
+\draw[-{Stealth[length=5pt]},very thick] (5.25,2.45)--(5.85,2.45);
 
-% New canonical
-\node[draw,rounded corners,minimum width=2.8cm,minimum height=0.9cm,fill=slab4!40] (fin) at (0,-1.5) {};
-\node[font=\scriptsize\bfseries] at (fin) {$\mathtt{Decompose} \to \mathcal{R}$};
+\begin{scope}[shift={(6.15,0)}]
+\node[font=\tiny\bfseries] at (2.5,5.05) {build $\mathcal{K}$};
+\fillslab{slab5}{3}{5}{1}{2}{5}
+\fillslab{slab4}{3}{3}{3}{3}{5}
+\fillslab{splitpiece}{4}{4}{3}{3}{5}
+\fillslab{slab1}{4}{5}{4}{5}{5}
+\fillslab{updateone!35}{3}{3}{5}{5}{5}
+\draw[step=1,gray!45] (0,0) grid (5,5);
+\draw[thick] (0,0) rectangle (5,5);
+\drawslab{slab5}{3}{5}{1}{2}{5}
+\drawslab{slab4}{3}{3}{3}{3}{5}
+\drawslab{splitpiece}{4}{4}{3}{3}{5}
+\drawslab{slab1}{4}{5}{4}{5}{5}
+\draw[updateone,line width=1.1pt,rounded corners=1pt] (4,2) rectangle (5,3);
+\node[font=\tiny,align=center,anchor=north] at (2.5,-0.1) {split + uncovered $1\times 1$};
+\end{scope}
 
-\draw[-{Stealth},thick] (old)--(mid);
-\draw[-{Stealth},thick] (mid)--(fin);
+\draw[-{Stealth[length=5pt]},very thick] (11.4,2.45)--(11.95,2.45);
+
+\begin{scope}[shift={(12.3,0.15)}]
+\draw[rounded corners,fill=gray!5] (0,0.3) rectangle (2.55,4.35);
+\node[font=\tiny\bfseries,align=center] at (1.275,3.85) {$\mathtt{Decompose}$};
+\fill[gray!10] (0.45,1.0) rectangle (2.05,3.1);
+\draw[gray!35,step=0.4] (0.45,1.0) grid (2.05,3.1);
+\draw[thick,gray!55] (0.45,1.0) rectangle (2.05,3.1);
+\fill[slab5!35] (0.45,1.0) rectangle (0.85,3.1);
+\fill[slab4!35] (0.85,1.4) rectangle (1.25,2.6);
+\fill[slab1!32] (1.25,1.0) rectangle (2.05,1.8);
+\draw[slab5!80!black,very thick] (0.45,1.0) rectangle (0.85,3.1);
+\draw[slab4!80!black,very thick] (0.85,1.4) rectangle (1.25,2.6);
+\draw[slab1!80!black,very thick] (1.25,1.0) rectangle (2.05,1.8);
+\node[font=\tiny,align=center] at (1.275,0.62) {new canonical slabs};
+\end{scope}
 \end{tikzpicture}
 
 \smallskip
@@ -570,7 +679,7 @@ $i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\{[1,1],[3,4]\}$ & $[4,\bot,4,\bot]$ & $(1,1,4,
 %% ============== SLIDE 12: De-amortization ==============
 \begin{frame}{From amortized to worst-case: epochs and snapshot copies}
 
-{\small Threshold: $L = 8f_d(n+2)$. \quad Partition all updates into epochs $E_0, E_1, E_2, \ldots$ of length $L$.}
+{\small Threshold: $L = 8f_d(n+2)$. \quad Partition all updates into epochs $E_0,E_1,E_2,\ldots$ of length $L$.}
 
 \medskip
 \textbf{Key idea:} one copy keeps answering updates, while the next copy is initialized in the background and then catches up.
@@ -578,47 +687,49 @@ $i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\{[1,1],[3,4]\}$ & $[4,\bot,4,\bot]$ & $(1,1,4,
 \medskip
 \begin{itemize}
 \item During $E_{2i-2}$: spread $\mathtt{Init}(n,\mathcal{K})$ of the next structure over the whole epoch
-\item During $E_{2i-1}$: next structure catches up (two updates per one)
+\item During $E_{2i-1}$: the next structure catches up by processing two updates while the previous one processes one
 \item Queries keep going to the currently active copy throughout
 \end{itemize}
 
 \medskip
-{\small Two copies $\mathbb{A}_{i,0}$ (active) and $\mathbb{A}_{i,1}$ (frozen snapshot) resolve the need for uninterrupted access during initialization.}
+{\footnotesize Two copies are needed: $\mathbb{A}_{i,0}$ is the active structure, while $\mathbb{A}_{i,1}$ is the frozen snapshot that gives uninterrupted access to the old state during initialization.}
 
-\bigskip
+\medskip
 \centering
-\begin{tikzpicture}[xscale=1.3,yscale=0.8,font=\small]
-% Timeline
-\draw[thick,-{Stealth}] (-0.3,0)--(8.5,0);
-% Epochs
-\fill[darkblue!8] (0.5,0) rectangle (3.5,0.5);
-\fill[darkblue!15] (3.5,0) rectangle (6.5,0.5);
-\node[font=\scriptsize] at (2,0.25) {$E_{2i-2}$};
-\node[font=\scriptsize] at (5,0.25) {$E_{2i-1}$};
-\node[font=\tiny,gray] at (0,0.25) {$\cdots$};
-\node[font=\tiny,gray] at (7.5,0.25) {$\cdots$};
-% Upper track: active copy
-\draw[thick,darkblue] (0.5,1.2)--(6.5,1.2);
-\node[font=\scriptsize,darkblue,left] at (0.4,1.2) {active};
-\node[font=\tiny,above,darkblue] at (3.5,1.2) {$\mathbb{A}_{i-1}$ answers queries};
-% Lower track: next copy
-\draw[thick,darkred] (0.5,0.7)--(6.5,0.7);
-\node[font=\scriptsize,darkred,left] at (0.4,0.7) {next};
-\fill[slab4!50] (0.5,0.55) rectangle (3.5,0.7);
-\node[font=\tiny] at (2,0.62) {};
-\node[font=\tiny,below,darkred] at (2,0.55) {background Init};
-\fill[slab3!50] (3.5,0.55) rectangle (6.5,0.7);
-\node[font=\tiny,below,darkred] at (5,0.55) {catch-up: $2\times$ speed};
-% Takeover
-\draw[-{Stealth},very thick,darkred] (6.5,0.7)--(6.8,1.2);
-\node[font=\tiny,right,darkred] at (6.8,0.95) {takes over};
-% Snapshot
-\node[draw,rounded corners,font=\tiny,fill=gray!10] at (1.2,1.6) {frozen snapshot $\mathbb{A}_{i-1,1}$};
-\draw[->,gray,thin] (1.2,1.45)--(1.2,0.78);
+\begin{tikzpicture}[x=0.95cm,y=0.74cm,font=\small]
+\draw[thick,-{Stealth[length=5pt]}] (0,0)--(7.6,0);
+\node[font=\tiny,gray] at (0.35,0.2) {$\cdots$};
+\node[font=\tiny,gray] at (7.1,0.2) {$\cdots$};
+\fill[darkblue!8] (1.0,-0.02) rectangle (3.9,0.52);
+\fill[darkblue!16] (3.9,-0.02) rectangle (6.6,0.52);
+\node[font=\scriptsize] at (2.45,0.24) {$E_{2i-2}$};
+\node[font=\scriptsize] at (5.25,0.24) {$E_{2i-1}$};
+
+\node[left,font=\scriptsize,darkblue,align=right] at (0.9,1.75) {active copy\\answering updates};
+\node[left,font=\scriptsize,darkred,align=right] at (0.9,0.9) {next copy\\being prepared};
+\draw[thick,darkblue] (1.0,1.75)--(6.55,1.75);
+\node[font=\tiny,darkblue,above] at (3.8,1.78) {$\mathbb{A}_{i,0}$ keeps answering queries};
+\draw[thick,darkred] (1.0,0.9)--(6.55,0.9);
+
+\node[draw,rounded corners,fill=gray!8,font=\tiny,align=center] (snap) at (1.45,2.45) {read-only snapshot\\$\mathbb{A}_{i,1}$};
+\draw[gray!70,-{Stealth[length=4pt]}] (snap.south)--(1.45,1.02);
+
+\fill[slab4!55] (1.0,0.72) rectangle (3.9,1.08);
+\node[font=\tiny,darkred] at (2.45,0.48) {background Init from frozen snapshot};
+
+\fill[slab3!45] (3.9,0.72) rectangle (6.55,1.08);
+\foreach \x in {4.35,4.95,5.55,6.15} {
+  \draw[darkred,-{Stealth[length=4pt]},line width=0.9pt] (\x,0.78)--++(0.18,0.18);
+  \draw[darkred,-{Stealth[length=4pt]},line width=0.9pt] (\x,0.92)--++(0.18,0.18);
+}
+\node[font=\tiny,darkred] at (5.2,0.48) {catch-up: 2 updates here / 1 above};
+
+\draw[-{Stealth[length=6pt]},very thick,darkred] (6.55,0.9)--(6.95,1.75);
+\node[font=\tiny,darkred,right] at (6.98,1.36) {takes over};
 \end{tikzpicture}
 
 \smallskip
-{\small\color{gray} De-amortization of Theorem~5: expected worst-case $\Oh(\log\log n)$ per update.}
+{\footnotesize\color{gray} New timeline schematic based on Theorem~5; no literal update sequence shown.}
 \end{frame}
 
 %% ============== SLIDE 13: Take-away ==============
@@ -637,7 +748,7 @@ $\Oh_d(n)$ memory and $\Oh(\log\log n)$ expected worst-case time for both \textt
 \node[box,right=of tw] (sl) {$\Oh_d(n)$\\[-2pt]slabs};
 \node[box,right=of sl] (cs) {canonical\\[-2pt]slabs};
 \node[box,right=of cs] (pq) {$\mathbb{P}+\mathbb{Q}$};
-\node[box,right=of pq,fill=darkblue!12,font=\footnotesize\bfseries] (ds) {dynamic\\[-2pt]DS};
+\node[box,right=of pq,fill=darkblue!12,font=\footnotesize\bfseries,minimum width=2.25cm] (ds) {epochs +\\[-2pt]snapshot copies};
 \draw[-{Stealth},thick] (tw)--(sl);
 \draw[-{Stealth},thick] (sl)--(cs);
 \draw[-{Stealth},thick] (cs)--(pq);
