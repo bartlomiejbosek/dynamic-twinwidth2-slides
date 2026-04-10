@@ -14,6 +14,7 @@ NC='\033[0m' # No Color
 echo -e "${GREEN}=== Generowanie MP3 ze wszystkich plików TXT ===${NC}\n"
 
 LENGTH_SCALE="${1:-1.0}"
+LENGTH_SCALE_TAG="${LENGTH_SCALE//./_}"
 
 if [[ ! "$LENGTH_SCALE" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
     echo -e "${RED}Błąd: parametr tempa musi być dodatnią liczbą, np. 1.0, 1.33, 2.0 albo 4.0.${NC}"
@@ -155,8 +156,8 @@ for TEXT_FILE in "${TEXT_FILES[@]}"; do
 
     BASENAME="${TEXT_FILE%.txt}"
     CLEAN_TEXT_FILE="${BASENAME}.clean.txt"
-    WAV_FILE="${BASENAME}.wav"
-    MP3_FILE="${BASENAME}.mp3"
+    WAV_FILE="${BASENAME}.speed-${LENGTH_SCALE_TAG}.wav"
+    MP3_FILE="${BASENAME}.speed-${LENGTH_SCALE_TAG}.mp3"
 
     echo -e "\n${YELLOW}Przetwarzanie pliku: $TEXT_FILE${NC}"
 
