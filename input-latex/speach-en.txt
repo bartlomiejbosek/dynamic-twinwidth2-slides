@@ -1,101 +1,125 @@
 * **[Slide 1: Dynamic data structures for twin-ordered matrices]**
-  I will talk about dynamic data structures for d-twin-ordered binary matrices. The promise is structural, but the operations are very simple: cell queries and single-cell flips. The punchline is `O(log log n)` expected worst-case time with near-linear memory. Let me start with the object.
+  This talk is about `d`-twin-ordered binary matrices. We want cell queries and single-cell flips, and the target is `O(log log n)` expected worst-case time with near-linear memory. Let me start with the object.
 
 * **[Slide 2: What is the dynamic object?]**
-  The object is a binary `n by n` matrix `M`. The first point on the left is important: the row order and the column order are fixed once and for all. We are not allowed to repair the structure by permuting rows or columns after an update.
+  The object is a binary `n by n` matrix `M`, and the key point on the left is that the row order and the column order are fixed once and for all. We are not allowed to restore structure by permuting rows or columns after an update.
 
-  Look now at the matrix on the right. The red-outlined cell is the interface for `QueryBit(i,j)`: the user names one row and one column, and asks for that bit. The blue-outlined cell, with the small `0 <-> 1` label next to it, is the interface for `Update(i,j)`: one cell is flipped. The global promise, written on the left, is that after every such flip the matrix is still d-twin-ordered. So the challenge is not local access. The challenge is to keep a compact representation online, without rebuilding it from scratch after every flip.
+  Now look at the matrix on the right. The red-outlined cell is the interface for `QueryBit(i,j)`: we point to one row and one column and ask for that bit. The blue-outlined cell, with the little `0 <-> 1` label, is the interface for `Update(i,j)`: we flip one entry.
+
+  So the operations themselves are completely local. The real difficulty is the challenge box on the left: after every flip, the whole matrix is still promised to be `d`-twin-ordered, and we want to keep a compact online representation without rebuilding everything from scratch.
 
 * **[Slide 3: Twin-ordering by contraction sequences]**
-  Let me unpack the promise just enough for the rest of the talk. The table at the top gives the formal definition. A contraction sequence is a sequence of row and column partitions. It starts with singleton row blocks and singleton column blocks. It ends with one row block and one column block. Each step merges two consecutive row blocks or two consecutive column blocks.
+  The formal definition is at the top. For the talk, the right mental picture is simpler: we keep folding the matrix, always respecting the fixed row and column order.
 
-  The picture at the bottom is the intuition. Start with the leftmost matrix: every row and every column is still separate. In the next snapshot, two consecutive rows have been merged. In the third snapshot, two consecutive columns have been merged. In the rightmost snapshot, the partition is much coarser. The pale blue rectangles mark non-constant zones, meaning zones containing both zeroes and ones.
+  Follow the four snapshots at the bottom from left to right. In the first one, every row and every column is still separate. In the second one, two consecutive rows have been merged. In the third one, we also merge two consecutive columns. In the rightmost picture, the blocks are already much larger, so we see a coarser view of the same matrix.
 
-  The width is the maximum number of such non-constant zones seen by any current row block or column block. In this example it stays at most two. In general, the matrix is d-twin-ordered if there exists a contraction sequence where this number never exceeds `d`. This is the structural promise that must survive all updates.
+  The highlighted zones are the only troublesome parts. Those are the non-constant zones: inside such a block interaction you still see both zeroes and ones. Width counts how many troublesome zones a current row block or a current column block can see at once.
+
+  So in this example the matrix stays simple while we fold it: no block ever sees more than two non-constant zones. In general, `d`-twin-ordered means that there exists some sequence of such row and column merges whose width never exceeds `d`. That is the promise we rely on after every update.
 
 * **[Slide 4: The gap: static yes, dynamic no]**
-  This slide is the whole motivation. On the left, in the blue box, we have the static compact representation of Pilipczuk, Sokolowski, and Zych-Pawlewicz. For a fixed d-twin-ordered matrix, they store the matrix in `O_d(n)` bits and answer queries in `O_d(log log n)` time. But the third bullet is the limitation: the matrix is initialized once.
+  This slide sets up the gap. Look first at the left block. The static result of Pilipczuk, Sokolowski, and Zych-Pawlewicz stores a fixed `d`-twin-ordered matrix in `O_d(n)` bits and answers queries in `O_d(log log n)` time. The limitation is the last bullet: the matrix is initialized once.
 
-  On the right, in the red box, is the question of this work. Can we support both `QueryBit` and `Update`, while the matrix remains d-twin-ordered at every moment, and still keep near-linear memory on word RAM? The small arrow at the bottom, from static DS to dynamic DS with a question mark, is exactly the gap. We want the compactness of the static world, but with single-cell flips.
+  Now look at the right block. This is exactly our question. Can we support both `QueryBit` and `Update`, while the matrix remains `d`-twin-ordered at every moment, and while memory stays near-linear on word RAM?
+
+  The arrow at the bottom is the whole point of the paper. We want to cross from the static world to the dynamic one without giving up local query time. And a full rebuild after every flip would be a bad answer, because then the update would stop being local at all.
 
 * **[Slide 5: Main theorem]**
-  Here is the result. Fix `d`, and consider a binary matrix that changes over time, always remaining d-twin-ordered. The theorem gives a dynamic data structure using `O_d(n)` memory. It initializes from a list `K` of disjoint rectangles covering all ones, answers `QueryBit(i,j)` in `O(log log n)` expected worst-case time, and supports `Update(i,j)` in the same expected worst-case time.
+  Here is the result. We fix `d`, we assume the matrix stays `d`-twin-ordered over time, and we build a dynamic data structure with `O_d(n)` memory. It initializes from a slab list `K`, answers `QueryBit(i,j)` in `O(log log n)` expected worst-case time, and supports `Update(i,j)` in the same expected worst-case time.
 
-  The comparison table at the bottom is worth reading as a trade-off. The static representation is bit-compact: `O_d(n)` bits. Our dynamic representation uses `O_d(n)` memory words, so `O_d(n log n)` bits. That is the price of dynamism. But we gain the missing update operation, and both query and update have bounds with no dependence on `d` in the `O(log log n)` term. Only initialization time and memory carry the d-dependence. The rest of the talk explains why this theorem is possible.
+  Now use the comparison table at the bottom to read the trade-off. On the static side, space is bit-compact: `O_d(n)` bits. On the dynamic side, space becomes `O_d(n)` memory words, so `O_d(n log n)` bits. That is the price we pay.
+
+  What do we keep, and what do we gain? We keep the very fast local access time, we gain the missing update operation, and the `O(log log n)` bounds for query and update do not carry any dependence on `d`. The dependence on `d` stays only in initialization and memory. That is what makes the theorem strong.
 
 * **[Slide 6: Slabs: why near-linear space is possible]**
-  The first structural object is a slab. A slab is simply a rectangle of the matrix filled entirely with ones. A slab decomposition is a set of pairwise disjoint slabs covering all ones.
+  The first structural object is very simple: a slab is just a rectangle filled with ones. A slab decomposition is a set of pairwise disjoint slabs covering all ones.
 
-  Look at the small matrix in the lower left. The ones are not stored one by one. They are grouped into the colored rectangles. On the right, the same information is written as a list `K`: each entry is a rectangle such as `M[[4,5],[1,3]]`. At the bottom of that list is the implementation point: each slab is just four coordinates, `(a,b,c,d)`.
+  Look at the colored matrix on the left. The ones are not stored cell by cell. They are grouped into a few rectangles. Now look at the list `K` on the right: it is exactly the same information written as coordinates. Each line names one rectangle, and at the bottom we make the implementation point explicit: each slab is just four numbers.
 
-  The highlighted bound is the reason this is useful. Every d-twin-ordered matrix admits such a decomposition with at most `d(2n-2)+1` slabs. So before doing anything dynamic, we already know that the set of ones has an `O_d(n)` rectangle description. But arbitrary slabs are not yet stable enough for updates. We need a normalized description.
+  The bound in the middle tells us why this matters. Every `d`-twin-ordered matrix has a slab decomposition with at most `d(2n-2)+1` slabs. So the set of ones already admits an `O_d(n)` geometric description. But there is still a problem: a good cover is not yet a canonical cover, and for rebuilding we will need a normalized target.
 
 * **[Slide 7: Canonical slabs: normalize before rebuilding]**
-  The normalization is shown on this slide. On the left side of the slide, an `i`-strip is a maximal vertical run of ones inside column `i`. If the same row interval `[a,b]` continues through consecutive columns, those strips are siblings. One sibling class forms one canonical slab.
+  This slide explains that normalization. Start with the left column. In one fixed column, an `i`-strip is a maximal vertical run of ones. If the same row interval survives through consecutive columns, those strips are siblings. One sibling class becomes one canonical slab.
 
-  Now look at the two matrices on the right. The left panel is a valid cover with two slabs. It covers the ones, but it merges pieces that do not behave the same way across columns. The arrow points to the canonical decomposition. The right panel splits the cover into three slabs, following sibling classes exactly.
+  Now look at the two panels on the right and use the large arrow as the story. The left panel is a valid cover: it does cover all ones, but it merges pieces that do not behave the same way across columns. The right panel is the canonical version. It splits that coarse cover exactly where sibling classes diverge.
 
-  This is the key normalization step before rebuilding. We are allowed to split more, but not too much. The bound on the left says `|R| <= 4 f_d(n+2) + 4n`, hence still `O_d(n)`. The corner argument behind that bound is in the backup. For now, the important point is: canonical slabs are predictable, and still only linearly many.
+  This is what we want before future rebuilds. We do not just want some rectangle description of the current matrix. We want the normalized one forced by the strip structure, because that gives us a predictable base.
+
+  The important point is that canonicalization does not blow up the size. The bound on the left still says `O_d(n)`. The corner argument is in the backup. For the main story, the takeaway is: canonical slabs are structured enough for rebuilding and still only linearly many.
 
 * **[Slide 8: Running example I: where do canonical slabs end?]**
-  Now we turn this into an algorithm. The small `4 by 4` matrix on the left is the running example, with the input slab decomposition colored in the matrix. The table on the right is the first sweep.
+  Now let us turn canonicalization into an actual procedure. On the left is the running `4 by 4` example with the input decomposition `K`. On the right is the first sweep, and it asks only one question: where does a strip stop?
 
-  Read the table row by row. Before round `i`, the adhesive segment set stores `strips_i`, the vertical all-one intervals in the current column. After updating it to `strips_{i+1}`, we record the last column: `B_i` is `strips_i` minus `strips_{i+1}`. These are precisely the strips that end here.
+  Read the table row by row. Before round `i`, the adhesive segment set stores `strips_i`, the vertical all-one intervals in column `i`. After we update that set to `strips_{i+1}`, we record what disappeared. That last column is `B_i`: these strips end here.
 
-  In the first highlighted row, `i=1`, the strips `[2,2]` and `[4,4]` are present before the update, but after the update only `[2,4]` remains. So both one-cell strips appear in the red `B_i` column. In the middle row, `i=2`, nothing ends. In the highlighted row `i=3`, the interval `[2,4]` disappears and is recorded in `B_3`. The bottom-left note explains why the update is local: only intervals touched by closing slabs `C_i` and opening slabs `O_{i+1}` are tested again. Everything else survives without being rechecked.
+  In the first highlighted row, `i=1`, the intervals `[2,2]` and `[4,4]` disappear, so both go into `B_1`. In the middle row, `i=2`, nothing closes. In the highlighted row `i=3`, `[2,4]` disappears, so it goes into `B_3`. And in the last row, the remaining intervals close at column `4`.
+
+  The alert box on the left explains why this sweep is efficient. We do not recompute every interval in every round. We retest only intervals touched by the closing slabs `C_i` and the opening slabs `O_{i+1}`. Everything else is carried over.
 
 * **[Slide 9: Running example II: openings plus closings]**
-  The second half is symmetric. On the left, `A_i` is defined as the strips that appear when we enter column `i`. The top table combines openings `A_i`, closings `B_i`, and the output created in each round.
+  The second sweep is the symmetric half. The left box defines `A_i`: these are the strips that appear when we enter column `i`. So now we have two event streams, openings `A_i` and closings `B_i`, and the top table shows how they are matched.
 
-  The bookkeeping is simple but important. When interval `[a,b]` appears in `A_i`, we store `i` in `slab_start[a]`. When the same interval later appears in `B_i`, we output the canonical slab starting at that stored column and ending at the current column.
+  The rule is very simple. If `[a,b]` appears in `A_i`, we store the current column as `slab_start[a]`. Later, when the same interval `[a,b]` shows up in `B_i`, we output one canonical slab from that start up to the current column.
 
-  Look at the row `i=2`: `[2,4]` opens, so `slab_start[2]` becomes two. Then look at the row `i=3`: `[2,4]` closes, and the gray note under the table spells out the output `(2,4,2,3)`. At `i=4`, the intervals `[1,1]` and `[3,4]` both open and close immediately, so they produce one-column slabs. The lower matrix is the result: the canonical slab decomposition `R`. Slides 8 and 9 together are the `Decompose` story: find where strips open, find where they close, and match the two events.
+  You can see that mechanism directly in the highlighted rows. At `i=2`, the interval `[2,4]` opens, so `slab_start[2]` becomes `2`. At `i=3`, the same interval closes, so we output `(2,4,2,3)`. At `i=4`, the intervals `[1,1]` and `[3,4]` both open and close immediately, so they become one-column slabs.
+
+  The lower matrix is the result of that bookkeeping: the canonical slab decomposition `R`. So slides 8 and 9 together explain `Decompose`: detect where strips open, detect where they close, and match the two events. Once we have `R`, we can move to the dynamic layer.
 
 * **[Slide 10: Amortized structure: P for slabs, Q for recent flips]**
-  We can now make the representation dynamic. The left picture is the base: the canonical decomposition from the last rebuild, stored in `P` through static point location. It is structured, but it may be stale. The right diagram is the override layer `Q`: explicit cell values for flips since the last rebuild.
+  Now the dynamic picture starts. On the left, the colored matrix is the last rebuilt canonical base stored in the point-location structure `P`. On the right, the large top box is `Q`: explicit overrides for flips since the last rebuild.
 
-  Follow the query flow in the right diagram. `QueryBit(i,j)` first goes to `Q`. If there is a hit, we return the value stored there, because `Q` overrides the base. On a miss, we ask `P` whether the cell lies in one of the canonical base slabs.
+  Read the query path on the right from top to bottom. `QueryBit(i,j)` first checks `Q`. If there is a hit, we trust `Q`, because recent flips override the old base. On a miss, we ask `P`, which still knows the value coming from the last canonical slab family.
 
-  The update flow is parallel. `Update(i,j)` first checks whether the cell is already in `Q`. If yes, it negates the stored value. If not, it queries `P` to recover the old base value, flips it, and stores the new explicit value in `Q`.
+  The update path is parallel. `Update(i,j)` again starts with `Q`. If the cell is already there, we just negate the stored value. If it is not there, we query `P` for the old bit, flip it, and store the new explicit value in `Q`.
 
-  The invariant along the bottom says exactly this. If a cell is in `Q`, `Q` tells the truth. If it is not in `Q`, the base `P` tells the truth. The threshold box at the bottom of the diagram is the only time we pay globally: once `|Q|` reaches `8 f_d(n+2)`, we rebuild `P` and empty `Q`.
+  The invariant written along the bottom is the whole contract. If a cell is in `Q`, then `Q` tells the truth. Otherwise `P` tells the truth. And the red threshold box says when buffering stops: once `|Q|` reaches `8 f_d(n+2)`, we rebuild `P` and clear `Q`.
 
 * **[Slide 11: Rebuilding P: buffer -> fresh base]**
-  This slide shows what happens at that threshold. Follow the pipeline from left to right. The first box contains the old base `P` and the buffer `Q`. The old colored rectangles are the slabs from the last canonical base. The small red and green cells are buffered values.
+  This is the rebuild itself, and here it helps to follow the pipeline strictly from left to right.
 
-  The second box builds a temporary slab decomposition `K`. Zero-updates are the dangerous ones: if a buffered zero lies inside an old all-one slab, that old slab must be split. One-updates are easier. If a buffered one was not already covered, it becomes a singleton slab. This is why the middle box separates red zero-updates from green uncovered one-updates.
+  In the first box we have the old base and the current buffer. The rectangles are the old canonical slabs from `P`. The small red `0` is a buffered zero-update, and the small green `1` is a buffered one-update.
 
-  The formula inside that box is the key estimate: `|K| <= |P| + 2|Q|`. In words, the temporary decomposition is only the old size plus a constant amount per buffered update. We do not lose linearity during rebuilding.
+  Move to the middle box, where we build the temporary decomposition `K`. The red zero-updates are the ones that force surgery: if such an update lies inside an old all-one slab, that slab has to be split. The green one-updates are different. Only the uncovered ones matter, and each of those is added as a singleton slab.
 
-  The third box runs `Decompose(n,K)`. This is exactly the canonicalization procedure from the running example. Finally, the rightmost box becomes the new base: `P` is replaced by the new canonical family `R`, whose size is again `O_d(n)`. So rebuilding is expensive once, but it restores the same kind of base that queries already know how to use.
+  That is why the estimate in the middle is the right one: `|K| <= |P| + 2|Q|`. The temporary cover is still small. Each buffered update creates only constant extra geometry.
+
+  Then the next box is the familiar procedure from slides 8 and 9. We run `Decompose(n,K)`, which canonicalizes this temporary cover. In the rightmost box we get the new base: `P` is replaced by the new canonical family `R`.
+
+  So the point of rebuilding is not merely to obtain some correct current cover. The point is to return to the canonical format that the query layer already understands. Expensive once, yes, but after the rebuild we are back in the same clean representation as before.
 
 * **[Slide 12: Worst-case updates: epochs and snapshot copies]**
-  The previous structure is amortized, because a rebuild happens all at once. This slide explains how it becomes worst-case. Let `L = 8 f_d(n+2)`, the same threshold as before. The diagram has three columns: the background rebuild epoch `E_{2i-2}`, the catch-up epoch `E_{2i-1}`, and then takeover at `E_{2i}`.
+  Up to now, the structure is only amortized, because a rebuild is still expensive when it happens. This slide explains how that cost is spread out and turned into worst-case `O(log log n)`.
 
-  In the first column, the top blue box is the active copy. It keeps answering operations. Below it is a frozen copy, read-only. At the bottom, the new structure `A_i` is initialized in the background from that frozen copy. Since the rebuild costs `O(L log log n)`, spreading it across `L` updates costs only `O(log log n)` extra per update.
+  Read the diagram column by column. In the left column, during epoch `E_{2i-2}`, the top blue copy is active and keeps answering the real online operations. The gray copy below it is frozen and read-only. The red box at the bottom initializes the next structure `A_i` from that frozen snapshot.
 
-  In the middle column, the active copy still answers the real stream. The red box below is the new copy catching up: it processes two stored updates for each incoming update above. It starts one epoch behind, and after `L` steps this two-for-one schedule eliminates the lag.
+  That read-only snapshot is essential. Background initialization needs a stable old state to read from. If we initialized from the live structure, the rebuild target would keep moving under our feet.
 
-  In the right column, the red arrow has delivered us to takeover. The new copy becomes active, and a new frozen copy is kept for the next initialization. The frozen snapshot is the technical fix: initialization needs a stable old state, while the live structure continues to change.
+  Now go to the middle column, epoch `E_{2i-1}`. The old blue copy is still active and still answers the stream. Meanwhile the red copy `A_i` catches up by processing two stored updates for every new incoming one. One update arrives, two old ones are absorbed, so the lag shrinks instead of growing.
+
+  In the right column, epoch `E_{2i}`, the handover is complete. The red structure becomes the new active blue copy, and we also keep a new frozen copy for the next initialization phase. So the delay does not accumulate across epochs: each epoch ends with a clean takeover and a fresh read-only snapshot.
+
+  That is the final fix. Canonical rebuilding gives us the right structure, and frozen snapshots let that rebuilding happen in the background without blocking online updates.
 
 * **[Slide 13: Take-away]**
-  Let me close by reading the pipeline, not the theorem. The first box is d-twin-ordering. That gives an `O_d(n)` slab description. The next box canonicalizes it into `R`, a normalized target for rebuilding. Then `P + Q` separates the old structure from recent flips. Finally, epochs and frozen copies remove amortization.
+  Let me close by reading the pipeline once from left to right. `d`-twin-ordering gives us an `O_d(n)` slab description. Canonicalization turns that description into a stable target `R`. Then `P` plus `Q` separates old structure from recent flips. And epochs with frozen copies turn the amortized rebuild into a worst-case one.
 
-  So the structural core is canonicalization, and the dynamic core is buffered updates plus scheduled rebuilding. Together they give a genuinely dynamic data structure for d-twin-ordered matrices: `O_d(n)` memory and `O(log log n)` expected worst-case time for both queries and updates.
+  So the bottom line is simple. A static compact representation becomes dynamic through four ingredients: canonicalization, buffering, rebuilding, and epoch-based de-amortization. That is how we keep `O(log log n)` local time while allowing single-cell updates.
 
-  The main message is that the static compact representation can be made dynamic without losing the local time bound. The price is word-RAM near-linear memory; the gain is online updates with worst-case guarantees. Thank you.
+  If you remember one sentence from this talk, let it be this: the hard part is not storing the matrix once, but returning to the right canonical picture after it changes. And that can still be done online with near-linear memory. I will be happy to take questions.
 
-* **[Slide 14: OPTIONAL BACKUP / Q&A -- adhesive segment set]**
-  If someone asks how the sweep on slides 8 and 9 is implemented, this is the supporting data structure. It maintains disjoint, non-adjacent segments on the line `1,...,n`. The operations in the list are exactly what the sweep needs: find containing or adjacent intervals, test disjointness, merge, and split.
+--- Main talk ends here. Slides 14--16 are backup / Q&A only and should not be rehearsed in the main 16--17 minute timing. ---
 
-  In the picture, the axis shows two current segments, `[2,4]` and `[7,9]`. `Merge([5,6])` bridges the gap between them, while `Split([3,3])` removes a subinterval from an existing segment. All operations take `O(log log n)` worst-case time with `O(n)` memory.
+* **[Slide 14: BACKUP / Q&A only -- adhesive segment set]**
+  If the question is how the sweep on slides 8 and 9 is implemented, this is the supporting data structure. It maintains disjoint, non-adjacent intervals on the line `1,...,n`, and the operations listed here are exactly the ones the sweep needs: contain, test adjacency, merge, and split.
 
-* **[Slide 15: OPTIONAL BACKUP / Q&A -- why are there only O_d(n) canonical slabs?]**
-  If the question is about the size bound for canonical slabs, the answer is the corner charging argument. A corner is a `2 by 2` zone where both rows differ and both columns differ. Lemma 1 bounds the number of corners by `f_d(n+2)`.
+  In the picture, the two current segments are `[2,4]` and `[7,9]`. The blue arrow shows how `Merge([5,6])` bridges the gap, and the red arrow shows how `Split([3,3])` removes a subinterval. All of this is still `O(log log n)` worst-case with `O(n)` memory.
 
-  The picture shows the local witness: an internal canonical slab must meet a corner near the place where it cannot be extended. Boundary slabs are handled separately and contribute only `4n`. This gives `|R| <= 4 f_d(n+2) + 4n`.
+* **[Slide 15: BACKUP / Q&A only -- why are there only O_d(n) canonical slabs?]**
+  If someone asks where the linear bound comes from, the answer is the corner argument on this slide. A corner is the highlighted `2 by 2` witness where both rows differ and both columns differ, and Lemma 1 bounds how many such witnesses a `d`-twin-ordered matrix can have.
 
-* **[Slide 16: OPTIONAL BACKUP / Q&A -- rebuilding K from P and Q in detail]**
-  This is the expanded version of slide 11. Start from old `P`, sort `Q`, assign zero-updates to the slabs of `P` that contain them, split affected slabs row by row, add uncovered `1 x 1` slabs for one-updates, then run `Decompose`.
+  Internal canonical slabs are charged to nearby corners, while boundary cases contribute only the extra `4n`. That is the reason the canonical family still satisfies `|R| <= 4 f_d(n+2) + 4n`.
 
-  The small sketch at the bottom is one affected slab. The row `i` is split at the sorted update columns `k_1` and `k_2`; the parts above and below, `P[<i]` and `P[>i]`, stay as larger slabs. The point of the procedure is the same estimate as before: `|K| <= |P| + 2|Q|`, amortized over the threshold `8 f_d(n+2)`.
+* **[Slide 16: BACKUP / Q&A only -- rebuilding K from P and Q in detail]**
+  This is the expanded version of slide 11. The top line is the algorithmic checklist: sort `Q`, assign zero-updates to containing slabs of `P`, split the affected slabs row by row, add uncovered `1 x 1` slabs for one-updates, and then run `Decompose`.
+
+  The small picture at the bottom shows one affected slab. The marked row `i` is split at the update columns `k_1` and `k_2`, while the parts above and below stay larger slabs. The reason to keep this backup slide is just the same estimate as before: after all of that local splitting, we still have `|K| <= |P| + 2|Q|`.
