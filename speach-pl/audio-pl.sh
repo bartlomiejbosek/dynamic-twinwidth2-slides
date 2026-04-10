@@ -37,6 +37,56 @@ CONFIG_FILE="$VOICE_DIR/pl_PL-gosia-medium.onnx.json"
 MODEL_URL="https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/pl/pl_PL/gosia/medium/pl_PL-gosia-medium.onnx"
 CONFIG_URL="https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/pl/pl_PL/gosia/medium/pl_PL-gosia-medium.onnx.json"
 
+sanitize_text() {
+    local input_file="$1"
+    local output_file="$2"
+
+    awk '
+        BEGIN { blank = 0 }
+        {
+            line = $0
+            gsub(/\r/, "", line)
+
+            if (line ~ /^\* \*\*\[.*\]\*\*$/) {
+                sub(/^\* \*\*\[/, "", line)
+                sub(/\]\*\*$/, "", line)
+            } else {
+                sub(/^\* /, "", line)
+                gsub(/\*\*/, "", line)
+            }
+
+            gsub(/`/, "", line)
+            gsub(/\*/, "", line)
+            gsub(/\[/, " ", line)
+            gsub(/\]/, " ", line)
+            gsub(/\(/, " ", line)
+            gsub(/\)/, " ", line)
+            gsub(/\{/, " ", line)
+            gsub(/\}/, " ", line)
+            gsub(/\|/, " ", line)
+            gsub(/</, " ", line)
+            gsub(/>/, " ", line)
+            gsub(/_/, " ", line)
+            gsub(/\\/, " ", line)
+            gsub(/---+/, " ", line)
+            gsub(/[[:space:]]+/, " ", line)
+
+            sub(/^ /, "", line)
+            sub(/ $/, "", line)
+
+            if (line == "") {
+                blank++
+                if (blank <= 1) {
+                    print ""
+                }
+            } else {
+                blank = 0
+                print line
+            }
+        }
+    ' "$input_file" > "$output_file"
+}
+
 # 3. Tworzenie katalogu na modele głosowe
 if [ ! -d "$VOICE_DIR" ]; then
     echo -e "${YELLOW}Tworzę katalog na modele głosowe: $VOICE_DIR${NC}"
@@ -76,11 +126,19 @@ SKIP_COUNT=0
 
 # 7. Generowanie audio dla każdego pliku TXT
 for TEXT_FILE in "${TEXT_FILES[@]}"; do
+    if [[ "$TEXT_FILE" == *.clean.txt ]]; then
+        continue
+    fi
+
     BASENAME="${TEXT_FILE%.txt}"
+    CLEAN_TEXT_FILE="${BASENAME}.clean.txt"
     WAV_FILE="${BASENAME}.wav"
     MP3_FILE="${BASENAME}.mp3"
 
     echo -e "\n${YELLOW}Przetwarzanie pliku: $TEXT_FILE${NC}"
+
+    echo -e "${YELLOW}0/2: Czyszczenie tekstu do wersji dla TTS...${NC}"
+    sanitize_text "$TEXT_FILE" "$CLEAN_TEXT_FILE"
 
     if [ -f "$MP3_FILE" ]; then
         echo -e "${YELLOW}Pomijam, plik MP3 już istnieje: $MP3_FILE${NC}"
@@ -95,7 +153,13 @@ for TEXT_FILE in "${TEXT_FILES[@]}"; do
     fi
 
     echo -e "${YELLOW}1/2: Generowanie WAV...${NC}"
-    if ! piper-tts --model "$MODEL_FILE" --output_file "$WAV_FILE" < "$TEXT_FILE"; then
+    if [ ! -s "$CLEAN_TEXT_FILE" ]; then
+        echo -e "${RED}Błąd: Oczyszczony plik jest pusty: $CLEAN_TEXT_FILE${NC}"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+        continue
+    fi
+
+    if ! piper-tts --model "$MODEL_FILE" --output_file "$WAV_FILE" < "$CLEAN_TEXT_FILE"; then
         echo -e "${RED}Błąd generowania WAV dla: $TEXT_FILE${NC}"
         rm -f "$WAV_FILE"
         FAIL_COUNT=$((FAIL_COUNT + 1))
