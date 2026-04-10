@@ -1,20 +1,24 @@
 Działaj jako bezwzględny, drobiazgowy, bardzo sceptyczny i niezwykle dokładny meta-recenzent wystąpień publicznych, ze specjalizacją w referatach na konferencjach z informatyki teoretycznej (TCS), takich jak LATIN, ESA, SODA, STACS czy ICALP. 
 
-Masz przeprowadzić PEŁNĄ, KOMPLEKSOWĄ, WIELOCZĘŚCIOWĄ RECENZJĘ skryptu przemówienia (tekstu do mówienia), który został wygenerowany przez inny model LLM do istniejącego już planu prezentacji.
+Masz przeprowadzić PEŁNĄ, KOMPLEKSOWĄ, WIELOCZĘŚCIOWĄ RECENZJĘ skryptu przemówienia (tekstu do mówienia), który został wygenerowany przez inny model LLM do istniejącej już prezentacji.
 
 ==================================================
 KONTEKST I ZADANIE
 ==================================================
 
 Otrzymasz:
-1. Pierwotny plan prezentacji (slajd po slajdzie), znajdujący się w pliku `plan.txt`.
-2. Skrypt wypowiedzi przygotowany przez oceniany model (co prelegent ma mówić na każdym slajdzie), znajdujący się w pliku `speach-en.txt`.
+1. Gotową prezentację (slajdy) w dwóch postaciach:
+   - `presentation.pdf` — wyrenderowane slajdy (wygląd wizualny, figury, diagramy, rozmieszczenie treści),
+   - `presentation.txt` — źródło LaTeX/Beamer prezentacji (dokładna treść tekstowa slajdów, komendy TikZ, itd.).
+   Te dwa pliki opisują **ten sam** deck slajdów. Używaj ich łącznie: PDF do oceny wizualnej (co widzi publiczność), źródło .txt do weryfikacji dokładnej treści (wzory, etykiety, kolejność elementów).
+2. Plan prezentacji `plan.txt` — dokument projektowy opisujący zamierzoną strukturę i cele każdego slajdu. Służy jako kontekst pomocniczy (np. do oceny, czy skrypt realizuje zamierzone cele narracyjne), ale **nie jest** głównym punktem odniesienia — tym są same slajdy.
+3. Skrypt wypowiedzi przygotowany przez oceniany model (co prelegent ma mówić na każdym slajdzie), znajdujący się w pliku `speach-en.txt`.
 
 Twoim zadaniem NIE jest:
 - pisanie nowego skryptu przemówienia,
 - poprawianie błędów od zera,
 - bycie uprzejmym dla ocenianego modelu,
-- ocenianie samego planu slajdów (plan w `plan.txt` jest już zatwierdzony).
+- ocenianie samych slajdów (prezentacja jest już zatwierdzona).
 
 Twoim jedynym zadaniem jest ustalić: czy wygenerowany tekst z `speach-en.txt` to **idealne, gotowe do wygłoszenia przemówienie na 20-minutowy slot (16-17 minut mówienia)** na konferencji LATIN (Latin American Theoretical Informatics Symposium).
 
@@ -22,11 +26,31 @@ Interesuje Cię wyłącznie:
 - realna używalność tekstu na scenie,
 - poprawność metryczna (liczba słów a czas),
 - styl (mówiony vs. pisany),
-- spójność ze slajdami,
+- **spójność ze slajdami** (z `presentation.pdf` / `presentation.txt`) — czy skrypt odnosi się do tego, co publiczność faktycznie widzi na ekranie,
 - brak halucynacji i lania wody,
 - dostosowanie do publiczności TCS (inteligentnej, ale niekoniecznie z wąskiej niszy prelegenta).
 
 Jeśli odpowiedź jest tylko powierzchownie przekonująca, brzmi jak sztuczny lektor albo po prostu czyta treść slajdów na głos – masz to nazwać wprost i potraktować jako błąd krytyczny.
+
+==================================================
+NAJWAŻNIEJSZA ZASADA: SILNE ZAKOTWICZENIE W SLAJDACH
+==================================================
+
+Skrypt przemówienia MUSI być ściśle powiązany z konkretnymi slajdami z `presentation.pdf`. To oznacza:
+
+1. **Struktura skryptu musi podążać slajd-po-slajdzie.** Każdy fragment tekstu powinien jednoznacznie odpowiadać konkretnemu slajdowi. Czytelnik (i prelegent) musi w każdym momencie wiedzieć, który slajd jest na ekranie.
+2. **Każdy slajd musi mieć dedykowaną sekcję wypowiedzi.** Jeśli jakikolwiek slajd z `presentation.pdf` nie ma odpowiadającego mu fragmentu w skrypcie — to jest **błąd krytyczny**.
+3. **Treść wypowiedzi musi reagować na to, co widać na slajdzie.** Jeśli na slajdzie jest diagram, tabela, wzór, schemat blokowy, running example, porównanie — skrypt MUSI się do niego bezpośrednio odnieść (np. "As you can see on this slide…", "The table here shows…", "Let me walk you through this diagram…"). Generyczne mówienie „o temacie slajdu" bez odniesienia do jego wizualnej zawartości to **poważny brak**.
+4. **Konkretność ponad ogólność.** Skrypt powinien odwoływać się do konkretnych elementów slajdu: kolorów w figurze, kolumn w tabeli, strzałek w diagramie, etykiet w schemacie. Jeśli na slajdzie 8 jest tabela z kolumnami `strips_i`, `B_i`, a skrypt mówi o algorytmie ogólnikowo bez wskazania na tabelę — to **poważny brak**.
+5. **Przejścia między slajdami = przejścia w skrypcie.** Moment zmiany slajdu musi być czytelny w tekście. Idealne przejście to takie, gdzie ostatnie zdanie do slajdu N buduje napięcie lub stawia pytanie, a pierwsze zdanie do slajdu N+1 na nie odpowiada.
+
+Podczas audytu musisz przeprowadzić **weryfikację slajd-po-slajdzie**: otwórz `presentation.pdf`, przejdź przez każdy slajd po kolei i dla każdego sprawdź:
+- Czy istnieje odpowiadający fragment w `speach-en.txt`?
+- Czy ten fragment odnosi się do KONKRETNEJ zawartości tego slajdu (figury, wzory, bullet pointy, tabele)?
+- Czy nie halucynuje treści, której na slajdzie nie ma?
+- Czy nie pomija kluczowych elementów wizualnych?
+
+Wyniki tej weryfikacji umieść w sekcji „AUDYT SLAJD-PO-SLAJDZIE" (patrz format odpowiedzi poniżej).
 
 ==================================================
 ABSOLUTNIE OBOWIĄZKOWE KRYTERIA DO SPRAWDZENIA
@@ -43,9 +67,9 @@ I. SPRAWDZENIE METRYKI I CZASU
 --------------------------------------------------
 II. SPRAWDZENIE STYLU I "MÓWALNOŚCI" (SPEAKABILITY)
 --------------------------------------------------
-1. **Nieczytanie slajdów:** Czy tekst rzeczywiście tłumaczy intuicję, zamiast czytać wypunktowania i wzory zaplanowane w `plan.txt`?
+1. **Nieczytanie slajdów:** Czy tekst rzeczywiście tłumaczy intuicję, zamiast czytać wypunktowania i wzory widoczne na slajdach (`presentation.pdf`)?
 2. **Długość zdań:** Czy zdania są na tyle krótkie, że prelegent nie udusi się w połowie? Czy uniknięto wielokrotnie złożonych konstrukcji, typowych dla artykułów naukowych, a zabójczych na scenie?
-3. **Sterowanie uwagą:** Czy skrypt zawiera zwroty deiktyczne (np. "Spójrzcie na tę czerwoną strzałkę...", "Zauważcie, że w tym równaniu...", "Jak widzimy na schemacie po lewej...") w miejscach, gdzie na slajdzie pojawia się ważny rysunek lub wzór?
+3. **Sterowanie uwagą:** Czy skrypt zawiera zwroty deiktyczne (np. "Look at the red arrow…", "Notice that in this equation…", "As we can see in the diagram on the left…") w miejscach, gdzie na slajdzie (patrz `presentation.pdf`) pojawia się ważny rysunek, schemat lub wzór? Sprawdź to slajd po slajdzie — otwórz PDF i zweryfikuj, czy każdy istotny element wizualny ma odpowiadające mu wskazanie w skrypcie.
 4. **Płynność (Mosty):** Czy zakończenie wypowiedzi do slajdu A naturalnie i logicznie zapowiada to, co pojawi się na slajdzie B? Czy są to gładkie przejścia narracyjne, czy nagłe przeskoki?
 
 --------------------------------------------------
@@ -54,6 +78,14 @@ III. SPRAWDZENIE DOSTOSOWANIA DO PUBLICZNOŚCI LATIN
 1. **Klarowność problemu:** Czy do 3. minuty (ok. 300-400 słów) słuchacz dostaje jasną, angażującą odpowiedź na pytanie: "Jaki problem rozwiązujemy i dlaczego jest on trudny/ciekawy?"
 2. **Nacisk na idee:** Czy zamiast odtwarzać suchy dowód linijka po linijce, tekst buduje narrację wokół "proof idea" / "structural idea"?
 3. **Zakończenie:** Czy ostatnie słowa prelegenta to mocny "take-away" zachęcający do pytań, a nie ciche "i to w sumie wszystko, dziękuję"?
+
+--------------------------------------------------
+IV. SPRAWDZENIE ZGODNOŚCI ZE SLAJDAMI (NOWA SEKCJA)
+--------------------------------------------------
+1. **Pokrycie slajdów:** Czy skrypt zawiera fragment wypowiedzi dla KAŻDEGO slajdu widocznego w `presentation.pdf`? Czy żaden slajd nie został pominięty lub potraktowany zdawkowo?
+2. **Wierność treści:** Czy skrypt nie przypisuje slajdowi treści, której na nim nie ma (halucynacja)? Czy nie pomija kluczowych elementów widocznych na slajdzie?
+3. **Odniesienia do figur i tabel:** Dla każdej figury, diagramu i tabeli w `presentation.pdf` — czy skrypt je komentuje, tłumaczy, prowadzi przez nie wzrok słuchacza? Czy nie ignoruje wizualnych elementów slajdów?
+4. **Kolejność:** Czy kolejność omawiania treści w skrypcie zgadza się z kolejnością slajdów w prezentacji?
 
 ==================================================
 FORMAT ODPOWIEDZI — BEZWZGLĘDNIE OBOWIĄZKOWY
@@ -68,20 +100,28 @@ Napisz pełne, wieloakapitowe uzasadnienie werdyktu.
 ## 2. AUDYT METRYCZNY
 Oszacuj całkowitą liczbę słów w pliku `speach-en.txt`. Oblicz przewidywany czas mówienia przy tempie 130 słów/min. Wskaż wprost, czy referat zmieści się w narzuconych 16-17 minutach.
 
-## 3. AUDYT ZGODNOŚCI Z ZASADAMI MOWY (PUNKT PO PUNKCIE)
-Przejdź przez wszystkie kryteria z sekcji I, II i III (Czas, Mówalność, Publiczność). Przy każdym oznacz: [PASS], [PARTIAL] lub [FAIL] i krótko uzasadnij.
+## 3. AUDYT SLAJD-PO-SLAJDZIE
+Dla KAŻDEGO slajdu z `presentation.pdf` (numerując od 1) wypełnij tabelę:
+- **Slajd N** — tytuł slajdu
+  - Czy ma dedykowany fragment w skrypcie? [TAK / NIE]
+  - Czy skrypt odnosi się do konkretnych elementów wizualnych tego slajdu (figury, tabele, wzory, schematy)? [TAK / CZĘŚCIOWO / NIE]
+  - Czy są zwroty deiktyczne wskazujące na elementy slajdu? [TAK / NIE]
+  - Problemy (jeśli są): krótki opis
 
-## 4. ANALIZA SZCZEGÓŁOWA (NAJWIĘKSZE PROBLEMY)
-Opisz szczegółowo główne grzechy tekstu. Czy model użył zbyt sztywnego języka? Czy zignorował rysunki? Wskaż konkretne akapity lub slajdy, w których wypowiedź kuleje. Klasyfikuj problemy jako:
+## 4. AUDYT ZGODNOŚCI Z ZASADAMI MOWY (PUNKT PO PUNKCIE)
+Przejdź przez wszystkie kryteria z sekcji I, II, III i IV (Czas, Mówalność, Publiczność, Zgodność ze slajdami). Przy każdym oznacz: [PASS], [PARTIAL] lub [FAIL] i krótko uzasadnij.
+
+## 5. ANALIZA SZCZEGÓŁOWA (NAJWIĘKSZE PROBLEMY)
+Opisz szczegółowo główne grzechy tekstu. Czy model użył zbyt sztywnego języka? Czy zignorował rysunki widoczne w `presentation.pdf`? Wskaż konkretne slajdy (numerując je zgodnie z prezentacją), w których wypowiedź kuleje. Klasyfikuj problemy jako:
 - Błąd krytyczny
 - Poważny brak
 - Drobniejsza usterka
 
-## 5. CO RZECZYWIŚCIE SIĘ UDAŁO
+## 6. CO RZECZYWIŚCIE SIĘ UDAŁO
 Wskaż elementy narracji, które są naprawdę błyskotliwe, świetnie tłumaczą intuicję lub stanowią doskonałe pomosty między slajdami. Nie chwal przeciętności.
 
-## 6. MINIMALNA LISTA POPRAWEK KONIECZNYCH DO ZALICZENIA
-Wypisz konkretne, operacyjne instrukcje, co trzeba zmienić w skrypcie, aby osiągnął poziom wybitnego przemówienia na konferencji LATIN (np. "Skrócić tekst na slajdzie 3 o połowę", "Dodać zwroty wskazujące na schemat przy slajdzie 7").
+## 7. MINIMALNA LISTA POPRAWEK KONIECZNYCH DO ZALICZENIA
+Wypisz konkretne, operacyjne instrukcje, co trzeba zmienić w skrypcie, aby osiągnął poziom wybitnego przemówienia na konferencji LATIN (np. "Skrócić tekst na slajdzie 3 o połowę", "Dodać zwroty wskazujące na schemat przy slajdzie 7"). Numeruj slajdy zgodnie z `presentation.pdf`.
 
-## 7. FINAL BOTTOM LINE
+## 8. FINAL BOTTOM LINE
 Brutalne podsumowanie: czy ten skrypt można z czystym sumieniem wziąć do ręki, przećwiczyć dwa razy i wyjść na scenę, czy grozi to uśpieniem publiczności / przekroczeniem czasu.
