@@ -14,11 +14,11 @@ KONTEKST
 
 Otrzymujesz:
 
-1. Gotowe slajdy w pliku `presentation.tex` (kod Beamer) — to jest obiekt Twojej recenzji.
+1. Gotowe slajdy w pliku `presentation.txt` (kod Beamer) — to jest obiekt Twojej recenzji.
 2. Wyrenderowaną wersję slajdów w pliku `presentation.pdf` — użyj do oceny wizualnej i czytelności.
 3. Pliki źródłowe artykułu naukowego, na którym slajdy miały być oparte:
-   - `main-all.tex` — pełny kod LaTeX artykułu,
-   - `main.pdf` — wyrenderowany artykuł.
+   - `paper.txt` — pełny kod LaTeX artykułu,
+   - `paper.pdf` — wyrenderowany artykuł.
 
 Slajdy zostały przygotowane na konferencję **LATIN 2026 (Latin American Symposium on Theoretical Informatics)**.
 Slot referatowy trwa **20 minut łącznie** (w tym 1–2 pytania i przejście między prezentacjami).
@@ -37,7 +37,7 @@ Nie interesuje Cię dobre brzmienie kodu LaTeX.
 Nie interesuje Cię to, czy slajdy są długie.
 Nie interesuje Cię uprzejmość wobec ocenianego modelu.
 Interesuje Cię wyłącznie:
-- zgodność ze źródłami (`main-all.tex` i `main.pdf`),
+- zgodność ze źródłami (`paper.txt` i `paper.pdf`),
 - poprawność matematyczna,
 - poprawność terminologiczna,
 - jakość konferencyjna,
@@ -59,18 +59,18 @@ Masz analizować je wszystkie osobno i szczegółowo.
 I. ZGODNOŚĆ Z MATERIAŁEM ŹRÓDŁOWYM
 --------------------------------------------------
 
-Sprawdź, czy każdy slajd jest oparty na rzeczywistej treści z `main-all.tex` i `main.pdf`.
+Sprawdź, czy każdy slajd jest oparty na rzeczywistej treści z `paper.txt` i `paper.pdf`.
 
 Musisz sprawdzić osobno:
 
 ### 1. Poprawność matematyczna
-- Czy twierdzenia, lematy, definicje na slajdach wiernie oddają treść z `main-all.tex`.
+- Czy twierdzenia, lematy, definicje na slajdach wiernie oddają treść z `paper.txt`.
 - Czy nie zmieniono sensu matematycznego (nawet jeśli uproszczono ekspozycję).
 - Czy wzory, notacja, symbole są zgodne z artykułem.
 - Czy nie brakuje istotnych założeń lub warunków w prezentowanych twierdzeniach.
 
 ### 2. Poprawność terminologiczna
-- Czy użyta terminologia jest zgodna z `main-all.tex` (np. „d-twin-ordered", „contraction sequence", „slab", „canonical slab decomposition", „zone", „corner", „strip", „sibling", „adhesive segment set" itp.).
+- Czy użyta terminologia jest zgodna z `paper.txt` (np. „d-twin-ordered", „contraction sequence", „slab", „canonical slab decomposition", „zone", „corner", „strip", „sibling", „adhesive segment set" itp.).
 - Czy nie wprowadzono terminów, których nie ma w artykule.
 - Czy nie zmieniono nazw procedur, operacji, obiektów.
 
@@ -83,7 +83,7 @@ Musisz rozróżniać:
 - treści wyglądające na wygenerowane z ogólnego szablonu TCS zamiast z rzeczywistej analizy artykułu.
 
 ### 4. Figury i przykłady
-- Czy slajdy korzystają z figur, przykładów i schematów obecnych w `main.pdf` (Figure 1, 2, 3, 4, 5, 6).
+- Czy slajdy korzystają z figur, przykładów i schematów obecnych w `paper.pdf` (Figure 1, 2, 3, 4, 5, 6).
 - Czy jeśli slajdy zawierają nowe rysunki, ich treść wynika bezpośrednio z materiału w artykule.
 - Czy running example (jeśli jest) odpowiada przykładom z artykułu.
 
@@ -130,7 +130,7 @@ Musisz wykrywać przypadki, w których slajdy:
 IV. JAKOŚĆ SLAJDÓW — SLAJD PO SLAJDZIE
 --------------------------------------------------
 
-Dla każdego slajdu w `presentation.tex` musisz ocenić:
+Dla każdego slajdu w `presentation.txt` musisz ocenić:
 
 ### a) Tytuł
 - Czy jest krótki, konkretny, konferencyjny, nieogólnikowy?
@@ -168,7 +168,7 @@ Sprawdź każdy z poniższych punktów osobno:
 8. Prezentacja nie jest zbudowana jak wykład 50-minutowy.
 9. Ostatni slajd jest dobry jako slajd wiszący podczas pytań.
 10. Backup slides (jeśli są) są sensowne i konkretne, a nie symboliczne.
-11. Slajdy są zgodne z `main-all.tex` i `main.pdf` zarówno na poziomie treści, jak i terminologii.
+11. Slajdy są zgodne z `paper.txt` i `paper.pdf` zarówno na poziomie treści, jak i terminologii.
 12. Jeśli jakiś slajd opiera się szczególnie mocno na jednej figurze, definicji lub fragmencie argumentu z artykułu, jest to widoczne w jego konstrukcji.
 
 --------------------------------------------------
@@ -177,7 +177,7 @@ VI. RZECZY ZAKAZANE
 
 Sprawdź, czy slajdy NIE zawierają:
 - treści halucynowanych (twierdzeń, definicji, przykładów, rysunków bez oparcia w artykule),
-- zmienionej terminologii względem `main-all.tex`,
+- zmienionej terminologii względem `paper.txt`,
 - przeładowanych slajdów z wieloma definicjami naraz,
 - pełnych dowodów technicznych zamiast proof idea,
 - slajdów zakładających, że publiczność zna szczegóły niszy twin-width,
@@ -190,7 +190,7 @@ Sprawdź, czy slajdy NIE zawierają:
 VII. SPRAWDZENIE KODU BEAMER
 --------------------------------------------------
 
-Sprawdź, czy kod `presentation.tex`:
+Sprawdź, czy kod `presentation.txt`:
 - kompiluje się poprawnie (lub przynajmniej nie zawiera oczywistych błędów LaTeX),
 - używa sensownych overlays (nie zbyt wielu, nie łamiących PDF),
 - nie zawiera artefaktów generacji (np. komentarzy typu „TODO", lorem ipsum, pustych slajdów),
@@ -255,7 +255,7 @@ Nie wolno Ci pominąć żadnego wymagania.
 
 ## 4. ANALIZA SLAJD PO SLAJDZIE
 
-Dla każdego slajdu w `presentation.tex` podaj:
+Dla każdego slajdu w `presentation.txt` podaj:
 - numer i tytuł slajdu,
 - ocenę treści (poprawność, klarowność, gęstość),
 - ocenę zgodności z artykułem,
@@ -285,7 +285,7 @@ Każdy pozytywny punkt musi być konkretnie uzasadniony.
 
 ## 9. MIEJSCA WYMAGAJĄCE RĘCZNEGO SPRAWDZENIA
 
-Wskaż wszystko, czego nie da się w 100% potwierdzić bez dodatkowej weryfikacji z `main-all.tex` i `main.pdf`.
+Wskaż wszystko, czego nie da się w 100% potwierdzić bez dodatkowej weryfikacji z `paper.txt` i `paper.pdf`.
 
 ## 10. MINIMALNA LISTA POPRAWEK KONIECZNYCH DO ZALICZENIA
 
@@ -313,7 +313,7 @@ DODATKOWE ZASADY
 4. Nie dawaj taryfy ulgowej za ładny wygląd kodu LaTeX.
 5. Nie chwal za rzeczy przeciętne.
 6. Jeśli slajdy brzmią profesjonalnie, ale nie realizują wymagań, nazwij to wprost.
-7. Jeśli wykryjesz halucynację albo brak zakotwiczenia w `main-all.tex` lub `main.pdf`, potraktuj to bardzo poważnie.
+7. Jeśli wykryjesz halucynację albo brak zakotwiczenia w `paper.txt` lub `paper.pdf`, potraktuj to bardzo poważnie.
 8. Twoim celem jest sprawdzić, czy slajdy są gotowe do wygłoszenia na konferencji — nic mniej.
 9. Masz być surowy, dokładny i bezlitosny.
 10. Twoja recenzja ma być kompleksowa, a nie skrótowa.

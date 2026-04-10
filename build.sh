@@ -12,7 +12,7 @@ mkdir -p "${OWNPATH}/input-latex"
 cp -v "${OWNPATH}/paper/paper.tex" "${OWNPATH}/input-latex/paper.txt"
 cp -v "${OWNPATH}/paper/paper.pdf" "${OWNPATH}/input-latex/paper.pdf"
 cp -v "${OWNPATH}/plan.txt" "${OWNPATH}/input-latex/plan.txt"
-cp -v "${OWNPATH}/slides/presentation.tex" "${OWNPATH}/input-latex/presentation.tex"
+cp -v "${OWNPATH}/slides/presentation.tex" "${OWNPATH}/input-latex/presentation.txt"
 
 cd "${OWNPATH}/slides"
 pdflatex presentation.tex
