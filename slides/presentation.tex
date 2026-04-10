@@ -35,6 +35,8 @@
 \definecolor{updateone}{RGB}{48,140,97}
 \definecolor{splitpiece}{RGB}{118,188,228}
 \definecolor{coarsefill}{RGB}{202,211,225}
+\definecolor{softgreen}{RGB}{226,242,232}
+\definecolor{softred}{RGB}{248,228,228}
 
 \setbeamercolor{block title}{bg=darkblue!15,fg=darkblue}
 \setbeamercolor{block body}{bg=darkblue!5}
@@ -58,19 +60,24 @@
 \end{frame}
 
 %% ============== SLIDE 2: Object ==============
-\begin{frame}{What is the object we want to maintain?}
+\begin{frame}{What is the dynamic object?}
 \begin{columns}[T]
 \begin{column}{0.52\textwidth}
-\vspace{0.3cm}
+\vspace{0.15cm}
 {\Large $M \in \{0,1\}^{n\times n}$}
-\medskip
+\smallskip
 \begin{itemize}
+\setlength\itemsep{0.25em}
 \item Rows and columns stay in a fixed order
-\item The matrix is always promised to be $d$-twin-ordered
-\item We need cell queries and single-cell flips
+\item After every flip, $M$ is promised to be $d$-twin-ordered
+\item We need online cell queries and single-cell flips
 \end{itemize}
 \smallskip
-{\small\color{gray} The row and column orders are part of the maintained object.}
+\begin{beamercolorbox}[wd=\linewidth,sep=0.75ex,rounded=true]{block body alerted}
+\footnotesize The challenge is to keep a compact representation without rebuilding it from scratch after each update.
+\end{beamercolorbox}
+\smallskip
+{\scriptsize\color{gray} The fixed order is part of the input; we are not allowed to reorder after updates.}
 \end{column}
 \begin{column}{0.44\textwidth}
 \centering
@@ -108,19 +115,24 @@
 
 %% ============== SLIDE 3: Twin-ordering ==============
 \begin{frame}{Twin-ordering by contraction sequences}
-\begin{itemize}
-\item A \emph{contraction sequence}: $(\mathcal{R}_0,\mathcal{C}_0),\ldots,(\mathcal{R}_p,\mathcal{C}_p)$
-\item Starts with singleton blocks $\to$ ends with one row block and one column block
-\item Each step: merge two consecutive row blocks or two consecutive column blocks
-\item Width $\leq d$: at every step, every row/column block has $\leq d$ non-constant zones
-\end{itemize}
+\begin{beamercolorbox}[wd=\textwidth,sep=0.65ex,rounded=true]{block body}
+{\footnotesize
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{@{}p{0.23\textwidth}p{0.70\textwidth}@{}}
+\textbf{Sequence} & $(\mathcal{R}_0,\mathcal{C}_0),\ldots,(\mathcal{R}_p,\mathcal{C}_p)$ of row/column partitions\\
+\textbf{Endpoints} & singleton blocks at the start; one row block and one column block at the end\\
+\textbf{Step} & merge two consecutive row blocks or two consecutive column blocks\\
+\textbf{Width $\leq d$} & every row/column block sees at most $d$ zones $M[R,C]$ containing both $0$ and $1$
+\end{tabular}
+}
+\end{beamercolorbox}
 
-\medskip
+\smallskip
 \begin{alertblock}{}
-$M$ is $d$-\emph{twin-ordered} iff it admits such a contraction sequence.
+\small $M$ is $d$-\emph{twin-ordered} iff, in this fixed order, it admits such a contraction sequence.
 \end{alertblock}
 
-\medskip
+\smallskip
 \centering
 \begin{tikzpicture}[scale=0.30]
 % Helper for drawing a 5x5 matrix
@@ -190,13 +202,18 @@ $M$ is $d$-\emph{twin-ordered} iff it admits such a contraction sequence.
 
 %% ============== SLIDE 4: The gap ==============
 \begin{frame}{The gap: static yes, dynamic no}
+\begin{beamercolorbox}[wd=\textwidth,sep=0.55ex,rounded=true]{block body}
+{\small Matrix viewpoint: a standard lens on twin-width; compact representations [PSZ] are the starting point here.}
+\end{beamercolorbox}
+
+\smallskip
 \begin{columns}[T]
 \begin{column}{0.46\textwidth}
-\begin{block}{Static compact repr.\ {\small[PSZ, STACS'22]}}
+\begin{block}{Static compact representation {\small[PSZ, STACS'22]}}
 \begin{itemize}
 \item $\Oh_d(n)$ bits of space
 \item Queries in $\Oh_d(\log\log n)$
-\item Fundamentally static
+\item The matrix is initialized once
 \end{itemize}
 \end{block}
 \end{column}
@@ -205,7 +222,7 @@ $M$ is $d$-\emph{twin-ordered} iff it admits such a contraction sequence.
 \begin{itemize}
 \item Support \texttt{QueryBit} and \texttt{Update}
 \item $M$ stays $d$-twin-ordered at every moment
-\item Near-linear memory on word RAM?
+\item Near-linear memory on word RAM
 \end{itemize}
 \end{alertblock}
 \end{column}
@@ -220,7 +237,7 @@ $M$ is $d$-\emph{twin-ordered} iff it admits such a contraction sequence.
 \end{tikzpicture}
 
 \smallskip
-{\small Can compactness survive single-cell flips?}
+{\small Can compactness survive single-cell flips, without paying for a full rebuild every time?}
 \end{frame}
 
 %% ============== SLIDE 5: Main theorem ==============
@@ -312,26 +329,26 @@ Each slab stored as four coordinates $(a,b,c,d)$.
 \end{frame}
 
 %% ============== SLIDE 7: Canonical slabs ==============
-\begin{frame}{Canonical slabs: the normalization step}
+\begin{frame}{Canonical slabs: normalization for rebuilding}
 \vspace{-0.2em}
 {\small
 \begin{itemize}
 \setlength\itemsep{0.15em}
-\item An $i$-\emph{strip}: a maximal all-ones slab of width 1 in column $i$
+\item An $i$-\emph{strip}: a width-$1$ all-ones slab $(a,b,i,i)$, maximal up/down in column $i$
 \item $\strips_i$: the set of all $i$-strips
-\item \emph{Siblings}: strips with the same row interval persisting through consecutive columns
+\item \emph{Siblings}: the same row interval $(a,b)$ persists as a strip through every column in between
 \end{itemize}
 }
 
 \begin{beamercolorbox}[wd=\textwidth,sep=0.65ex,rounded=true]{block body alerted}
-\footnotesize A \emph{canonical slab} is the union of one sibling class; each strip belongs to exactly one canonical slab.
+\footnotesize A \emph{canonical slab} is the union of one sibling class. The family of all of them is $\mathcal{R}$.
 \end{beamercolorbox}
 
 \vspace{-0.2em}
 \[
 |\mathcal{R}| \leq 4f_d(n+2)+4n
 \]
-{\footnotesize Canonicalization gives each rebuild a normalized slab family; size remains $\Oh_d(n)$.}
+{\footnotesize Canonicalization gives each rebuild a normalized slab family; every strip is assigned once, and size remains $\Oh_d(n)$.}
 
 {\scriptsize Same matrix on both sides: the left decomposition is valid, but it merges different sibling classes.}
 
@@ -389,9 +406,9 @@ Each slab stored as four coordinates $(a,b,c,d)$.
 %% ============== SLIDE 8: Running example part I ==============
 \begin{frame}{Running example I: sweep detects disappearing strips}
 \begin{columns}[T,onlytextwidth]
-\begin{column}{0.31\textwidth}
+\begin{column}{0.32\textwidth}
 \vspace{-0.2cm}
-{\footnotesize\textbf{Sweep state}}
+{\footnotesize\textbf{One left-to-right round}}
 \[
 \resizebox{\linewidth}{!}{$
 \begin{aligned}
@@ -403,23 +420,23 @@ $}
 \]
 
 \begin{beamercolorbox}[wd=\linewidth,sep=0.65ex,rounded=true]{block body alerted}
-\footnotesize Before round $i$, $\mathbb{S}$ stores exactly $\strips_i$.
+\footnotesize Invariant: before round $i$, $\mathbb{S}$ stores exactly $\strips_i$.
 \end{beamercolorbox}
 
 \smallskip
 {\scriptsize
 \begin{itemize}
 \setlength\itemsep{0.18em}
-\item Apply closings $C_i$ and openings $O_{i+1}$
-\item Re-test only touched segments
-\item Failed tests are exactly $B_i$
+\item $C_i$ closes slabs ending at column $i$
+\item $O_{i+1}$ opens slabs starting at column $i+1$
+\item Re-test only touched intervals; failed tests form $B_i$
 \end{itemize}
 }
 
 \smallskip
 {\scriptsize First half of $\mathtt{Decompose}$: record where canonical slabs end.}
 \end{column}
-\begin{column}{0.67\textwidth}
+\begin{column}{0.66\textwidth}
 \centering
 \begin{tikzpicture}[scale=0.60]
 \foreach \r/\d [count=\ri from 0] in {
@@ -440,23 +457,26 @@ $}
 
 \smallskip
 {\scriptsize
-\renewcommand{\arraystretch}{1.22}
+\renewcommand{\arraystretch}{1.28}
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{c|c|c|c}
- & before round $i$: $\strips_i$ & after round $i$: $\strips_{i+1}$ & disappears: $B_i$\\
+\begin{tabular}{@{}c|c|c|>{\columncolor{softred}}c@{}}
+ & before: $\strips_i$ & after: $\strips_{i+1}$ & \textbf{disappears: $B_i$}\\
 \hline
 \rowcolor{slab4!18}
-$i\!=\!1$ & $\{[2,2],[4,4]\}$ & $\{[2,4]\}$ & $\{[2,2],[4,4]\}$\\
+$i\!=\!1$ & $\{[2,2],[4,4]\}$ & $\{[2,4]\}$ & \textbf{$\{[2,2],[4,4]\}$}\\
 \hline
-$i\!=\!2$ & $\{[2,4]\}$ & $\{[2,4]\}$ & $\varnothing$\\
+$i\!=\!2$ & $\{[2,4]\}$ & $\{[2,4]\}$ & \textbf{$\varnothing$}\\
 \hline
 \rowcolor{slab1!12}
-$i\!=\!3$ & $\{[2,4]\}$ & $\{[1,1],[3,4]\}$ & $\{[2,4]\}$\\
+$i\!=\!3$ & $\{[2,4]\}$ & $\{[1,1],[3,4]\}$ & \textbf{$\{[2,4]\}$}\\
 \hline
-$i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\varnothing$ & $\{[1,1],[3,4]\}$\\
+$i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\varnothing$ & \textbf{$\{[1,1],[3,4]\}$}\\
 \end{tabular}
 }
 }
+
+\vspace{0.25em}
+{\scriptsize\color{gray!75!black}Read the red column as ``the strips whose canonical slabs end here''.}
 \end{column}
 \end{columns}
 \end{frame}
@@ -464,7 +484,7 @@ $i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\varnothing$ & $\{[1,1],[3,4]\}$\\
 %% ============== SLIDE 9: Running example part II ==============
 \begin{frame}{Running example II: starts and ends form canonical slabs}
 \begin{columns}[T,onlytextwidth]
-\begin{column}{0.31\textwidth}
+\begin{column}{0.30\textwidth}
 {\scriptsize A symmetric right-to-left sweep gives}
 \[
 A_i \coloneqq \strips_i \setminus \strips_{i-1}
@@ -476,36 +496,42 @@ A_i \coloneqq \strips_i \setminus \strips_{i-1}
 \setlength\itemsep{0.18em}
 \item $A_i$ opens a sibling class
 \item $B_i$ closes the same row interval later
-\item $\mathsf{start}[a]$ stores the opening column
+\item $\mathsf{slab\_start}[a]$ stores its opening column
 \end{itemize}
 
 \begin{beamercolorbox}[wd=\linewidth,sep=0.65ex,rounded=true]{block body alerted}
-\footnotesize $\mathtt{Decompose}(n,\mathcal{K})$ outputs $\mathcal{R}$ in $\Oh(n+|\mathcal{K}|\log\log n)$.
+\footnotesize On closing $[a,b]\in B_i$, output $(a,b,\mathsf{slab\_start}[a],i)$.
 \end{beamercolorbox}
+
+\smallskip
+{\scriptsize $\mathtt{Decompose}(n,\mathcal{K})$ computes $\mathcal{R}$ in $\Oh(n+|\mathcal{K}|\log\log n)$.}
 \end{column}
-\begin{column}{0.67\textwidth}
+\begin{column}{0.68\textwidth}
 \centering
 {\scriptsize
-\renewcommand{\arraystretch}{1.18}
+\renewcommand{\arraystretch}{1.32}
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{c|c|c|c|c}
- & $A_i$ & $B_i$ & $\mathsf{start}$ after $A_i$ & output in round $i$\\
+\begin{tabular}{@{}c|c|c|>{\columncolor{softgreen}}c@{}}
+ & opens: $A_i$ & closes: $B_i$ & \textbf{canonical slabs output in round $i$}\\
 \hline
 \rowcolor{slab4!18}
-$i\!=\!1$ & $\{[2,2],[4,4]\}$ & $\{[2,2],[4,4]\}$ & $[\bot,1,\bot,1]$ & $(2,2,1,1),\ (4,4,1,1)$\\
+$i\!=\!1$ & $\{[2,2],[4,4]\}$ & $\{[2,2],[4,4]\}$ & \textbf{$(2,2,1,1),\ (4,4,1,1)$}\\
 \hline
-$i\!=\!2$ & $\{[2,4]\}$ & $\varnothing$ & $[\bot,2,\bot,\bot]$ & --\\
+$i\!=\!2$ & $\{[2,4]\}$ & $\varnothing$ & --\\
 \hline
 \rowcolor{slab1!12}
-$i\!=\!3$ & $\varnothing$ & $\{[2,4]\}$ & $[\bot,2,\bot,\bot]$ & $(2,4,2,3)$\\
+$i\!=\!3$ & $\varnothing$ & $\{[2,4]\}$ & \textbf{$(2,4,2,3)$}\\
 \hline
-$i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\{[1,1],[3,4]\}$ & $[4,\bot,4,\bot]$ & $(1,1,4,4),\ (3,4,4,4)$\\
+$i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\{[1,1],[3,4]\}$ & \textbf{$(1,1,4,4),\ (3,4,4,4)$}\\
 \end{tabular}
 }
 }
 
-\smallskip
-\begin{tikzpicture}[scale=0.39]
+\vspace{0.35em}
+{\scriptsize\color{gray!75!black}Example: at $i=3$, the interval $[2,4]$ closes and $\mathsf{slab\_start}[2]=2$, hence $(2,4,2,3)$.}
+
+\vspace{0.25em}
+\begin{tikzpicture}[scale=0.46]
 \fillslab{slab1}{2}{2}{1}{1}{4}
 \fillslab{slab2}{4}{4}{1}{1}{4}
 \fillslab{slab4}{2}{4}{2}{3}{4}
@@ -527,6 +553,7 @@ $i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\{[1,1],[3,4]\}$ & $[4,\bot,4,\bot]$ & $(1,1,4,
 \drawslab{slab4}{2}{4}{2}{3}{4}
 \drawslab{slab5}{1}{1}{4}{4}{4}
 \drawslab{slab3}{3}{4}{4}{4}{4}
+\node[font=\scriptsize,gray!70!black] at (2,-0.55) {canonical slab decomposition $\mathcal{R}$};
 \end{tikzpicture}
 \end{column}
 \end{columns}
@@ -535,14 +562,14 @@ $i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\{[1,1],[3,4]\}$ & $[4,\bot,4,\bot]$ & $(1,1,4,
 %% ============== SLIDE 10: Amortized structure ==============
 \begin{frame}{Amortized structure: $\mathbb{P}$ for slabs, $\mathbb{Q}$ for recent flips}
 
-{\footnotesize Keep the last canonical decomposition as a rebuilt base. New flips are buffered instead of merged into the slabs immediately.}
+{\footnotesize Keep the last canonical slab family $\mathcal{P}$ inside a static point-location structure $\mathbb{P}$. New flips are buffered in $\mathbb{Q}$ instead of merged immediately.}
 
 \smallskip
 \begin{columns}[T,onlytextwidth]
 \begin{column}{0.43\textwidth}
 \centering
 \begin{tikzpicture}[scale=0.54]
-\node[font=\scriptsize\bfseries,align=center] at (2,4.85) {$\mathbb{P}$: last rebuilt\\canonical slabs};
+\node[font=\scriptsize\bfseries,align=center] at (2,4.85) {$\mathbb{P}$: point location\\over canonical slabs $\mathcal{P}$};
 \fillslab{slab1}{2}{2}{1}{1}{4}
 \fillslab{slab2}{4}{4}{1}{1}{4}
 \fillslab{slab4}{2}{4}{2}{3}{4}
@@ -604,7 +631,7 @@ $(i,j)\notin\mathbb{Q} \Rightarrow M[i,j]=1 \iff (i,j)$ lies in a base slab of $
 %% ============== SLIDE 11: Rebuilding ==============
 \begin{frame}{Rebuilding $\mathbb{P}$: create a fresh decomposition}
 
-{\footnotesize Rebuilding starts from the old slabs $\mathcal{P}$ and the buffered explicit values $\mathcal{Q}$.}
+{\footnotesize Rebuilding starts from two extracted lists: old slabs $\mathcal{P}$ from $\mathbb{P}$, and buffered values $\mathcal{Q}$ from $\mathbb{Q}$.}
 
 \vspace{-0.15em}
 \centering
@@ -616,7 +643,7 @@ $(i,j)\notin\mathbb{Q} \Rightarrow M[i,j]=1 \iff (i,j)$ lies in a base slab of $
   note/.style={font=\scriptsize,align=center}]
 
 \node[panelbox,minimum width=4.05cm,minimum height=4.55cm,anchor=south west] (oldbox) at (0,0) {};
-\node[paneltitle] at (2.03,4.28) {old slabs in $\mathbb{P}$\\+ buffered values in $\mathbb{Q}$};
+\node[paneltitle] at (2.03,4.28) {old slabs $\mathcal{P}$\\+ buffered values $\mathcal{Q}$};
 \draw[step=0.62,gray!24] (0.38,0.55) grid (3.72,3.72);
 \draw[gray!70] (0.38,0.55) rectangle (3.72,3.72);
 \fill[slab2,opacity=0.48] (0.62,0.82) rectangle (1.75,3.42);
@@ -674,74 +701,63 @@ $|\mathcal{K}| \leq |\mathcal{P}| + 2|\mathcal{Q}|$.
 %% ============== SLIDE 12: De-amortization ==============
 \begin{frame}{Worst-case updates: epochs and snapshot copies}
 
-{\footnotesize Let $L=8f_d(n+2)$. The amortized rebuild is spread over epochs, with only $\Oh(\log\log n)$ extra work per update.}
+{\footnotesize Let $L=8f_d(n+2)$ and split the update sequence into epochs of length $L$. A rebuild that costs $\Oh(L\log\log n)$ is paid for gradually.}
 
 \smallskip
-\begin{columns}[T,onlytextwidth]
-\begin{column}{0.48\textwidth}
-{\scriptsize \textbf{Amortized $\mathbb{A}$:} keep $\mathbb{P}+\mathbb{Q}$; when $|\mathbb{Q}|=L$, rebuild and empty the buffer.}
-\end{column}
-\begin{column}{0.48\textwidth}
-{\scriptsize \textbf{Worst-case $\mathbb{W}$:} background initialization, catch-up, then takeover.}
-\end{column}
-\end{columns}
+\begin{beamercolorbox}[wd=\textwidth,sep=0.65ex,rounded=true]{block body}
+\scriptsize Active copy answers online operations. Frozen snapshot is read-only, so the next copy can be initialized while the active one keeps changing.
+\end{beamercolorbox}
 
 \smallskip
 \centering
-\begin{tikzpicture}[x=0.88cm,y=0.63cm,font=\scriptsize]
-\draw[thick,-{Stealth[length=5pt]}] (0,0)--(10.2,0);
-\node[font=\tiny,gray] at (0.45,0.23) {$\cdots$};
-\node[font=\tiny,gray] at (9.65,0.23) {$\cdots$};
-\fill[darkblue!8] (1.2,-0.02) rectangle (4.25,0.54);
-\fill[darkblue!16] (4.25,-0.02) rectangle (7.3,0.54);
-\fill[darkblue!8] (7.3,-0.02) rectangle (9.2,0.54);
-\node at (2.72,0.27) {$E_{2i-2}$};
-\node at (5.78,0.27) {$E_{2i-1}$};
-\node at (8.25,0.27) {$E_{2i}$};
+\begin{tikzpicture}[x=1cm,y=1cm,font=\scriptsize,
+  phase/.style={draw=gray!45,rounded corners=3pt,fill=gray!3,minimum width=3.35cm,minimum height=3.95cm,anchor=north},
+  title/.style={font=\scriptsize\bfseries,align=center},
+  copy/.style={draw,rounded corners=2pt,align=center,inner sep=3pt,minimum width=2.82cm},
+  active/.style={copy,draw=darkblue,text=darkblue,fill=darkblue!7},
+  frozen/.style={copy,draw=gray!65,text=gray!75!black,fill=gray!8},
+  next/.style={copy,draw=darkred,text=darkred,fill=darkred!7}]
 
-\node[left,font=\scriptsize,align=right,darkblue] at (1.05,3.62) {active\\copy};
-\node[left,font=\scriptsize,align=right,gray!70!black] at (1.05,2.48) {frozen\\snapshot};
-\node[left,font=\scriptsize,align=right,darkred] at (1.05,1.28) {next\\copy};
+\node[phase] (p1) at (0,0) {};
+\node[phase] (p2) at (4.05,0) {};
+\node[phase] (p3) at (8.10,0) {};
 
-\draw[darkblue,line width=1.1pt] (1.2,3.62)--(7.3,3.62);
-\node[draw,rounded corners,fill=darkblue!7,font=\scriptsize,align=center] at (4.25,3.98)
-  {$\mathbb{A}_{i-1,0}$ answers queries and updates};
+\node[title] at (0,-0.35) {$E_{2i-2}$\\initialize};
+\node[active] (a10) at (0,-1.15) {active\\$\mathbb{A}_{i-1,0}$};
+\node[frozen] (f10) at (0,-2.10) {frozen snapshot\\$\mathbb{A}_{i-1,1}$};
+\node[next] (n10) at (0,-3.12) {build successor\\$\mathbb{A}_i$};
+\draw[-{Stealth[length=4pt]},gray!70,thick] (f10)--(n10);
 
-\draw[gray!70,line width=1pt] (1.2,2.48)--(4.25,2.48);
-\node[draw,rounded corners,fill=gray!8,font=\scriptsize,align=center] (snap) at (2.72,2.85)
-  {$\mathbb{A}_{i-1,1}$ frozen snapshot\\old $\mathbb{P}+\mathbb{Q}$};
+\node[title] at (4.05,-0.35) {$E_{2i-1}$\\catch up};
+\node[active] at (4.05,-1.15) {active still\\$\mathbb{A}_{i-1,0}$};
+\node[next] at (4.05,-2.28) {$\mathbb{A}_i$ processes\\two stored updates\\per incoming update};
+\node[font=\tiny,gray!70!black,align=center] at (4.05,-3.38) {constant-factor extra work};
 
-\fill[slab4!55] (1.2,1.02) rectangle (4.25,1.55);
-\node[font=\scriptsize,darkred,align=center] at (2.72,1.28)
-  {background $\mathtt{Init}(n,\mathcal{K})$};
-\draw[gray!70,-{Stealth[length=4pt]}] (snap.south)--(2.72,1.58);
+\node[title] at (8.10,-0.35) {$E_{2i}$\\takeover};
+\node[active] at (8.10,-1.35) {new active\\$\mathbb{A}_{i,0}$};
+\node[frozen] at (8.10,-2.55) {new frozen snapshot\\$\mathbb{A}_{i,1}$};
+\node[font=\tiny,gray!70!black,align=center] at (8.10,-3.38) {ready for $\mathbb{A}_{i+1}$};
 
-\fill[slab3!45] (4.25,1.02) rectangle (7.3,1.55);
-\node[font=\scriptsize,darkred,align=center] at (5.78,1.28)
-  {catch-up:\\two updates here\\for one incoming};
-\foreach \x in {4.75,5.35,5.95,6.55} {
-  \draw[darkred,-{Stealth[length=4pt]},line width=0.85pt] (\x,1.62)--++(0.16,0.25);
-  \draw[darkred,-{Stealth[length=4pt]},line width=0.85pt] (\x,1.86)--++(0.16,0.25);
-}
-
-\draw[-{Stealth[length=6pt]},very thick,darkred] (7.3,1.28)--(7.75,3.62);
-\node[draw,rounded corners,fill=darkred!8,font=\scriptsize,align=center,anchor=west] at (7.78,3.62)
-  {takeover:\\$\mathbb{A}_{i,0}$ active};
+\draw[-{Stealth[length=5pt]},very thick,darkred] (1.85,-2.70)--(2.18,-2.70);
+\draw[-{Stealth[length=5pt]},very thick,darkred] (5.90,-2.70)--(6.23,-2.05);
 \end{tikzpicture}
 
 \smallskip
-{\footnotesize Active copy answers online operations; frozen snapshot is read-only input for initializing the successor.}
+{\footnotesize This turns the amortized rebuild threshold into $\Oh(\log\log n)$ expected worst-case update time.}
 \end{frame}
 
 %% ============== SLIDE 13: Take-away ==============
 \begin{frame}{Take-away}
 
 \begin{alertblock}{}
-Dynamic data structure for $d$-twin-ordered matrices:\\[2pt]
-$\Oh_d(n)$ memory and $\Oh(\log\log n)$ expected worst-case time for both \texttt{QueryBit} and \texttt{Update}.
+For every fixed $d$, a dynamically updated $d$-twin-ordered matrix admits:\\[2pt]
+\[
+\Oh_d(n)\ \text{memory},\qquad
+\Oh(\log\log n)\ \text{expected worst-case query and update time.}
+\]
 \end{alertblock}
 
-\bigskip
+\medskip
 \centering
 \begin{tikzpicture}[node distance=0.6cm,font=\small,
   box/.style={draw,rounded corners,minimum height=0.8cm,minimum width=1.8cm,fill=darkblue!6,align=center,font=\footnotesize}]
@@ -756,10 +772,12 @@ $\Oh_d(n)$ memory and $\Oh(\log\log n)$ expected worst-case time for both \textt
 \draw[-{Stealth},thick] (pq)--(ds);
 \end{tikzpicture}
 
-\bigskip
-{\small Structural core: canonicalization. \quad Dynamic core: buffered updates plus scheduled rebuilding.}
+\medskip
+\begin{beamercolorbox}[wd=0.88\textwidth,sep=0.85ex,rounded=true,center]{block body}
+{\small Canonical slabs make every rebuild small and well defined; $\mathbb{P}+\mathbb{Q}$ isolates recent flips; snapshot copies remove the amortization.}
+\end{beamercolorbox}
 
-\vspace{0.8cm}
+\vspace{0.55cm}
 \centering
 {\Large\color{darkblue} Questions?}
 \end{frame}

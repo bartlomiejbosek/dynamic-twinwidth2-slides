@@ -1,229 +1,271 @@
-Działaj jako światowej klasy redaktor techniczny prezentacji TCS, bardzo rygorystyczny audytor zgodności z materiałem źródłowym oraz doświadczony autor slajdów Beamer/TikZ na konferencje typu LATIN / ESA / SODA / STACS / ICALP.
+Masz wykonać **precyzyjną edycję istniejących slajdów Beamerowych** w pliku:
 
-Twoim zadaniem jest NANIEŚĆ POPRAWKI bezpośrednio do pliku:
+`slides/presentation.tex`
 
-slides/presentation.tex
+## CEL
 
-Masz edytować ten plik in place.
-Nie wypisuj całej poprawionej zawartości pliku na stdout.
-Na stdout wypisz tylko krótkie podsumowanie:
-- jakie zmiany zostały wykonane,
-- które slajdy zostały zmodyfikowane,
-- czy plik się kompiluje,
-- czy wykryto coś, czego nie dało się poprawić bez ryzyka psucia matematyki.
+Doprowadź prezentację do poziomu **idealnego referatu konferencyjnego TCS** na **LATIN 2026**:
+ma być:
 
-==================================================
-CEL
-==================================================
+* **w 100% poprawna merytorycznie i terminologicznie** względem artykułu źródłowego,
+* **maksymalnie klarowna dla szerokiej publiczności TCS**,
+* **bardzo dobra wizualnie i konferencyjnie**,
+* **bezpieczna jako PDF odpalany na obcym komputerze**,
+* **realnie wygłaszalna w ok. 16–17 minut mówienia**.
 
-Doprowadź prezentację do stanu możliwie idealnego:
-- idealna merytorycznie,
-- idealna terminologicznie,
-- idealna konferencyjnie,
-- idealna wizualnie,
-- w pełni zgodna z artykułem źródłowym,
-- bez śladów procesu generacji,
-- gotowa do wygłoszenia na LATIN 2026 jako PDF na obcym komputerze.
+Nie twórz nowej prezentacji od zera.
+Masz **naprawić i dopracować istniejący plik** `slides/presentation.tex`.
 
-Nie wolno Ci:
-- wymyślać nowej matematyki,
-- dopisywać treści bez oparcia w artykule,
-- zmieniać poprawnych twierdzeń, stałych, nazw lub zależności asymptotycznych,
-- przepisywać prezentacji od zera, jeśli wystarczą precyzyjne poprawki,
-- osłabiać poprawnych slajdów tylko dlatego, że są techniczne.
+## MATERIAŁY ŹRÓDŁOWE, KTÓRE MUSISZ SPRAWDZIĆ
 
-Masz poprawiać wyłącznie rzeczywiste problemy i podnosić jakość bez psucia tego, co już działa.
+Musisz oprzeć się na:
 
-==================================================
-MATERIAŁ ŹRÓDŁOWY I ZASADA NACZELNA
-==================================================
+* `paper/paper.tex`
+* `paper/paper.pdf`
 
-Jeżeli w repozytorium są dostępne pliki artykułu (np. paper/paper.tex, paper/paper.pdf albo ich odpowiedniki), użyj ich do weryfikacji każdej zmiany.
-Zasada nadrzędna:
-1. najpierw wierność wobec źródła,
-2. potem klarowność konferencyjna,
-3. potem estetyka.
+Jeżeli w repozytorium istnieją także:
 
-Gdy pojawia się konflikt między „ładniej” a „wierniej”, wybieraj „wierniej”, ale staraj się poprawić formę bez naruszania treści.
+* wyrenderowany PDF slajdów,
+* inne pomocnicze pliki związane z prezentacją,
 
-==================================================
-NAJWAŻNIEJSZE RZECZYWISTE PROBLEMY DO NAPRAWY
-==================================================
+to wykorzystaj je do kontroli jakości, ale **źródłem prawdy merytorycznej pozostają `paper/paper.tex` i `paper/paper.pdf`**.
 
-1. Usuń WSZYSTKIE widoczne meta-komentarze i ślady procesu generacji z treści slajdów.
-Dotyczy to w szczególności wszystkich zdań w rodzaju:
-- „This is exactly the problem addressed by Theorem 1 of the paper.”
-- „new schematic based directly on Theorem 4; layout inspired by Figure 6”
-- „new timeline schematic based on Theorem 5; no literal update sequence shown”
-oraz wszelkich podobnych adnotacji, które są komentarzem do konstrukcji slajdu, a nie treścią referatu.
+## NAJWAŻNIEJSZA ZASADA
 
-2. Popraw czytelność i konferencyjność najbardziej gęstych slajdów technicznych, zwłaszcza w środkowo-końcowej części talku.
-Szczególnie dokładnie przejrzyj slajdy odpowiadające:
-- running example / sweep / Decompose,
-- amortized structure,
-- rebuilding,
-- de-amortization.
-Masz usunąć realne przeciążenie poznawcze, ale bez utraty merytorycznego rdzenia.
-Jeśli trzeba:
-- uprość nagłówki tabel,
-- zwiększ czytelność,
-- przestaw elementy,
-- wyeksponuj jedną dominującą myśl na slajd,
-- zmniejsz ilość tekstu w małych pudełkach,
-- usuń zbędne powtórzenia,
-- rozbij jeden przeciążony slajd na dwa TYLKO jeśli to realnie poprawia odbiór i nadal utrzymuje całość w zakresie ok. 13–14 głównych slajdów.
+**Nie wolno Ci wprowadzić żadnej zmiany merytorycznej, której nie potrafisz obronić na podstawie artykułu źródłowego.**
 
-3. Zachowaj i w razie potrzeby wzmocnij to, co już działa bardzo dobrze:
-- szybki setup,
-- wczesny theorem slide,
-- running example,
-- logiczny pipeline idei,
-- dobry final slide do pytań,
-- sensowne backup slides.
+To oznacza:
 
-4. Popraw wizualną czytelność figur i schematów:
-- zwiększ kontrast tam, gdzie pastelowe wypełnienia lub cienkie obrysy mogą być zbyt słabe na projektorze,
-- upewnij się, że elementy są czytelne z dalszych rzędów,
-- unikaj mikroskopijnych podpisów,
-- unikaj ścisku przy stopce, numerze slajdu i marginesach,
-- dopracuj wyrównanie, spacing, proporcje i hierarchię wizualną.
+* nie wolno halucynować twierdzeń,
+* nie wolno zmieniać sensu definicji,
+* nie wolno podmieniać terminologii na „ładniejszą”, jeśli nie jest zgodna z paperem,
+* nie wolno psuć poprawnych przykładów ani poprawnych tabel,
+* nie wolno „ulepszać” matematyki na wyczucie.
 
-5. Upewnij się, że najważniejsze twierdzenia i inwarianty są wyeksponowane wizualnie bardziej niż drugorzędne opisy operacyjne.
+Masz poprawiać **wyłącznie rzeczywiste problemy** oraz podnosić jakość komunikacyjną i wizualną.
 
-==================================================
-TWARDE WYMAGANIA MERYTORYCZNE
-==================================================
+## CO MASZ ZROBIĆ
 
-Absolutnie zachowaj poprawność wszystkich poniższych rzeczy:
-- definicji d-twin-ordered matrix,
-- contraction sequence,
-- zones / non-constant zones,
-- slabs i slab decomposition,
-- canonical slabs, strips, siblings, corners,
-- algorytmu Decompose,
-- struktury P + Q,
-- boundów typu O_d(n), d(2n−2)+1, 4f_d(n+2)+4n, 8f_d(n+2),
-- Init / QueryBit / Update,
-- expected worst-case tam, gdzie występuje w źródle,
-- rozróżnienia amortized vs worst-case,
-- de-amortization przez epochs / snapshot copies.
+Przeprowadź pełny, rygorystyczny self-audit i następnie **edytuj `slides/presentation.tex` bezpośrednio** tak, aby osiągnąć następujący efekt:
 
-Nie wolno Ci:
-- usuwać słusznych niuansów typu „expected”,
-- podmieniać zależności od d,
-- upraszczać twierdzeń tak, że staną się nieprecyzyjne,
-- zmieniać nazw pojęć na niezgodne ze źródłem.
+### A. Zachowaj to, co już jest dobre
 
-==================================================
-TWARDE WYMAGANIA KONFERENCYJNE
-==================================================
+Nie niszcz:
 
-Końcowa prezentacja ma spełniać wszystkie poniższe warunki:
+* poprawnego statementu głównego wyniku,
+* poprawnej definicji `d`-twin-ordering / contraction sequence,
+* poprawnych bounds typu `|K| ≤ d(2n−2)+1`, `|R| ≤ 4f_d(n+2)+4n`, `|K| ≤ |P| + 2|Q|`, `L = 8f_d(n+2)`,
+* poprawnego running example na slajdach 8–9,
+* poprawnej architektury `P + Q`,
+* poprawnej idei rebuilding i de-amortization,
+* sensownych backup slides.
 
-1. Do ok. slajdu 4 słuchacz rozumie:
-- jaki jest problem,
-- jaki jest model,
-- jakie jest pytanie badawcze.
+Nie rób zbędnej rewolucji.
+To ma być **surgical improvement**, nie przepisywanie wszystkiego.
 
-2. Główny wynik ma być pokazany wcześnie i bardzo wyraźnie.
+### B. Napraw i dopracuj rzeczywiste słabości konferencyjne
 
-3. Część techniczna ma pokazywać proof idea, a nie pełny dowód.
+Masz poprawić przede wszystkim to, co realnie obniża jakość talku:
 
-4. Running example ma pozostać spójny i pomagać, a nie przytłaczać.
+#### 1. Mocniejsze otwarcie i stawka problemu
 
-5. Ostatni główny slajd ma być dobrym „hanging slide” podczas pytań.
+Prezentacja jest poprawna, ale początek można zrobić bardziej konferencyjny.
 
-6. Prezentacja ma być bezpieczna jako statyczny PDF:
-- żadnych zależności od PowerPointa,
-- żadnych multimediów,
-- żadnych efektów wymagających specyficznego środowiska.
+Popraw opening tak, aby już na początku silniej wybrzmiało:
 
-7. Docelowo całość ma nadawać się na ok. 16–17 minut mówienia.
+* co jest problemem,
+* dlaczego jest on ciekawy,
+* co było wcześniej znane,
+* dlaczego dynamiczny wariant jest nieoczywisty.
 
-==================================================
-STRATEGIA EDYCJI
-==================================================
+Nie rozbudowuj tego przesadnie.
+To ma być nadal krótki setup pod 20-minutowy talk.
 
-Wykonaj pracę w tej kolejności:
+Możesz:
 
-KROK 1.
-Przeczytaj slides/presentation.tex i zidentyfikuj strukturę slajdów.
+* lekko wzmocnić slajd 1 lub 2,
+* lekko dopracować slajd 4,
+* dodać bardzo krótką, elegancką warstwę „why should I care?”.
 
-KROK 2.
-Jeśli masz dostęp do źródeł artykułu, porównaj slajdy z materiałem źródłowym i upewnij się, że nic nie jest halucynacją.
+#### 2. Related work / positioning
 
-KROK 3.
-Wprowadź wyłącznie sensowne, celowane poprawki.
-Preferuj chirurgiczne edycje zamiast niepotrzebnego przepisywania.
+Nie dodawaj ciężkiego, osobnego slajdu literaturowego, jeśli nie jest to konieczne.
+Ale upewnij się, że prezentacja **minimalnie, lecz wyraźnie** pozycjonuje pracę względem:
 
-KROK 4.
-Usuń meta-komentarze, ślady generacji, zbyt małe dopiski, zbędne techniczne autoobjaśnienia, które nie należą do referatu.
+* wcześniejszej statycznej struktury danych [PSZ],
+* szerszego matrix/twin-width viewpoint, o ile da się to zrobić krótko i naturalnie.
 
-KROK 5.
-Popraw gęste slajdy techniczne:
-- uprość tam, gdzie wizualnie lub poznawczo jest za ciasno,
-- zachowaj treść merytoryczną,
-- nie usuwaj kluczowej idei.
+To ma być subtelne i konferencyjne, nie bibliograficznie przeładowane.
 
-KROK 6.
-Popraw estetykę:
-- kontrast,
-- rozmiary czcionek,
-- spacing,
-- alignment,
-- proporcje rysunków,
-- czytelność tabel,
-- ekspozycję kluczowych boxów.
+#### 3. Maksymalna klarowność definicji na slajdach 3 i 7
 
-KROK 7.
-Skompiluj prezentację.
-Jeśli są ostrzeżenia wpływające na jakość prezentacji (np. overfull boxes, ucięte elementy, nachodzenie na stopkę), napraw je.
-Jeśli są tylko niegroźne warningi, odnotuj to krótko w podsumowaniu.
+Sprawdź i dopracuj sformułowania tak, aby:
 
-KROK 8.
-Po kompilacji jeszcze raz oceń prezentację jako całość:
-- czy jest bardziej klarowna,
-- czy nic matematycznego nie zostało uszkodzone,
-- czy nie dodano żadnej halucynacji,
-- czy nadal mieści się konferencyjnie.
+* były matematycznie wierne paperowi,
+* ale jednocześnie maksymalnie czytelne dla publiczności.
 
-==================================================
-SZCZEGÓLNE ZALECENIA REDAKCYJNE
-==================================================
+Szczególnie:
 
-- Jeśli jakiś slajd zawiera zbyt dużo małego tekstu w pudełkach, przeredaguj go tak, by logika była czytelna z daleka.
-- Jeśli tabela jest zbyt gęsta, uprość nagłówki i układ, ale nie fałszuj danych.
-- Jeśli pełna tabela nie wnosi proporcjonalnie dużo do odbioru konferencyjnego, rozważ lekkie uproszczenie lub lepszą hierarchię wizualną.
-- Jeśli dokładna stała pojawia się na głównym slajdzie i pogarsza odbiór, możesz ją zostawić w mniejszym dopisku lub przenieść nacisk na O_d(n), ALE tylko jeśli dokładna forma pozostaje dostępna tam, gdzie jest potrzebna.
-- Zachowaj backup slides i popraw je tylko wtedy, gdy mają realny problem.
+* slajd o contraction sequences,
+* slajd o `i-strip`, `siblings`, `canonical slab`.
 
-==================================================
-KRYTERIUM SUKCESU
-==================================================
+Jeśli da się doprecyzować jedno zdanie bez zwiększania ciężaru slajdu, zrób to.
 
-Masz zakończyć z prezentacją, która:
-- jest w 100% zgodna z artykułem,
-- nie zawiera żadnych widocznych meta-komentarzy,
-- ma lepszą czytelność na projektorze,
-- redukuje realne przeciążenie w technicznej części,
-- zachowuje mocny theorem slide i mocny final slide,
-- kompiluje się poprawnie,
-- wygląda jak profesjonalny, dopracowany deck na LATIN 2026.
+#### 4. Czytelność i pacing slajdów 8–9
 
-==================================================
-FORMAT KOŃCOWEJ ODPOWIEDZI AGENTA
-==================================================
+To są slajdy poprawne merytorycznie, ale potencjalnie najtrudniejsze w odbiorze.
 
-Nie wypisuj całego pliku.
-Nie pokazuj diffa całego dokumentu.
-Nie wklejaj pełnego LaTeX-a.
+Masz poprawić ich **czytelność konferencyjną**, nie psując treści:
 
-Wypisz tylko krótko:
-1. które slajdy zostały zmienione,
-2. jakie były główne poprawki,
-3. czy kompilacja się udała,
-4. czy pozostały jakieś nieistotne warningi,
-5. jednozdaniową ocenę, czy plik jest gotowy do wygłoszenia.
+* zwiększ czytelność tabel i oznaczeń,
+* wzmocnij wizualnie najważniejsze wiersze / kroki,
+* osłab mniej istotne elementy,
+* popraw hierarchię wzroku,
+* dopilnuj, by prelegent mógł łatwo pokazać „co znika” i „co się otwiera”.
 
-Teraz wykonaj zadanie i edytuj bezpośrednio:
-slides/presentation.tex
+Nie wolno Ci zmienić danych w tabelach, jeśli są poprawne.
+Masz poprawić **prezentację danych**, nie wymyślać nowe dane.
+
+#### 5. Ujednolicenie notacji
+
+Sprawdź spójność notacji w całym decku:
+
+* `\mathcal{P}` / `\mathbb{P}`,
+* `\mathcal{Q}` / `\mathbb{Q}`,
+* `\mathcal{K}` / `K`,
+* `\mathcal{R}` / `R`,
+* nazewnictwo canonical slabs / slab decomposition / strips.
+
+Ujednolić wszystko tak, aby:
+
+* było zgodne z paperem,
+* było spójne między slajdami,
+* nie mieszało struktury danych z rodziną obiektów.
+
+#### 6. Slajd 12 — uproszczenie komunikacyjne bez utraty treści
+
+Slajd o epochs / snapshot copies ma być:
+
+* matematycznie poprawny,
+* ale prostszy w śledzeniu na żywo.
+
+Masz poprawić jego **czytelność i narracyjność**:
+
+* uprość podpisy, jeśli są zbyt gęste,
+* popraw hierarchy layout,
+* dopilnuj, by active copy / frozen snapshot / next copy / catch-up / takeover były natychmiast zrozumiałe wzrokowo,
+* zachowaj pełną zgodność z ideą z paperu.
+
+#### 7. Mocniejszy finał
+
+Slajd końcowy ma być lepszy niż zwykły summary slide.
+Ma:
+
+* przypominać wynik,
+* streszczać ideę,
+* zostawiać dobry „take-away”,
+* dobrze wisieć podczas pytań.
+
+Wzmocnij punchline końcowy, ale bez tanich sloganów.
+
+### C. Popraw jakość wizualną i estetyczną
+
+Masz dopracować slajdy tak, aby wyglądały jak bardzo dobra prezentacja na LATIN / ESA / STACS / ICALP.
+
+Sprawdź i popraw:
+
+* balans białej przestrzeni,
+* wyrównania,
+* konsekwencję rozmiarów fontów,
+* czytelność na projektorze,
+* kontrast kolorów,
+* spójność grubości linii i obramowań,
+* spójność stylu bloków, alertblocków, diagramów i TikZ,
+* czy hierarchia informacji jest widoczna bez wysiłku.
+
+W szczególności:
+
+* nie rób slajdów „przeładowanych ładnymi rzeczami”,
+* nie wprowadzaj ozdobników bez funkcji,
+* nie używaj efektów, które są ryzykowne w PDF,
+* nie uzależniaj sensu slajdu od overlayów.
+
+### D. Zachowaj rygor konferencyjny
+
+Prezentacja ma pozostać:
+
+* krótka,
+* gęsta, ale strawna,
+* matematycznie precyzyjna,
+* zorientowana na proof idea,
+* nieprzypominająca 50-minutowego seminarium.
+
+Nie dodawaj nowych slajdów, chyba że jest to absolutnie konieczne.
+Preferowane jest ulepszanie istniejących slajdów.
+Jeśli dodasz nowy slajd, zrób to tylko wtedy, gdy bez tego nie da się osiągnąć naprawdę istotnej poprawy, i wtedy zachowaj bezpieczny timing całości.
+
+## DODATKOWE OGRANICZENIA
+
+1. **Edytuj wyłącznie plik `slides/presentation.tex`.**
+2. **Nie wypisuj poprawionej prezentacji na stdout.**
+3. **Nie twórz nowego pliku zamiast istniejącego**, chyba że absolutnie musisz utworzyć pomocniczy plik roboczy do kompilacji; finalnie i tak właściwe poprawki mają być w `slides/presentation.tex`.
+4. **Nie zmieniaj matematyki bez sprawdzenia w paperze.**
+5. **Nie usuwaj backup slides**, jeśli są sensowne.
+6. **Nie wprowadzaj halucynowanych uproszczeń.**
+7. **Nie psuj poprawnego running example.**
+8. **Nie przesadzaj z formalizmem na slajdach** — to ma być talk, nie artykuł.
+9. **Nie przesadzaj z minimalizmem** — slajdy mają być również wizualnie mocne i eleganckie.
+
+## PROCEDURA, KTÓRĄ MASZ WYKONAĆ
+
+1. Przeczytaj `paper/paper.tex` i porównaj z `paper/paper.pdf`, aby ustalić źródłową treść.
+2. Przeczytaj dokładnie `slides/presentation.tex`.
+3. Zidentyfikuj:
+
+   * elementy poprawne, które trzeba zachować,
+   * elementy wymagające dopracowania merytorycznego,
+   * elementy wymagające dopracowania wizualnego,
+   * elementy ryzykowne pod względem czytelności projektorowej.
+4. Wprowadź poprawki bezpośrednio w `slides/presentation.tex`.
+5. Jeśli możesz, skompiluj prezentację i sprawdź, czy:
+
+   * nie ma błędów kompilacji,
+   * nie ma wyciekającego tekstu,
+   * TikZ nie rozjeżdża się,
+   * slajdy 8–12 są czytelne,
+   * finał wygląda mocno.
+6. Jeśli po kompilacji coś wygląda źle, popraw to od razu w `slides/presentation.tex`.
+7. Zakończ dopiero wtedy, gdy plik jest w stanie, który sam uznałbyś za **gotowy na konferencję**.
+
+## PRIORYTETY DECYZYJNE
+
+Jeżeli musisz wybierać, preferuj w tej kolejności:
+
+1. **poprawność matematyczna i zgodność z paperem,**
+2. **klarowność dla publiczności TCS,**
+3. **siła dramaturgii konferencyjnej,**
+4. **czytelność projektorowa,**
+5. **estetyka.**
+
+## KRYTERIUM SUKCESU
+
+Efekt końcowy ma spełniać wszystkie poniższe warunki:
+
+* slajdy są w pełni zgodne z `paper/paper.tex` i `paper/paper.pdf`,
+* nie zawierają halucynacji,
+* wyglądają profesjonalnie,
+* mają mocniejszy początek,
+* mają czytelniejsze slajdy 8–9,
+* mają bardziej komunikacyjny slajd 12,
+* mają mocniejszy slajd końcowy,
+* są spójne notacyjnie,
+* nadają się do bezpiecznego użycia na LATIN 2026.
+
+## FORMAT TWOJEGO DZIAŁANIA
+
+Masz po prostu:
+
+* **edytować `slides/presentation.tex`**,
+* a po zakończeniu wypisać tylko krótkie podsumowanie wykonanych zmian.
+
+**Nie wypisuj całego poprawionego kodu slajdów.**
