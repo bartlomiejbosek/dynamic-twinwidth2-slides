@@ -1,0 +1,145 @@
+* **[Slajd 1: Dynamiczne struktury danych dla macierzy twin-ordered]**
+  Dzień dobry. Ten referat dotyczy tego, jak uczynić zwarte reprezentacje macierzy twin-ordered dynamicznymi. To jest wspólna praca z osobami wymienionymi tutaj.
+
+* **[Slajd 2: Jaki jest dynamiczny obiekt?]**
+  Obiektem jest binarna macierz `n na n`, oznaczona przez `M`. Kluczowa rzecz po lewej stronie jest taka, że porządek wierszy i kolumn jest ustalony raz na zawsze. Po aktualizacji nie wolno nam już niczego przestawiać.
+
+  Teraz spójrzmy na rysunek po prawej. Komórka obwiedziona na czerwono to interfejs `QueryBit(i,j)`: wybieramy jeden wiersz i jedną kolumnę i pytamy o ten bit. Komórka obwiedziona na niebiesko, z małą etykietą `0 <-> 1`, to interfejs `Update(i,j)`: flip jednej wartości.
+
+  Same operacje są więc całkowicie lokalne, ale obietnica jest globalna. Po każdym flipie cała macierz nadal musi być `d`-twin-ordered, a my chcemy przez cały czas utrzymywać zwartą reprezentację online. Żeby wykorzystać tę obietnicę, najpierw potrzebujemy właściwego języka strukturalnego.
+
+* **[Slajd 3: Twin-ordering przez sekwencje kontrakcji]**
+  Formalna definicja jest w ramce u góry, ale na potrzeby referatu obraz jest prostszy: składamy macierz, podczas gdy porządek pozostaje ustalony.
+
+  Prześledźmy cztery migawki od lewej do prawej. Na pierwszym obrazku każdy wiersz i każda kolumna są osobne. Na drugim scalamy dwa kolejne wiersze. Na trzecim dodatkowo scalamy dwie kolejne kolumny. Na ostatnim bloki są już dużo większe, więc patrzymy na grubszą wersję tej samej macierzy.
+
+  Zacienione strefy to jedyne naprawdę kłopotliwe miejsca. To są strefy niestałe: aktualny blok wierszy spotyka aktualny blok kolumn i w ich przecięciu nadal widzimy zarówno zera, jak i jedynki. Szerokość po prostu liczy, ile takich mieszanych stref może jednocześnie widzieć pojedynczy aktualny blok wierszy albo pojedynczy aktualny blok kolumn.
+
+  W tym przykładzie nawet na późnym obrazku po prawej żaden blok nie widzi więcej niż dwóch takich stref. Dlatego etykieta mówi o szerokości co najwyżej `2`.
+
+  A więc `d`-twin-ordered znaczy: istnieje pewna historia kolejnych scaleń wierszy i kolumn, której szerokość nigdy nie przekracza `d`. To jest strukturalna obietnica na resztę referatu. Gdy już mamy ten model, naturalne kolejne pytanie brzmi, czy da się go utrzymać po aktualizacjach.
+
+* **[Slajd 4: Luka: statycznie tak, dynamicznie nie]**
+  Spójrzmy najpierw na lewą kartę. Statyczny wynik Pilipczuka, Sokołowskiego i Zych-Pawlewicza przechowuje ustaloną macierz `d`-twin-ordered w `O_d(n)` bitach i odpowiada na zapytania w czasie `O_d(log log n)`.
+
+  Teraz spójrzmy na prawą kartę. To jest brakująca wersja dynamiczna: czy możemy wspierać zarówno `QueryBit`, jak i `Update`, przy założeniu że macierz cały czas pozostaje `d`-twin-ordered, a pamięć pozostaje bliska liniowej na word RAM?
+
+  Strzałka na dole pokazuje lukę między tymi dwoma światami. Chcemy dostać prawą stronę, nie rezygnując z lokalnego dostępu `O(log log n)`. Pełna przebudowa po każdym flipie zabijałaby cały sens, bo jedna lokalna zmiana wywoływałaby pracę globalną.
+
+  Tak więc pod koniec setupu pytanie jest bardzo czyste: zachować zwartość, dodać aktualizacje i nadal pozostać lokalnym. Następny slajd daje odpowiedź.
+
+* **[Slajd 5: Główne twierdzenie]**
+  Najpierw sformułuję payoff. Jeśli macierz przez cały czas pozostaje `d`-twin-ordered, to możemy uczynić interfejs w pełni dynamicznym, z `O_d(n)` pamięci i z oczekiwanym czasem worst-case `O(log log n)` zarówno dla `QueryBit`, jak i dla `Update`.
+
+  Wiersz z inicjalizacją to miejsce, w którym pozostaje praca strukturalna i zależność od `d`: startujemy z listy slabów `K`. Teraz czytajmy tabelę na dole jako trade-off. W porównaniu ze strukturą statyczną cena pojawia się w kolumnie `Space`: `O_d(n)` bitów zamienia się w `O_d(n)` słów pamięci.
+
+  Zachowujemy tę samą lokalną skalę dostępu `O(log log n)`. Zyskujemy prawdziwą operację aktualizacji, a online'owe ograniczenia dla zapytań i aktualizacji nie niosą już `d`. Ta zależność zostaje tylko w inicjalizacji i pamięci.
+
+  To jest siła tego twierdzenia: trudność kombinatoryczna jest opłacana w inicjalizacji i pamięci, a żywy interfejs pozostaje jednostajnie szybki.
+
+* **[Slajd 6: Slaby: skąd bierze się pamięć bliska liniowej]**
+  Pierwszy obiekt strukturalny jest bardzo prosty: slab to po prostu prostokąt całkowicie wypełniony jedynkami, a dekompozycja slabowa to zbiór parami rozłącznych slabów pokrywających wszystkie jedynki.
+
+  Zacznijmy od kolorowej macierzy po lewej. Każdy półprzezroczysty prostokąt to jeden slab. A więc jedynki nie są reprezentowane komórka po komórce; są zgrupowane w kilka geometrycznych bloków.
+
+  Teraz przejdźmy do listy `K` po prawej. To nie jest drugi przykład. To jest dokładnie ten sam obraz zapisany współrzędnymi. Krótki slab przy górze to `M[[1,1],[2,3]]`. Duży blok w lewym dolnym rogu to `M[[4,5],[1,3]]`. Cienkie kawałki po prawej też stają się osobnymi wpisami.
+
+  Ograniczenie w środku mówi nam, dlaczego to jest użyteczne. Każda macierz `d`-twin-ordered ma dekompozycję slabową z co najwyżej `d(2n-2)+1` slabami. A więc zbiór jedynek już ma geometryczny opis rozmiaru `O_d(n)`.
+
+  To jest pierwszy krok kompresji. Ale do dynamicznej przebudowy nie wystarczy dowolne pokrycie slabami. Potrzebujemy kanonicznego.
+
+* **[Slajd 7: Kanoniczne slaby: normalizacja przed przebudową]**
+  Ten slajd pokazuje krok normalizacji. Zacznijmy od bloku definicji po lewej: w ustalonej kolumnie `i`-strip to maksymalny pionowy bieg jedynek. Jeśli ten sam przedział wierszy przetrwa przez kolejne kolumny, to takie stripy są siblings. Jedna klasa siblings tworzy jeden kanoniczny slab.
+
+  Teraz czytajmy rysunek jako układ przed i po. W lewym panelu pokrycie jest poprawne, ale duże grube prostokąty łączą stripy, które przestają zachowywać się tak samo, gdy przesuwamy się po kolumnach. Duża strzałka mówi nam, żeby rozciąć dokładnie w tym miejscu.
+
+  W prawym panelu te klasy siblings zostały już rozdzielone. Pokrycie jest bardziej rozdrobnione, ale teraz jest wymuszone przez strukturę stripów samej macierzy. Dlatego właśnie jest to właściwy cel dla przyszłych przebudów.
+
+  Rodzina kanoniczna nadal ma tylko rozmiar `O_d(n)`, a argument z corners stojący za tym ograniczeniem jest w backupie.
+
+  A więc zadanie `Decompose` jest jasne: wziąć dowolną dekompozycję slabową i zamienić ją na tę znormalizowaną kanoniczną. Następne dwa slajdy pokazują to na jednym konkretnym running example.
+
+* **[Slajd 8: Running example I: gdzie kończą się kanoniczne slaby?]**
+  Tutaj naprawdę zaczyna się running example. Zachowajmy kolorową macierz `4 na 4` po lewej jako wejściową dekompozycję `K`, ale większość uwagi skierujmy na tabelę po prawej.
+
+  Dla każdego wiersza `i` czytajmy tabelę ściśle od lewej do prawej. Kolumna `before` to `strips_i`. Kolumna `after` to `strips_{i+1}`. A czerwona kolumna `ends here` to `B_i`, czyli dokładnie te stripy, które znikają w tej rundzie.
+
+  W wierszu `i=1` kolumna `before` zawiera `[2,2]` i `[4,4]`, a kolumna `after` ma już tylko `[2,4]`. A więc stripy `[2,2]` i `[4,4]` kończą się właśnie tutaj i trafiają do `B_1`. W wierszu `i=2` kolumny `before` i `after` są identyczne, więc czerwona kolumna jest pusta. W wierszu `i=3` przedział `[2,4]` jest obecny `before`, ale nie `after`, więc cały ten przedział trafia do `B_3`. W ostatnim wierszu wszystko, co jeszcze jest obecne, musi zakończyć się w kolumnie `4`.
+
+  Alert box po lewej daje zasadę efektywności stojącą za tą tabelą. Nie przeliczamy wszystkich stripów od zera. Zmienić się mogą tylko przedziały dotknięte przez kończące się slaby `C_i` oraz przez następne otwierające się slaby `O_{i+1}`. Cała reszta jest po prostu przenoszona przez wiersz.
+
+* **[Slajd 9: Running example II: otwarcia i domknięcia]**
+  Drugi sweep jest częścią symetryczną, a teraz głównym obiektem do obserwowania jest zielona kolumna `output`. Lewy box definiuje `A_i`: to są stripy, które otwierają się, gdy wchodzimy do kolumny `i`. Tabela dopasowuje więc dwa strumienie zdarzeń: otwarcia `A_i` i domknięcia `B_i`.
+
+  Czytajmy regułę po lewej razem z górną tabelą. Gdy `[a,b]` pojawia się w kolumnie `opens`, zapisujemy bieżącą kolumnę w `slab_start[a]`. Gdy ten sam przedział później pojawi się w kolumnie `closes`, wypisujemy jeden kanoniczny slab w zielonej kolumnie.
+
+  Kluczowy fragment to wiersz `i=2`, a potem `i=3`. W wierszu `i=2` przedział `[2,4]` pojawia się w `A_2`, więc ustawiamy `slab_start[2]=2`. W wierszu `i=3` ten sam przedział `[2,4]` pojawia się w kolumnie `closes`, więc zielony output to dokładnie `(2,4,2,3)`. W wierszu `i=4` przedziały `[1,1]` i `[3,4]` zarówno się otwierają, jak i zamykają w tej samej rundzie, więc stają się jednokolumnowymi kanonicznymi slabami.
+
+  Teraz spójrzmy na macierz na dole. Te zielone rekordy outputu są dokładnie kolorowymi prostokątami finalnej kanonicznej dekompozycji `R`. A więc `Decompose` jest bardzo konkretną historią: wykryj otwarcia, wykryj domknięcia, dopasuj równe przedziały wierszy i wypisz kanoniczne slaby.
+
+  W tym momencie możemy już przejść do samej struktury dynamicznej.
+
+* **[Slajd 10: Struktura amortyzowana: `P` dla slabów, `Q` dla świeżych flipów]**
+  Tu zaczyna się warstwa dynamiczna. Weźmy kanoniczną dekompozycję ze slajdu 9 jako ostatnią przebudowaną bazę. Po lewej jest ona przechowywana geometrycznie w strukturze point-location `P`. Po prawej duży box `Q` przechowuje tylko jawne nadpisania komórek od czasu tej przebudowy.
+
+  Ten podział jest pojęciowo czysty: `P` pamięta stabilną geometrię, a `Q` pamięta świeżą zmianę.
+
+  Czytajmy przepływ po prawej od góry do dołu. `QueryBit(i,j)` najpierw sprawdza `Q`. Jeśli jest trafienie, ufamy `Q`; tylko przy braku trafienia pytamy `P`.
+
+  Dla `Update(i,j)` logika jest równoległa. Przy trafieniu w `Q` po prostu negujemy zapisaną wartość. Przy braku trafienia pytamy `P` o stary bit, wykonujemy flip i zapisujemy jawne nadpisanie w `Q`.
+
+  Inwariant na dole jest więc regułą własności komórek: jeśli komórka jest w `Q`, to `Q` jest autorytatywne; w przeciwnym razie odpowiedź pochodzi z bazowych slabów w `P`. A gdy box z progiem uruchamia się przy `|Q| = 8 f_d(n+2)`, przebudowujemy bazę i opróżniamy bufor.
+
+* **[Slajd 11: Przebudowa `P`: bufor -> świeża baza]**
+  To jest sama przebudowa, i najczyściej czyta się ten slajd ściśle od lewej do prawej.
+
+  W pierwszym boxie mamy starą bazę kanoniczną razem z bieżącym buforem. Kolorowe prostokąty to stare slaby z `P`. Małe czerwone `0` oznacza zbuforowany zero-update, a małe zielone `1` oznacza zbuforowany one-update.
+
+  Teraz skupmy się na środkowym boxie, bo to właśnie tam dzieje się właściwa praca. Zbuforowane zero-updates są destrukcyjne: jeśli taka aktualizacja leży wewnątrz starego jedynkowego slaba, to ten slab trzeba lokalnie rozciąć, wiersz po wierszu, wokół niej. Zbuforowane one-updates mają znaczenie tylko wtedy, gdy są niepokryte; wtedy stają się singletonowymi slabami.
+
+  A więc `K` w środku zawiera dokładnie trzy rodzaje elementów: nietknięte stare slaby, rozcięte kawałki wycięte przez czerwone zero-updates oraz singletonowe slaby dla niepokrytych zielonych one-updates. To nie jest jeszcze postać kanoniczna, ale już jest poprawna dekompozycja slabowa aktualnej macierzy.
+
+  Dlatego właśnie oszacowanie w środku jest ważne: `|K| <= |P| + 2|Q|`. Po wchłonięciu bufora geometria nadal pozostaje mała.
+
+  Potem prawa strzałka to po prostu `Decompose(n,K)`. Ona zwraca nas do postaci kanonicznej `R`, której oczekuje warstwa zapytań.
+
+  A więc przebudowa znaczy: lokalnie wchłonąć bufor, zbudować małe bieżące pokrycie i ponownie sprowadzić strukturę do postaci kanonicznej.
+
+* **[Slajd 12: Aktualizacje worst-case: epoki i snapshot copies]**
+  Do tej pory struktura jest tylko amortyzowana, bo przebudowa nadal jest droga w chwili, w której się wydarza. Ten slajd zmienia przebudowę w pracę tła, podczas gdy interfejs online nigdy się nie zatrzymuje.
+
+  Czytajmy diagram kolumna po kolumnie. W lewej kolumnie, podczas epoki `E_{2i-2}`, górna niebieska kopia jest strukturą aktywną. Ona odpowiada na rzeczywisty strumień online. Szary box pod nią to zamrożony snapshot. Czerwony box na dole to następna struktura `A_i`, inicjalizowana z tego ustalonego snapshotu.
+
+  To właśnie ten zamrożony egzemplarz sprawia, że faza inicjalizacji jest czysta. Daje przebudowie nieprzerwany dostęp tylko do odczytu do starego stanu, podczas gdy aktywna kopia powyżej cały czas się zmienia.
+
+  Teraz przejdźmy do środkowej kolumny, epoki `E_{2i-1}`. Inicjalizacja jest skończona i czerwona kopia zaczyna nadrabianie. Niebieska kopia nadal odpowiada na żywe aktualizacje.
+
+  Tymczasem dla każdej nowej przychodzącej aktualizacji czerwona kopia przetwarza dwie stare zaległe. A więc backlog maleje ze stałą szybkością zamiast się kumulować.
+
+  W prawej kolumnie nadrabianie jest zakończone i czerwona kopia przejmuje sterowanie. Staje się nową aktywną niebieską kopią, a my zachowujemy świeży zamrożony snapshot na następną rundę.
+
+  Każdy cykl ma więc ten sam rytm: inicjalizacja w tle, catch-up, takeover. To jest krok deamortyzacji, który podnosi strukturę amortyzowaną do oczekiwanego czasu worst-case `O(log log n)` dla aktualizacji.
+
+* **[Slajd 13: Główne przesłanie]**
+  Na koniec chciałbym domknąć to pipeline'em na środku. Zaczynamy od strukturalnej obietnicy `d`-twin-ordering. Ona daje nam opis wszystkich jedynek za pomocą `O_d(n)` slabów. Kanonizacja zamienia ten opis w stabilny cel `R`. Następnie `P + Q` rozdziela długowieczną geometrię od najświeższych flipów. Na końcu epoki wraz z frozen copies usuwają amortyzację.
+
+  Cała historia kompresuje się więc do jednego łańcucha: `d`-twin-ordering -> slabs -> canonical slabs -> `P + Q` -> epochs with frozen copies.
+
+  Każdy krok usuwa jedną przeszkodę, a po ostatnim kroku interfejs online jest tak prosty, jak wyglądał na slajdzie 2: `QueryBit` i `Update`, oba w oczekiwanym czasie worst-case `O(log log n)`. To jest główne przesłanie, które chciałbym zostawić na tym slajdzie. Chętnie odpowiem na pytania.
+
+--- Główna część kończy się tutaj. Slajdy 14--16 są tylko backupem / Q&A. Nie należy ich wliczać do głównego timingu 16--17 minut. ---
+
+* **[Slajd 14: TYLKO BACKUP / Q&A -- adhesive segment set]**
+  Jeśli padnie pytanie, jak zaimplementowany jest sweep ze slajdów 8 i 9, to właśnie jest wspierająca go struktura danych. Utrzymuje ona rozłączne, niesąsiadujące przedziały na prostej `1,...,n`, a wypisane tutaj operacje są dokładnie tym, czego sweep potrzebuje: containment, test sąsiedztwa, merge i split.
+
+  Na rysunku dwa aktualne segmenty to `[2,4]` i `[7,9]`. Niebieska strzałka pokazuje, jak `Merge([5,6])` zasypuje lukę, a czerwona strzałka pokazuje, jak `Split([3,3])` usuwa podprzedział. Wszystko to nadal działa w czasie worst-case `O(log log n)` przy pamięci `O(n)`.
+
+* **[Slajd 15: TYLKO BACKUP / Q&A -- dlaczego kanonicznych slabów jest tylko O_d(n)?]**
+  Jeśli ktoś zapyta, skąd bierze się ograniczenie liniowe, odpowiedzią jest argument z corners na tym slajdzie. Corner to zaznaczony świadek `2 na 2`, w którym oba wiersze się różnią i obie kolumny się różnią, a Lemma 1 ogranicza liczbę takich świadków, jakie może mieć macierz `d`-twin-ordered.
+
+  Wewnętrzne kanoniczne slaby są obciążane do pobliskich corners, podczas gdy przypadki brzegowe dają tylko dodatkowe `4n`. To właśnie dlatego rodzina kanoniczna nadal spełnia `|R| <= 4 f_d(n+2) + 4n`.
+
+* **[Slajd 16: TYLKO BACKUP / Q&A -- przebudowa K z P i Q w szczegółach]**
+  To jest rozszerzona wersja slajdu 11. Górna linia to checklist algorytmiczny: posortować `Q`, przypisać zero-updates do zawierających je slabów z `P`, rozciąć dotknięte slaby wiersz po wierszu, dodać niepokryte slaby `1 x 1` dla one-updates, a potem uruchomić `Decompose`.
+
+  Mały rysunek na dole pokazuje jeden dotknięty slab. Zaznaczony wiersz `i` jest rozcinany w kolumnach aktualizacji `k_1` i `k_2`, podczas gdy części powyżej i poniżej pozostają większymi slabami. Ten slajd backupowy trzymamy głównie dla tego samego oszacowania co wcześniej: po całym tym lokalnym rozcinaniu nadal mamy `|K| <= |P| + 2|Q|`.
