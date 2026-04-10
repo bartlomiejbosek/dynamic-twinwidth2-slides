@@ -18,4 +18,4 @@ cd "${OWNPATH}/slides"
 pdflatex presentation.tex
 pdflatex presentation.tex
 
-cp -v "${OWNPATH}/slides/presentation.pdf" "${OWNPATH}/input-latex/presentation.pdf
+cp -v "${OWNPATH}/slides/presentation.pdf" "${OWNPATH}/input-latex/presentation.pdf"
