@@ -1,301 +1,341 @@
-Działaj jako światowej klasy speechwriter i redaktor wystąpień konferencyjnych TCS, ze specjalizacją w referatach na LATIN / ESA / SODA / STACS / ICALP. Twoim zadaniem nie jest recenzowanie, lecz wykonanie chirurgicznej, w pełni kontrolowanej poprawy istniejącego skryptu przemówienia tak, aby wynik był idealny pod względem:
-
-- zgodności ze slajdami,
-- mówalności,
-- metryki czasu,
-- klarowności dla publiczności TCS,
-- braku halucynacji wizualnych,
-- jakości narracyjnej i mostów między slajdami.
+Działaj jako elitarny redaktor wystąpień konferencyjnych TCS oraz bardzo dokładny edytor techniczny. Twoim zadaniem jest NIE napisać komentarz, tylko rzeczywiście poprawić istniejący skrypt przemówienia tak, aby stał się możliwie idealnym, gotowym do wygłoszenia tekstem na konferencji LATIN / ESA / STACS / SODA / ICALP.
 
 ==================================================
-PLIKI, Z KTÓRYCH MASZ KORZYSTAĆ
+CEL
 ==================================================
 
-Masz użyć łącznie następujących plików:
+Masz edytować plik:
 
-- `presentation.pdf` — źródło prawdy o tym, co naprawdę widzi publiczność;
-- `presentation.txt` — źródło prawdy o dokładnym tekście, wzorach, etykietach i strukturze slajdów;
-- `plan.txt` — pomocniczo, do zrozumienia zamierzonej dramaturgii i funkcji każdego slajdu;
-- `input-latex/speach-en.txt` — plik, który masz poprawić.
+input-latex/speach-en.txt
 
-==================================================
-GŁÓWNE ZADANIE
-==================================================
+Tak, aby po poprawkach był to:
+- świetny skrypt mówiony po angielsku,
+- ściśle zgodny ze slajdami,
+- naturalny do wygłoszenia,
+- odpowiednio długi na główny talk,
+- mocny retorycznie,
+- wolny od sztucznego „LLM-owego” tonu,
+- wolny od halucynacji i niepotrzebnych dopowiedzeń.
 
-Masz EDYTOWAĆ plik:
-
-`input-latex/speach-en.txt`
-
-tak, aby po poprawkach był to znakomity, gotowy do wygłoszenia skrypt przemówienia na 20-minutowy slot konferencyjny, z celem:
-
-- 16–17 minut mówienia netto dla głównego referatu,
-- naturalny język angielski,
-- pełna zgodność z głównymi slajdami,
-- mocne zakotwiczenie w tym, co faktycznie widać na ekranie.
-
-Masz poprawić tylko plik `input-latex/speach-en.txt`.
-Nie modyfikuj innych plików.
+Nie twórz nowego decku. Nie zmieniaj prezentacji. Nie zmieniaj planu. Popraw tylko skrypt mówiony.
 
 ==================================================
-TRYB PRACY — BARDZO WAŻNE
+MATERIAŁY ŹRÓDŁOWE I HIERARCHIA PRAWDY
 ==================================================
 
-1. Najpierw przeczytaj `presentation.pdf` slajd po slajdzie.
-2. Zweryfikuj każdy slajd z `presentation.txt`, aby nie pomylić etykiet, wzorów i nazw.
-3. Przeczytaj `plan.txt`, ale traktuj go jako kontekst pomocniczy.
-4. Potem popraw `input-latex/speach-en.txt`.
+Masz znaleźć i przeczytać odpowiednie pliki towarzyszące w repo/workspace, w szczególności:
+- presentation.pdf
+- presentation.txt
+- plan.txt
+- input-latex/speach-en.txt
 
-Źródłem prawdy o warstwie wizualnej jest `presentation.pdf`, a nie `plan.txt`.
-Jeżeli plan przewiduje element, którego nie ma w finalnym PDF, NIE WOLNO o nim mówić tak, jakby był widoczny na ekranie.
+Jeżeli dostępne są też paper.pdf / paper.txt, możesz ich używać wyłącznie pomocniczo do sprawdzania technicznej poprawności, ale:
 
-==================================================
-NAJWAŻNIEJSZY CEL
-==================================================
+NAJWYŻSZYM ŹRÓDŁEM PRAWDY dla skryptu są slajdy:
+1. presentation.pdf
+2. presentation.txt
+3. plan.txt jako kontekst pomocniczy
+4. dopiero potem artykuł
 
-Masz usunąć wszystkie realne błędy i doprowadzić skrypt do wersji idealnej.
-
-To znaczy:
-- żadnych halucynacji wizualnych,
-- żadnego mówienia obok slajdu,
-- żadnego czytania slajdów na głos,
-- żadnego sztucznego, papierowego stylu,
-- żadnego niedoboru czasu,
-- żadnych zbyt długich, duszących zdań,
-- żadnych generycznych opisów tam, gdzie na slajdzie jest konkretna tabela, diagram, pipeline, układ lewo-prawo, kolory lub schemat blokowy.
+Skrypt ma odpowiadać temu, co publiczność faktycznie widzi na ekranie.
 
 ==================================================
-SZTYWNE WYMAGANIA DOTYCZĄCE WYNIKU
+TRYB PRACY
 ==================================================
 
-Wynikowy plik musi spełniać WSZYSTKIE poniższe warunki:
+Masz wykonać realną edycję pliku input-latex/speach-en.txt.
+Nie wypisuj pełnej poprawionej treści na stdout, chyba że środowisko wymusza inaczej.
+Edytuj plik in place.
 
-### A. Metryka i czas
-- Główna część przemówienia dla slajdów 1–13 ma mieć około 2050–2200 słów licząc tylko treść mówioną, bez technicznych nagłówków i bez opcjonalnych sekcji backup/Q&A.
-- Celem jest realne 16–17 minut mówienia przy tempie około 130 słów/min.
-- Nie wolno osiągać tej długości przez lanie wody.
-- Dodatkowe słowa mają zwiększać klarowność, prowadzenie po slajdach i intuicję techniczną.
-
-### B. Styl mówiony
-- Angielski ma brzmieć jak prawdziwy, doświadczony badacz TCS na scenie.
-- Zdania mają być krótkie lub średnie, rytmiczne, łatwe do wypowiedzenia.
-- Rozbij zbyt długie zdania.
-- Usuń fragmenty brzmiące jak artykuł naukowy czy narrator lektorski.
-- Nie czytaj bullet pointów ani twierdzeń słowo w słowo; tłumacz ich sens.
-
-### C. Silne zakotwiczenie w slajdach
-- Każdy główny slajd 1–13 musi mieć wyraźnie dedykowany fragment.
-- Każdy ważny element wizualny na slajdach 3–13 ma być aktywnie wykorzystany przez mowę.
-- Tam, gdzie jest tabela, diagram, schemat blokowy, pipeline, układ dwóch paneli, oś czasu, kolorowe prostokąty, strzałki, podpisane boxy — skrypt ma prowadzić wzrok słuchacza po tych elementach.
-- W szczególności używaj kontrolowanej deiktyki typu:
-  - “look at the left panel”
-  - “in the bottom table”
-  - “follow the pipeline from left to right”
-  - “the red-outlined cell”
-  - “the rightmost box”
-  - “the middle column”
-  - “the lower matrix”
-ale tylko wtedy, gdy te elementy naprawdę są na slajdzie.
-
-### D. Brak halucynacji
-- Nie wolno wspominać o żadnym elemencie, którego nie ma w `presentation.pdf`.
-- Szczególnie: usuń lub napraw wszelkie odniesienia do nieistniejących elementów wizualnych.
-- Jeżeli jakiś szczegół był w `plan.txt`, ale nie ma go w finalnych slajdach, usuń go albo przeformułuj tak, by odnosił się do tego, co rzeczywiście widać.
-
-### E. Publiczność LATIN / TCS
-- Do końca slajdu 4 słuchacz ma dokładnie wiedzieć:
-  - jaki jest obiekt dynamiczny,
-  - jaki jest problem,
-  - jaka jest luka między statycznym i dynamicznym przypadkiem.
-- Główny wynik musi być wyraźny i dobrze “sprzedany”.
-- Część techniczna ma podkreślać proof idea i structural idea.
-- Zakończenie ma być mocne, zapamiętywalne i sceniczne.
+Po zakończeniu wypisz tylko krótkie podsumowanie:
+- co poprawiłeś,
+- szacunkową liczbę słów dla slajdów 1–13,
+- szacunkową liczbę słów dla slajdów 14–16,
+- potwierdzenie, że główny talk mieści się w 16–17 minutach przy ~130 słowach/min.
 
 ==================================================
-OBOWIĄZKOWE NAPRAWY SLAJD-PO-SLAJDZIE
+KLUCZOWE ZAŁOŻENIA, KTÓRYCH MUSISZ DOPILNOWAĆ
 ==================================================
 
-Masz bezwzględnie wprowadzić następujące poprawki.
+1. Skrypt ma pozostać zorganizowany slajd-po-slajdzie.
+   Każdy slajd musi mieć własny, jednoznacznie rozpoznawalny fragment wypowiedzi.
 
-### Slajd 1
-- Zachowaj bardzo krótki opener.
-- Nie przeciążaj tego slajdu.
-- Możesz lekko wzmocnić hook, ale bez rozwlekania.
+2. Musisz zachować wszystkie rzeczywiste zalety obecnej wersji:
+   - mocne zakotwiczenie w slajdach,
+   - odniesienia deiktyczne,
+   - prowadzenie wzroku słuchacza przez tabele, figury, diagramy,
+   - bardzo dobrą narrację na slajdach 8–12,
+   - brak halucynacji merytorycznych.
 
-### Slajd 2
-- Dodaj bardziej konkretne prowadzenie po rysunku.
-- Wprost wyjaśnij:
-  - że zaznaczona komórka dla `QueryBit(i,j)` odpowiada zapytaniu,
-  - że druga zaznaczona komórka z symbolem `0↔1` odpowiada flipowi.
-- Nazwij elementy kolorystycznie lub przestrzennie tylko jeśli są tak widoczne w finalnym PDF.
+3. Musisz usunąć lub naprawić wszystkie rzeczywiste wady:
+   - miejsca zbyt definicyjne albo zbyt blisko czytania slajdu,
+   - miejsca zbyt „pisane”, nie „mówione”,
+   - miejsca zbyt słabe retorycznie,
+   - miejsca, gdzie intuicja jest za płytka,
+   - miejsca z niepotrzebnie spornymi opisami wizualnymi,
+   - wszelką metryczną niejednoznaczność między głównym talkiem a backupami.
 
-### Slajd 3
-- To ma być pełnoprawny walkthrough sekwencji kontrakcji, a nie ogólna parafraza definicji.
-- Poprowadź słuchacza przez cztery stany od lewej do prawej.
+4. Nie wolno:
+   - zmyślać elementów, których nie ma na slajdach,
+   - dodawać nowych twierdzeń, nowych notacji, nowych wyników, nowych definicji spoza materiału,
+   - przepisywać artykułu do skryptu,
+   - psuć dobrych fragmentów tylko po to, by „zmienić jak najwięcej”.
+
+5. Edytuj odważnie, ale inteligentnie:
+   - zachowuj najlepsze fragmenty,
+   - przepisuj tylko to, co rzeczywiście wymaga poprawy,
+   - jeśli jakiś fragment już jest świetny, zostaw go albo dopracuj minimalnie.
+
+==================================================
+NAJWAŻNIEJSZY CEL METRYCZNY
+==================================================
+
+Rozdziel wyraźnie:
+- główny talk: slajdy 1–13,
+- backup/Q&A only: slajdy 14–16.
+
+Po poprawkach:
+- slajdy 1–13 mają dawać realnie około 16–17 minut mówienia przy ~130 słowach/min,
+- celuj w około 2050–2200 słów dla slajdów 1–13,
+- backupy 14–16 mają pozostać krótkie, wyraźnie opcjonalne, i nie mogą zaburzać metryki głównego referatu.
+
+Jeśli obecny plik nie rozróżnia wystarczająco jasno głównego talku od backupów, popraw to w samej strukturze tekstu.
+Możesz np. jasno oznaczyć przy slajdach 14–16, że są to:
+- Backup / only if asked
+- Q&A backup
+- Do not rehearse in main timing
+
+Zrób to elegancko i oszczędnie.
+
+==================================================
+WYMAGANIA STYLISTYCZNE
+==================================================
+
+Skrypt ma brzmieć jak naturalna, inteligentna mowa konferencyjna, a nie jak artykuł i nie jak LLM.
+
+W szczególności:
+- używaj krótkich i średnich zdań,
+- unikaj ciężkich zdań wielokrotnie złożonych,
+- unikaj suchego „This slide shows...”,
+- unikaj meta-komentarzy typu „this is the whole motivation”, „worth reading”, „I will now read...”
+- unikaj tonów sztucznie eleganckich i zbyt literackich,
+- unikaj zbędnych powtórzeń,
+- unikaj przegadania,
+- nie czytaj definicji z ekranu, jeśli można powiedzieć intuicję,
+- nie brzmi jak lektor,
+- nie brzmi jak tekst pisany do publikacji.
+
+Styl powinien być:
+- klarowny,
+- energiczny,
+- sceniczny,
+- precyzyjny,
+- naturalny dla prelegenta TCS.
+
+==================================================
+WYMAGANIA DEIKTYCZNE I WIZUALNE
+==================================================
+
+Dla każdego slajdu, który zawiera element wizualny, skrypt ma realnie prowadzić wzrok słuchacza.
+
+To oznacza, że masz używać zwrotów typu:
+- look at ...
+- on the left / on the right
+- in the top table
+- in the bottom figure
+- follow the arrow
+- in the first / second / rightmost box
+- notice the highlighted row
+- the red / green / blue cell, but tylko jeśli ten kolor rzeczywiście jest bezpieczny i jednoznaczny wizualnie
+- this column / this row / this panel
+
+ALE:
+jeśli opis koloru może być sporny albo niepotrzebny, wybieraj bezpieczniejsze kotwice przestrzenne:
+- left block / right block
+- highlighted box
+- lower panel
+- top blue box only when the box is clearly blue on the slide
+- etc.
+
+Masz szczególnie dopilnować, by skrypt był mocno zakotwiczony na slajdach:
+- 3
+- 6
+- 7
+- 11
+- 12
+
+bo tam najłatwiej wpaść w opis ogólnikowy albo zbyt pisemny.
+
+==================================================
+OBOWIĄZKOWE POPRAWKI SLIDE-BY-SLIDE
+==================================================
+
+Wprowadź co najmniej następujące korekty merytoryczno-retoryczne.
+
+SLIDE 1
+- Zachowaj krótki czas otwarcia.
+- Nie rozwlekaj.
+- Ma być naturalne, mocne, ale bardzo krótkie.
+- Nie zaczynaj enigmatycznym „The promise is structural”.
+- Od razu ustaw temat jasno i lekko.
+
+SLIDE 2
+- Zachowaj mocne odniesienie do czerwonej i niebieskiej zaznaczonej komórki.
+- Koniecznie zachowaj komentarz do challenge’u na dole slajdu.
+- To jest jeden z najlepszych fragmentów; poprawiaj minimalnie.
+
+SLIDE 3
+- To jest jeden z głównych problemów.
+- Skróć i odciąż formalny opis contraction sequence.
+- Nie czytaj prawie dosłownie definicji z tabeli.
+- Zamiast tego zbuduj intuicję „folding the matrix”.
+- Koniecznie prowadź wzrok przez cztery stany na dole.
+- Koniecznie wskaż non-constant zones i wyjaśnij ich rolę ustnie.
+- Zachowaj formalną poprawność, ale skróć definicyjność i zwiększ mówalność.
+
+SLIDE 4
+- Uczyń gap bardzo klarownym i scenicznym.
+- Unikaj opisów wizualnych, które mogą być niepotrzebnie sporne.
+- Najbezpieczniej operować na: left block, right block, arrow at the bottom, static result versus dynamic question.
+- Dodaj bardzo krótką intuicję, dlaczego full rebuild after each flip byłby złą odpowiedzią.
+
+SLIDE 5
+- Nie czytaj theorem slide.
+- Nie mów, że tabela „is worth reading”.
+- Zamiast tego aktywnie poprowadź słuchacza przez trade-off.
 - Wskaż:
-  - stan początkowy,
-  - merge rows,
-  - merge columns,
-  - ostatni stan z większymi blokami.
-- Wyjaśnij rolę zaznaczonych non-constant zones.
-- Zadbaj, aby definicja width była intuicyjna i mówiona, nie papierowa.
-
-### Slajd 4
-- Bezwzględnie wykorzystaj opozycję wizualną:
-  - lewa strona = static result,
-  - prawa strona = dynamic question,
-  - środkowa strzałka / kontrast = luka, którą praca domyka.
-- Ten slajd ma być scenicznie bardzo czytelny.
-
-### Slajd 5
-- Koniecznie wykorzystaj dolną tabelę porównawczą static vs dynamic.
-- Wyjaśnij ją krótko, ale konkretnie.
-- Podkreśl:
-  - co zachowujemy,
+  - co płacimy,
   - co zyskujemy,
-  - jaki jest trade-off przestrzeni,
-  - że query/update bounds nie niosą zależności od `d`.
-- Nie tylko wypowiedz theorem — sprzedaj go.
+  - dlaczego wynik jest mocny.
+- Dodaj 1–2 zdania ustnej interpretacji, dlaczego ten theorem jest nieoczywisty / imponujący.
+- Zachowaj pełną zgodność z twierdzeniem i tabelą.
 
-### Slajd 6
-- Silniej zakotwicz mowę w figurze.
-- Przeprowadź słuchacza:
-  - przez kolorowe slabs na rysunku,
-  - przez fakt, że kilka prostokątów koduje wszystkie jedynki,
-  - przez listę prostokątów `K`,
-  - przez fakt, że każdy slab to cztery współrzędne.
-- Dodaj nieco intuicji, ale bez wodolejstwa.
+SLIDE 6
+- Zachowaj dobry opis slab decomposition.
+- Wzmocnij połączenie między kolorowymi prostokątami w macierzy a listą K po prawej.
+- Mów naturalnie, nie zbyt definicyjnie.
+- Nie dopowiadaj implementacyjnych szczegółów spoza slajdu, jeśli nie są potrzebne.
 
-### Slajd 7
-- Zachowaj mocny kontrast:
-  - left valid cover,
-  - right canonical decomposition.
-- Wykorzystaj strzałkę / implikację między panelami.
-- Dobrze wyjaśnij `i-strip`, siblings i canonical slab.
-- Nie odlatuj za mocno w proof details, jeśli nie są widoczne na slajdzie.
-- Jeżeli wspominasz bound oparty na corners, rób to krótko i kontrolowanie.
+SLIDE 7
+- Mocno wyeksponuj kontrast:
+  - valid cover
+  - canonical decomposition
+- Użyj strzałki jako centralnego elementu narracji.
+- Wyjaśnij, po co canonicalization jest potrzebna dla przyszłych rebuildów.
+- Zachowaj bound, ale nie zamieniaj slajdu w suchy proof sketch.
 
-### Slajd 8
-- Usuń wszelkie halucynacje wizualne.
-- Jeżeli w finalnym PDF NIE ma czerwonej sweep line, NIE wolno o niej mówić jako o widocznym elemencie.
-- Zamiast tego prowadź słuchacza po tym, co naprawdę jest na slajdzie:
-  - macierzy,
-  - tabeli,
-  - wyróżnionych wierszach,
-  - kolumnie `B_i`,
-  - konkretnych rundach.
-- Zachowaj mocną konkretność, bo ten slajd ma potencjał dydaktyczny.
+SLIDES 8–9
+- To są najmocniejsze fragmenty. Zachowaj ich siłę.
+- Nie psuj ich.
+- Utrzymaj bardzo dobre prowadzenie przez tabelę i macierze.
+- Dodaj tylko drobne dopracowanie, jeśli pomoże płynności.
+- Na końcu slide 9 dodaj bardzo wyraźny most:
+  mamy już canonical description, więc teraz można przejść do dynamic layer.
 
-### Slajd 9
-- Zachowaj wysoką jakość tej sekcji.
-- Nadal prowadź przez top table i lower matrix.
-- Możesz ją lekko dopracować, ale nie zepsuj.
-- Utrzymaj konkrety zamiast ogólności.
+SLIDE 10
+- Zachowaj mocny opis rozdzielenia P i Q.
+- Uczyń invariant bardzo mówionym i intuicyjnym.
+- Ma być jasne:
+  - when query hits Q, trust Q;
+  - otherwise trust P.
+- Zachowaj odniesienie do threshold box na dole.
 
-### Slajd 10
-- To jeden z najważniejszych slajdów do naprawy.
-- Musisz explicite poprowadzić wzrok po schemacie:
-  - `P` jako baza,
-  - `Q` jako recent flips / override,
-  - flow zapytania,
-  - flow aktualizacji,
-  - hit / miss logic,
-  - próg rebuildingu,
-  - inwariant.
-- Słuchacz ma dokładnie wiedzieć, gdzie patrzeć na diagramie.
+SLIDE 11
+- To drugi główny problem.
+- Musisz znacznie poprawić deiktykę i konkretność.
+- Poprowadź widza przez pipeline left to right.
+- Koniecznie nazwij rolę poszczególnych boxów.
+- Koniecznie wyjaśnij wizualnie:
+  - buffered zero-updates,
+  - buffered one-updates,
+  - splitting of old slabs,
+  - singleton slabs for uncovered ones,
+  - canonicalization into the new base.
+- Ma to brzmieć jak realny komentarz do schematu, nie jak opis w podręczniku.
 
-### Slajd 11
-- To drugi najważniejszy slajd do naprawy.
-- Skrypt ma być mniej artykułowy, bardziej sceniczny.
-- Koniecznie przeprowadź słuchacza po pipeline’ie od lewej do prawej:
-  - old base,
-  - build/intermediate `K`,
-  - `Decompose`,
-  - new canonical base.
-- Zachowaj i dobrze objaśnij wzór:
-  `|K| <= |P| + 2|Q|`
-- Skróć lub rozbij zbyt ciężkie zdania.
-- Nie przeciążaj tego slajdu ponad miarę; ma być technicznie mocny, ale nadal mówalny.
+SLIDE 12
+- To trzeci główny problem.
+- Zachowaj strukturę trzech kolumn.
+- Znacznie pogłęb intuicję catch-upu i frozen snapshot.
+- Wyjaśnij:
+  - która kopia jest active,
+  - która jest frozen,
+  - skąd czyta background initialization,
+  - czemu snapshot musi być read-only,
+  - jak działa 2-for-1 catch-up,
+  - dlaczego zaległość znika zamiast narastać.
+- Nadal ma to być mówione i sceniczne, nie papierowe.
+- Nie wchodź w zbyt niski poziom formalizmu.
+- Ale daj publiczności LATIN realne „aha”.
 
-### Slajd 12
-- To trzeci kluczowy slajd do naprawy.
-- Musisz prowadzić po diagramie epok / snapshot copies.
-- Nazwij wyraźnie:
-  - kolejne kolumny / etapy,
-  - aktywną kopię,
-  - frozen copy / snapshot,
-  - initialize,
-  - catch-up,
-  - takeover.
-- Mowa ma być zsynchronizowana z diagramem, a nie abstrakcyjna.
+SLIDE 13
+- Zrób mocniejsze lądowanie.
+- Nie kończ po prostu neutralnym „Thank you.”
+- Ostatnie 2–3 zdania mają być zapamiętywalne.
+- Zakończenie ma zostawić słuchaczowi bardzo klarowny bottom line:
+  statyczna reprezentacja została uczyniona dynamiczną przez canonicalization + buffering + rebuilding + epoch de-amortization.
+- Dopiero potem naturalne zaproszenie do pytań.
 
-### Slajd 13
-- Zakończenie ma być mocne.
-- Użyj pipeline’u na slajdzie jako wizualnego podsumowania całości.
-- Przejdź po nim od lewej do prawej.
-- Ostatnie zdania mają brzmieć jak prawdziwy końcowy take-away dla LATIN, a nie zwykłe “thank you”.
-
-### Slajdy 14–16 (backup)
-- Dodaj krótkie, wyraźnie oznaczone OPTIONAL BACKUP / Q&A sections.
-- Te sekcje NIE wchodzą do głównego limitu 16–17 minut.
-- Dla każdego backup slide przygotuj 2–4 zdania:
-  - co powiedzieć, jeśli publiczność o to zapyta,
-  - jak odnieść się do widocznego slajdu,
-  - bez lania wody.
-- Oznacz te sekcje tak, aby było jasne, że są opcjonalne.
+SLIDES 14–16
+- Zachowaj, ale wyraźnie oznacz jako backup / optional / Q&A only.
+- Nie rozbudowuj ich.
+- Nie mogą przeszkadzać metryce głównego skryptu.
+- Mają być użyteczne, zwarte i technicznie precyzyjne.
 
 ==================================================
-DODATKOWE WYTYCZNE REDAKCYJNE
+DODATKOWE KRYTERIA JAKOŚCI
 ==================================================
 
-- Zachowaj strukturę slajd-po-slajdzie.
-- Zachowaj język angielski.
-- Nie psuj fragmentów, które już działają bardzo dobrze.
-- Szczególnie uważaj, aby nie zepsuć slajdów 8–9 i dobrych mostów między slajdami.
-- Wzmacniaj narrację przez:
-  - lepsze mosty,
-  - lepszą deiktykę,
-  - mocniejsze “why this matters”,
-  - klarowne przejścia od obrazu do idei.
+Po poprawkach skrypt ma spełniać wszystkie poniższe warunki jednocześnie:
+
+A. Każdy główny slajd 1–13 ma wyraźny, dedykowany fragment wypowiedzi.
+
+B. Skrypt nie pomija żadnego ważnego elementu wizualnego na slajdach 2–13.
+
+C. Skrypt nie czyta slajdów na głos.
+   Ma dodawać wartość ustną.
+
+D. Skrypt jest bezpieczny technicznie.
+   Zero halucynacji.
+   Zero nowych twierdzeń.
+   Zero błędnych kolorów/opisów.
+   Zero przesadnych interpretacji nieobecnych na slajdzie.
+
+E. Skrypt brzmi jak coś, co można naprawdę wygłosić na scenie.
+
+F. Główny talk 1–13 mieści się w 16–17 minutach przy ~130 słowach/min.
+
+G. Backup 14–16 jest wyraźnie oddzielony od głównej ścieżki.
 
 ==================================================
-CZEGO NIE WOLNO ROBIĆ
+STRATEGIA REDAKCYJNA
 ==================================================
 
-- Nie wolno wymyślać nowych wyników, argumentów ani treści nieobecnych w slajdach / planie / prezentacji.
-- Nie wolno mówić o elementach niewidocznych w finalnym PDF.
-- Nie wolno przepompować tekstu pustą retoryką.
-- Nie wolno zamieniać skryptu w styl artykułu.
-- Nie wolno usuwać technicznego rdzenia i zastępować go ogólnikami.
-- Nie wolno rozwalać poprawnej kolejności slajdów.
-- Nie wolno modyfikować innych plików niż `input-latex/speach-en.txt`.
+Nie edytuj mechanicznie wszystkiego.
+Zastosuj strategię:
+- preserve what is already excellent,
+- rewrite what is only decent,
+- fix aggressively what is weak.
+
+W praktyce:
+- slajdy 2, 8, 9, 10 są raczej do zachowania i lekkiego dopieszczenia,
+- slajdy 3, 11, 12, 13 wymagają najsilniejszych poprawek,
+- slajdy 4, 5, 6, 7 wymagają średnio mocnego dopracowania,
+- backupy tylko uporządkuj i oznacz jako opcjonalne.
 
 ==================================================
-KRYTERIUM AKCEPTACJI
+FINALNE POLECENIE
 ==================================================
 
-Twoja poprawa jest poprawna tylko wtedy, gdy po zakończeniu pracy spełnione są wszystkie poniższe warunki:
+Wykonaj teraz rzeczywistą edycję pliku input-latex/speach-en.txt zgodnie z powyższymi wymaganiami.
 
-1. Główny skrypt dla slajdów 1–13 ma realistyczne 16–17 minut.
-2. Każdy główny slajd jest jasno skomentowany.
-3. Skrypt reaguje na to, co naprawdę widać na slajdach.
-4. Nie ma halucynacji wizualnych.
-5. Slajdy 10–12 są wyraźnie lepiej zakotwiczone niż w wersji wyjściowej.
-6. Slajd 11 jest bardziej mówalny niż wcześniej.
-7. Slajd 5 wykorzystuje tabelę.
-8. Slajd 13 ma mocny final take-away.
-9. Backup slides 14–16 mają krótkie opcjonalne sekcje Q&A.
-10. Tekst brzmi jak gotowy speech, nie jak notatka do artykułu.
+Nie dawaj ogólnych porad.
+Nie opisuj, co „warto byłoby zrobić”.
+Po prostu popraw plik.
 
-==================================================
-SPOSÓB ZWROTU WYNIKU
-==================================================
-
-Masz wykonać edycję pliku `input-latex/speach-en.txt` in place.
-
-Nie wypisuj całego poprawionego skryptu na stdout.
-
-Na stdout wypisz wyłącznie krótkie podsumowanie wykonania, zawierające:
-- że plik został poprawiony,
-- liczbę słów dla głównej części slajdów 1–13,
-- krótką listę najważniejszych napraw,
-- informację, że dodano opcjonalne sekcje backup/Q&A dla slajdów 14–16.
+Na końcu wypisz tylko krótki raport:
+- edited: yes
+- main talk words (slides 1–13): ...
+- backup words (slides 14–16): ...
+- estimated main-talk duration at 130 wpm: ...
+- brief list of the most important fixes applied
