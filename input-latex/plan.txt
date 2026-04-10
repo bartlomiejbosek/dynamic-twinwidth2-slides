@@ -1,0 +1,549 @@
+## Część I. Krótka decyzja projektowa
+
+- Plan zakłada **13 głównych slajdów** oraz **3 backup slides**; to mieści się dokładnie w celu „12–14 + 2–5” i pozwala utrzymać gęstość typową dla 16–17 minut mówienia.
+- Ogólna dramaturgia jest czterofazowa: **(1)** szybkie ustawienie problemu i modelu na slajdach 1–4, **(2)** wczesne wyłożenie wyniku na slajdzie 5, **(3)** pokazanie głównej idei strukturalnej na slajdach 6–9, **(4)** pokazanie warstwy dynamicznej i deamortyzacji na slajdach 10–13.
+- **Main result** pojawia się na **slajdzie 5** i jest tam jedynym dominującym obiektem; wcześniejsze slajdy prowadzą wyłącznie do tego momentu.
+- **Running thread** ma tworzyć jeden realnie ciągły wątek na **slajdach 8–12**: slajdy **8–9** adaptują literalnie **Figure 4–5** dla tej samej macierzy `4\times 4`, natomiast slajdy **10–12** zachowują tylko rolę tej końcowej bazy jako „ostatnio przebudowanej canonical decomposition” i tłumaczą warstwę dynamiczną, rebuilding oraz de-amortization przez **nowe schematy oparte bezpośrednio na Theorem 4, Theorem 5 i na kompozycyjnej logice Figure 6**, bez dopisywania własnych literalnych buffered updates ani nowych współrzędnych.
+- Część **problem/setup** kończy się po **slajdzie 4**; **slajd 5** jest pomostem „wynik”, a część **wynik/idea** zaczyna się operacyjnie od **slajdu 6**.
+- Partie oparte przede wszystkim na **`main-all.tex`** to slajdy **4–12** oraz backupy **14–16**, bo tam kluczowe są dokładne definicje, nazwy procedur, inwarianty, granice asymptotyczne i logiczna kolejność argumentu.
+- Partie oparte przede wszystkim na **`main.pdf`** to wizualny kręgosłup slajdów **3, 6, 7, 8 i 9**, a dla **slajdu 11** także ważny wzorzec kompozycyjny przez **Figure 6**; tam warto możliwie wiernie adaptować **Figure 1–5**, zaś przy rebuildingu świadomie oprzeć nowy schemat na układzie z PDF zamiast udawać dosłowną kontynuację figury z artykułu.
+- Centralne figury artykułu to **Figure 1**, **Figure 4**, **Figure 5** i **Figure 6**: pierwsza tłumaczy model, dwie środkowe niosą running example dla `Decompose`, a ostatnia dostarcza wzorca przebudowy, który na slajdzie 11 ma służyć tylko jako wzorzec układu.
+- **Figure 2** i **Figure 3** pozostają ważne, ale pełnią rolę wspierającą: Figure 2 uzasadnia, że opis przez prostokąty jest mały, a Figure 3 pokazuje, dlaczego potrzebna jest kanoniczność zamiast dowolnej dekompozycji.
+- Slajd tytułowy ma trwać bardzo krótko, około **15–20 sekund**; właściwy setup merytoryczny biegnie na slajdach **2–4**.
+- Plan jest **świadomie projektowany pod 16–17 minut mówienia, a nie pod pełne 20 minut slotu**: do końca slajdu 4, czyli po około **2.5–3.0 minutach**, słuchacz ma już rozumieć problem, model i pytanie badawcze; następnie około **1–1.5 minuty** idzie na theorem slide, około **8–9 minut** na ideę techniczną i około **1 minuty** na końcowy take-away, zostawiając realny margines na pytania i przejście.
+
+## Część II. Szczegółowy plan slajd po slajdzie
+
+1. **a) Tytuł**
+**Dynamic data structures for twin-ordered matrices**
+
+**b) Cele slajdu**
+- Otworzyć referat czysto i bez technicznego długu.
+- Zamknąć ten slajd w około 15–20 sekund, bez merytorycznego zatrzymywania się.
+- Od razu ustawić dokładny temat: dynamiczna struktura danych dla binarnych macierzy `d`-twin-ordered.
+- Zasygnalizować główny rezultat czasowy, ale jeszcze bez wchodzenia w konstrukcję.
+
+**c) Treść slajdu**
+- Tytuł pracy.
+- Autorzy.
+- Afiliacje.
+- Mały podtytuł pod tytułem:
+`Queries and updates in \(O(\log\log n)\) expected worst-case time`
+- Stopka: `LATIN 2026`.
+
+**d) Bardzo precyzyjny opis rysunku**
+- Slajd bez osobnej figury merytorycznej.
+- Układ klasyczny: tytuł w górnej połowie, autorzy i afiliacje pod nim, dużo pustej przestrzeni.
+- Jeżeli ma się pojawić motyw wizualny, to wyłącznie bardzo mała neutralna ikona binarnej macierzy `4\times 4` w prawym dolnym rogu, bez podpisów i bez dodatkowej treści.
+
+2. **a) Tytuł**
+**What is the object we want to maintain?**
+
+**b) Cele slajdu**
+- Do około 1.5 minuty wyjaśnić, że problem dotyczy binarnej macierzy z ustalonym porządkiem wierszy i kolumn.
+- Ustawić dokładny interfejs dynamiczny: zapytania o komórkę i pojedyncze flipy.
+- Wprowadzić obietnicę `d`-twin-orderingu bez pełnej definicji kontrakcyjnej.
+
+**c) Treść slajdu**
+- Duży napis po lewej:
+\[
+M \in \{0,1\}^{n\times n}
+\]
+- Pod nim trzy krótkie punkty:
+- `rows and columns stay in a fixed order`
+- `the matrix is always promised to be \(d\)-twin-ordered`
+- `we need cell queries and single-cell flips`
+- Po prawej dwa duże napisy:
+- `QueryBit(i,j)`
+- `Update(i,j)`
+- Na dole jedna krótka linia:
+`The order is fixed throughout the paper.`
+
+**d) Bardzo precyzyjny opis rysunku**
+- W centrum średnia macierz `8\times 8` z czarnymi i białymi komórkami.
+- Jedna komórka zaznaczona cienką czerwoną ramką z etykietą `QueryBit(i,j)`.
+- Inna komórka zaznaczona niebieską obwódką i małą ikoną `0↔1`.
+- Nad macierzą cienki napis: `row/column order fixed`.
+- Rysunek ma być czysto interfejsowy, bez bloków, bez stref i bez jeszcze technicznej definicji twin-orderingu.
+
+3. **a) Tytuł**
+**Twin-ordering by contraction sequences**
+
+**b) Cele slajdu**
+- Dać minimalną, ale dokładną definicję `d`-twin-ordered matrix.
+- Oprzeć ten moment na istniejącej figurze z artykułu, a nie na nowej ilustracji.
+- Doprowadzić słuchacza do punktu: „rozumiem model, zanim usłyszę wynik”.
+
+**c) Treść slajdu**
+- Krótka definicja:
+- `a contraction sequence is a sequence \((\mathcal R_0,\mathcal C_0),\ldots,(\mathcal R_p,\mathcal C_p)\)`
+- `it starts with singleton row/column blocks and ends with one row block and one column block`
+- `each step merges two consecutive row blocks or two consecutive column blocks`
+- `width at most \(d\) means: at every step, every row block and every column block contains at most \(d\) non-constant zones`
+- Wyróżniona linia:
+`\(M\) is \(d\)-twin-ordered iff it admits such a contraction sequence.`
+- Mały dopisek:
+`Throughout the paper, the order is fixed.`
+
+**d) Bardzo precyzyjny opis rysunku**
+- Adaptacja **Figure 1**.
+- Pokazać cztery reprezentatywne stany zamiast całej sekwencji:
+- macierz początkową,
+- stan po scaleniu dwóch kolejnych wierszy,
+- stan po scaleniu dwóch kolejnych kolumn,
+- późny stan z dużymi blokami.
+- Grube czarne linie mają zaznaczać aktualne bloki.
+- Wszystkie non-constant zones zaznaczyć tym samym jasnym tłem co w artykule.
+- Pod każdym stanem mały podpis: `merge rows`, `merge columns`, `width stays 2 in the example`.
+
+4. **a) Tytuł**
+**The gap: static yes, dynamic no**
+
+**b) Cele slajdu**
+- Osadzić pracę względem bezpośredniego poprzednika z literatury.
+- Sformułować dokładne pytanie badawcze tej pracy.
+- Domknąć setup tak, by theorem slide mógł wejść około 3. minuty referatu.
+
+**c) Treść slajdu**
+- Lewa kolumna:
+`Static compact representation [Pilipczuk–Sokołowski–Zych-Pawlewicz]`
+- `\(O_d(n)\) bits`
+- `single-entry queries in \(O_d(\log\log n)\)`
+- `fundamentally static after initialization`
+- Prawa kolumna:
+`Our dynamic question`
+- `can we support QueryBit and Update`
+- `while \(M\) stays \(d\)-twin-ordered at every moment`
+- `and while keeping near-linear memory on word RAM?`
+- Na dole jedna linia:
+`This is exactly the problem addressed by Theorem 1 of the paper.`
+
+**d) Bardzo precyzyjny opis rysunku**
+- Dwie proste karty obok siebie.
+- Lewa karta: ikona macierzy z podpisem `static`.
+- Prawa karta: ta sama macierz z małą ikoną bufora aktualizacji i podpisem `dynamic ?`.
+- Między kartami gruba strzałka w prawo.
+- Bez ozdobników; rysunek ma tylko kondensować przejście od wyniku statycznego do pytania dynamicznego.
+
+5. **a) Tytuł**
+**Main theorem**
+
+**b) Cele slajdu**
+- Pokazać główny wynik wcześnie i bardzo wyraźnie.
+- Ustawić wszystko, co dalej będzie wyjaśniane jako proof idea tego jednego twierdzenia.
+- Uczciwie zaznaczyć różnicę między pamięcią dynamiczną a statycznym wynikiem bitowym.
+
+**c) Treść slajdu**
+- Centralny theorem box:
+\[
+\textbf{Theorem 1.}
+\]
+- `Let \(d\in\mathbb N\) and \(M\in\{0,1\}^{n\times n}\) be updated over time, always remaining \(d\)-twin-ordered.`
+- `There is a dynamic data structure using \(O_d(n)\) memory and supporting:`
+- `Init(n,\mathcal K)` in `\(O_d((n+|\mathcal K|)\log\log n)\)`
+- `QueryBit(i,j)` in `\(O(\log\log n)\)` expected worst-case time
+- `Update(i,j)` in `\(O(\log\log n)\)` expected worst-case time
+- Dwa krótkie dopiski pod boxem:
+- `\(\mathcal K\)` is a list of disjoint rectangles representing all ones
+- `word RAM: \(O_d(n)\) memory means \(O_d(n\log n)\) bits`
+- Jedna mała linia na dole:
+`Only initialization and memory depend on \(d\).`
+
+**d) Bardzo precyzyjny opis rysunku**
+- Bez osobnej figury narracyjnej; głównym obiektem ma być theorem box.
+- Pod theorem boxem mała tabelka `static vs dynamic` z trzema wierszami: `space`, `query`, `update`.
+- W wierszu `space` wpisać dokładnie `static: \(O_d(n)\) bits`, `dynamic: \(O_d(n)\) memory`.
+- W wierszu `query` wpisać dokładnie `static: \(O_d(\log\log n)\)`, `dynamic: \(O(\log\log n)\)`.
+- W wierszu `update` wpisać dokładnie `static: —`, `dynamic: \(O(\log\log n)\)`.
+
+6. **a) Tytuł**
+**Slabs: why near-linear space is possible**
+
+**b) Cele slajdu**
+- Wprowadzić podstawowy obiekt geometryczny używany potem przez strukturę danych.
+- Wyjaśnić, skąd bierze się mały opis wszystkich jedynek przez prostokąty.
+- Nie mieszać jeszcze kanoniczności z samym faktem istnienia małej dekompozycji.
+
+**c) Treść slajdu**
+- Definicje:
+- `a slab is a zone \(M[[a,b],[c,d]]\) entirely filled with ones`
+- `a slab decomposition \(\mathcal K\) is a set of pairwise disjoint slabs with no 1 outside the slabs`
+- Wyróżniona linia:
+\[
+|\mathcal K| \le d(2n-2)+1
+\]
+- Krótki komentarz:
+`So every \(d\)-twin-ordered matrix admits an \(O_d(n)\)-size rectangle description of all ones.`
+
+**d) Bardzo precyzyjny opis rysunku**
+- Adaptacja **Figure 2**.
+- Użyć dokładnie tej małej macierzy `5\times 5` z artykułu.
+- Każdy slab obrysowany innym kolorem; wypełnienie półprzezroczyste.
+- Zera pozostają białe, jedynki w slabach są tylko delikatnie podbarwione, bez ciężkich ramek.
+- Po prawej mała legenda z 2–3 zapisami współrzędnych typu `M[[4,5],[1,3]]`, żeby słuchacz widział, że chodzi o listę prostokątów.
+
+7. **a) Tytuł**
+**Canonical slabs: the normalization step**
+
+**b) Cele slajdu**
+- Wyjaśnić, że „jakaś” slab decomposition nie wystarcza do dynamicznej konstrukcji.
+- Wprowadzić canonical slab decomposition jako właściwy obiekt utrzymywany po przebudowie.
+- Pokazać, że kanoniczność nie niszczy liniowego rozmiaru.
+
+**c) Treść slajdu**
+- Trzy definicje:
+- `an \(i\)-strip is a maximal all-1 slab of width 1 inside column \(i\)`
+- `\(\mathtt{strips}_i\)` is the set of all \(i\)-strips
+- `siblings are strips with the same row interval persisting through consecutive columns`
+- Wyróżniona linia:
+`A canonical slab is the union of one sibling class, and each strip belongs to exactly one canonical slab.`
+- Potem:
+\[
+|\mathcal R| \le 4f_d(n+2)+4n
+\]
+- Krótki komentarz:
+`Canonical slabs are still only \(O_d(n)\).`
+- Drobny dopisek przy formule lub pod nią:
+`Here \(f_d\) is the constant from the corner bound behind the \(O_d(n)\) estimate.`
+
+**d) Bardzo precyzyjny opis rysunku**
+- Adaptacja **Figure 3**.
+- Dwie macierze obok siebie.
+- Nad lewą podpis `coarser slab decomposition`.
+- Nad prawą podpis `canonical slab decomposition`.
+- Na prawej figurze wszystkie canonical slabs w różnych kolorach.
+- Ważne, by wzrokowo było jasne: kanoniczna wersja jest bardziej rozszczepiona, ale nadal ma kontrolowany rozmiar.
+
+8. **a) Tytuł**
+**Running example, part I: left-to-right sweep for \(B_i\)**
+
+**b) Cele slajdu**
+- Wprowadzić jedyny rzeczywisty running example części technicznej.
+- Pokazać pierwszy sweep algorytmu `\mathtt{Decompose}`.
+- Wprowadzić tylko te symbole, które są niezbędne natychmiast: `O_i`, `C_i`, `B_i`; rolę `L_i` i bieżącego stanu `\mathbb S` potraktować jako mechanikę pomocniczą, a nie drugi temat slajdu.
+
+**c) Treść slajdu**
+- Po lewej jeden zwarty blok z trzema definicjami:
+\[
+O_i := \{[a,b] \mid (a,b,i,d')\in \mathcal K \text{ for some } d'\ge i\}
+\]
+\[
+C_i := \{[a,b] \mid (a,b,c',i)\in \mathcal K \text{ for some } c'\le i\}
+\]
+\[
+B_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i+1}
+\]
+- Po prawej tylko dwa punkty:
+- `round \(i\) transforms \(\mathtt{strips}_i\) into \(\mathtt{strips}_{i+1}\)`
+- `only strips touched by slabs closing at \(i\) or starting at \(i+1\) matter; the ones that disappear are exactly \(B_i\)`
+- Na dole jedna linia:
+`This is the first half of \(\mathtt{Decompose}(n,\mathcal K)\): identify which strips disappear in each round.`
+
+**d) Bardzo precyzyjny opis rysunku**
+- Adaptacja **Figure 4** prawie bez zmian.
+- U góry mała kolorowa macierz `4\times 4`.
+- Pod nią tabela z kolumnami `O_i`, `C_i`, `current strips`, `B_i`; nie eksponować `L_i` na tym slajdzie.
+- Graficznie wyróżnić wiersze `i=1` i `i=3`; pozostałe mogą być lekko przygaszone.
+- Obok tabeli pionowa czerwona linia symbolizująca aktualną kolumnę sweepa.
+
+9. **a) Tytuł**
+**Running example, part II: from \(A_i,B_i\) to canonical slabs**
+
+**b) Cele slajdu**
+- Domknąć running example z poprzedniego slajdu.
+- Pokazać drugi sweep i tablicę `\mathsf{slab\_start}`.
+- Sprawić, żeby `\mathtt{Decompose}` było dla słuchacza kompletną, zamkniętą historią.
+
+**c) Treść slajdu**
+- U góry:
+`Symmetric sweep from right to left gives`
+\[
+A_i := \mathtt{strips}_i \setminus \mathtt{strips}_{i-1}
+\]
+- Potem trzy krótkie linie:
+- `\(\mathsf{slab\_start}[a]\) remembers where the current slab on row interval \([a,b]\) started`
+- `when \((a,b)\in A_i\), record start \(i\); when \((a,b)\in B_i\), output \((a,b,\mathsf{slab\_start}[a],i)\)`
+- `a final left-to-right sweep over \(A_i\) and \(B_i\) outputs all canonical slabs`
+- Na dole:
+\[
+\mathtt{Decompose}(n,\mathcal K)\text{ runs in }O(n+|\mathcal K|\log\log n)
+\]
+- Drobny dopisek:
+`The output is the canonical slab decomposition \(\mathcal R\).`
+
+**d) Bardzo precyzyjny opis rysunku**
+- Adaptacja **Figure 5**.
+- Górą tabela `A_i`, `B_i`, `\mathsf{slab\_start}_i`, `slabs added in i-th round`.
+- Dołem ta sama macierz co na slajdzie 8, ale już z finalną canonical decomposition.
+- Koniecznie zachować wizualne połączenie z poprzednim slajdem: ta sama macierz, te same kolory, ten sam styl tabeli.
+- To ma wyglądać jak druga połowa dokładnie tego samego przykładu.
+
+10. **a) Tytuł**
+**Amortized structure: \(\mathbb P\) for slabs, \(\mathbb Q\) for recent flips**
+
+**b) Cele slajdu**
+- Przejść od reprezentacji do właściwej dynamicznej struktury danych.
+- Użyć końca slajdu 9 tylko jako wizualnej bazy „po ostatniej przebudowie”, bez dopisywania nowej literalnej sekwencji aktualizacji.
+- Wyjaśnić dwuwarstwowy inwariant bez jeszcze rozbierania przebudowy.
+- Uczynić `QueryBit` i `Update` intuicyjnymi na jednym obrazie.
+
+**c) Treść slajdu**
+- Pierwsza linia:
+`Take the final canonical slab decomposition from slide 9 as the last rebuilt base stored in \(\mathbb P\); all newer updates are kept only symbolically in \(\mathbb Q\).`
+- Dwa duże boksy:
+- `\(\mathbb P\)`: static 2D orthogonal point location on the canonical slab decomposition stored at the last rebuild`
+- `\(\mathbb Q\)`: dictionary of explicit cell values for the updates buffered since that rebuild`
+- Próg bufora:
+\[
+|\mathbb Q| \le 8f_d(n+2)
+\]
+- Inwariant:
+\[
+(i,j)\in \mathbb Q \Rightarrow M[i,j]=\mathbb Q[i,j]
+\]
+\[
+(i,j)\notin \mathbb Q \Rightarrow M[i,j]=1 \iff (i,j)\text{ lies in a base slab stored in }\mathbb P
+\]
+- Trzy krótkie linie operacyjne:
+- `\(\mathtt{QueryBit}(i,j)\): first inspect \(\mathbb Q\); on miss ask \(\mathbb P\)`
+- `\(\mathtt{Update}(i,j)\): keep the newest explicit value in \(\mathbb Q\); on first touch, recover the old value from \(\mathbb P\)`
+- `when \(|\mathbb Q|=8f_d(n+2)\), rebuild the base decomposition and empty the buffer`
+- Na dole jedna linia:
+`This is the Theorem 4 picture: \(O(\log\log n)\) expected worst-case queries and \(O(\log\log n)\) expected amortized updates.`
+
+**d) Bardzo precyzyjny opis rysunku**
+- Lewa część rysunku ma wykorzystywać finalną macierz ze slajdu 9 / Figure 5 jako bazę `base canonical slabs in \(\mathbb P\)`; kolory canonical slabs pozostają identyczne jak na slajdzie 9.
+- Prawa część rysunku to mały box `recent explicit values in \(\mathbb Q\)` z dwoma pozycjami legendy: `buffered 0` i `buffered 1`; nie wpisywać literalnych współrzędnych ani nowego datasetu.
+- Jeśli pokazać markery na macierzy, to najwyżej 1–2 małe, nieopisane symbole override; mają być wyłącznie schematyczne i nie mogą sugerować konkretnej sekwencji aktualizacji.
+- Markery nie zmieniają geometrii slabów na tym slajdzie; mają tylko pokazać, że \(\mathbb Q\) nadpisuje pojedyncze komórki ponad bazą z \(\mathbb P\).
+- Pod całością umieścić wąski pasek z dwoma liniami inwariantu z części **c)**.
+- W rogu mały szary podpis: `new schematic based directly on Theorem 4; base picture reused from Figure 5`.
+
+11. **a) Tytuł**
+**Rebuilding \(\mathbb P\): 0-updates split slabs, uncovered 1-updates become \(1\times 1\) slabs**
+
+**b) Cele slajdu**
+- Pokazać główne miejsce, gdzie dzieje się technika dynamiczna.
+- Pokazać rebuilding całkowicie ogólnie, bez wprowadzania własnej mini-instancji danych.
+- Wyjaśnić osobno rolę 0-updates i 1-updates.
+- Oprzeć opowieść na Theorem 4, używając Figure 6 co najwyżej jako wzorca układu rebuildingowego.
+
+**c) Treść slajdu**
+- Pierwsza linia:
+`Rebuilding starts from the slabs stored in \(\mathbb P\) and from the buffered explicit values stored in \(\mathbb Q\).`
+- Cztery krótkie kroki:
+- `partition \(\mathcal Q\) into 0-updates and 1-updates`
+- `assign 0-updates to slabs of \(\mathcal P\); these are the only updates that force splitting inside old slabs`
+- `split each affected slab row by row and collect the untouched pieces`
+- `every uncovered 1-update becomes a \(1\times 1\) slab`
+- Potem:
+`The resulting family \(\mathcal K\) is already a slab decomposition of the up-to-date matrix.`
+- Nierówność, którą trzeba zapamiętać:
+\[
+|\mathcal K| \le |\mathcal P| + 2|\mathcal Q|
+\]
+- Potem:
+`Run \(\mathtt{Decompose}(n,\mathcal K)\) to obtain the new canonical slab decomposition.`
+- Mały dopisek:
+`This is the rebuilding step of Theorem 4; Figure 6 can guide the composition, but not the literal data shown on the slide.`
+
+**d) Bardzo precyzyjny opis rysunku**
+- Użyć **dwóch dominujących paneli** plus **wąskiego prawego calloutu**.
+- Panel lewy: `old slabs in \(\mathbb P\) + buffered values in \(\mathbb Q\)`; to ma być nowy schemat, nie literalna rekonstrukcja Figure 6. Pokazać kilka starych slabów i kilka pogrubionych komórek typu `0-update` / `1-update`, ale bez współrzędnych i bez własnego małego datasetu.
+- Panel środkowy: pośrednia dekompozycja `\(\mathcal K\)`; jeden dawny slab ma być rozcięty na kilka `split pieces`, a jedna niepokryta `1-update` ma być pokazana jako turkusowy singleton `1\times 1`.
+- Pod panelem środkowym tylko krótki podpis tekstowy: `build \(\mathcal K\) with old untouched pieces + split pieces + uncovered \(1\times 1\) slabs`.
+- Callout prawy: `run \(\mathtt{Decompose}\)` prowadzi do nowej canonical decomposition; wystarczy narysować 2–3 pionowe canonical slabs jako wyraźnie „nowe po recomputation”, resztę można zostawić jako przygaszone tło.
+- W rogu obowiązkowy szary podpis: `new schematic based directly on Theorem 4; layout inspired by Figure 6`.
+
+12. **a) Tytuł**
+**From amortized to worst-case: epochs and snapshot copies**
+
+**b) Cele slajdu**
+- Domknąć ostatni brak: jak amortized rebuilding przechodzi w theorem-level expected worst-case bounds.
+- Pokazać epoki i catch-up całkowicie schematycznie, bez odtwarzania własnej sekwencji flipów.
+- Pokazać prostą ideę epok i catch-upu.
+- Wyjaśnić, po co naprawdę potrzebne są dwie kopie struktury.
+
+**c) Treść slajdu**
+- Ustal próg:
+\[
+L = 8f_d(n+2)
+\]
+- Główna myśl slajdu:
+`One copy keeps answering updates, while the next copy is initialized in the background and then catches up.`
+- Krótki plan:
+- `partition all updates into epochs \(E_0,E_1,E_2,\ldots\) of length \(L\)`
+- `during \(E_{2i-2}\), spread \(\mathtt{Init}(n,\mathcal K)\) of the next structure over the whole epoch; at the end it is exactly one epoch behind`
+- `during \(E_{2i-1}\), the next structure catches up by processing two updates while the previous one processes one`
+- `queries keep going to the currently active copy throughout`
+- Jeden ważny dopisek:
+`Initialization needs uninterrupted access to the old state, so we keep two copies: \(\mathbb A_{i,0}\) as the active structure and \(\mathbb A_{i,1}\) as the frozen snapshot.`
+- Na dole:
+`This is the de-amortization step of Theorem 5, upgrading the amortized structure to theorem-level expected worst-case bounds.`
+
+**d) Bardzo precyzyjny opis rysunku**
+- Pozioma oś czasu ma pokazywać przede wszystkim dwa duże bloki: `E_{2i-2}` i `E_{2i-1}`; po lewej i po prawej mogą być tylko małe, przygaszone `…`, bez dodatkowych szczegółów.
+- Dwa poziome tory:
+- górny: `active copy answering updates`
+- dolny: `next copy being prepared`
+- W bloku `E_{2i-2}` na dolnym torze narysować długi pasek `background Init from frozen snapshot`.
+- W bloku `E_{2i-1}` na dolnym torze narysować sekwencję krótkich podwójnych ticków lub podwójnych strzałek z podpisem `catch-up: 2 updates here / 1 update above`.
+- Przy początku osi dodać mały trzeci, cienki prostokąt `read-only snapshot` połączony tylko z paskiem `background Init`; nie prowadzić go dalej przez cały slajd.
+- Przy końcu `E_{2i-1}` wstawić pionową strzałkę `takes over`, przechodzącą z dolnego toru na górny.
+- W rogu obowiązkowy szary podpis: `new timeline schematic based on Theorem 5; no literal update sequence shown`.
+
+13. **a) Tytuł**
+**Take-away**
+
+**b) Cele slajdu**
+- Zostawić jedną mocną myśl na koniec.
+- Powtórzyć theorem i łańcuch idei prowadzących do wyniku.
+- Dać naturalny slajd wiszący podczas pytań bez dodawania niesource’owanych open problems.
+
+**c) Treść slajdu**
+- Jedna wyróżniona linia:
+`Dynamic data structure for \(d\)-twin-ordered matrices: \(O_d(n)\) memory and \(O(\log\log n)\) expected worst-case time for both QueryBit and Update.`
+- Potem pipeline:
+\[
+d\text{-twin-ordering}
+\Rightarrow O_d(n)\text{ slabs}
+\Rightarrow O_d(n)\text{ canonical slabs}
+\Rightarrow \mathbb P+\mathbb Q
+\Rightarrow \text{worst-case via epochs + snapshot copies}
+\]
+- Na dole jedno krótkie zdanie:
+`Structural core: canonicalization. Dynamic core: buffered updates plus scheduled rebuilding.`
+- Dolny pasek:
+`Questions?`
+
+**d) Bardzo precyzyjny opis rysunku**
+- Centralny poziomy pipeline z pięcioma prostokątami i strzałkami.
+- Prostokąty mają odpowiadać kolejno napisom: `d-twin-ordering`, `slabs`, `canonical slabs`, `\(\mathbb P+\mathbb Q\)`, `epochs + snapshot copies`.
+- W prostokącie `\(\mathbb P+\mathbb Q\)` umieścić małą, całkowicie ogólną ikonę dwuwarstwową: w tle 2–3 kolorowe canonical slabs, z przodu mały badge `\(\mathbb Q\)` z jednym czerwonym i jednym zielonym symbolem override, ale bez współrzędnych i bez sugerowania literalnej nowej instancji.
+- Ostatni prostokąt grubszy, z napisem `dynamic DS`.
+- Na samym dole jasnoszary pasek z napisem `Questions?`.
+- Slajd ma być prosty, symetryczny i dobrze wyglądać, gdy zostanie na ekranie po referacie.
+
+14 (backup). **a) Tytuł**
+**Backup: adhesive segment set**
+
+**b) Cele slajdu**
+- Mieć gotową odpowiedź na pytanie o implementację sweepa.
+- Pokazać tylko interfejs i koszt operacji, bez pełnego dowodu struktury danych.
+
+**c) Treść slajdu**
+- Lista operacji:
+- `Containing([a,b])`
+- `Adjacent([a,b])`
+- `Disjoint([a,b])`
+- `Merge([a,b])`
+- `Split([a,b])`
+- Mały komentarz:
+`All operations run in \(O(\log\log n)\) worst-case time, the structure uses \(O(n)\) memory, and it can be initialized on the empty set in \(O(n)\) time.`
+
+**d) Bardzo precyzyjny opis rysunku**
+- Oś liczbowa `1,\dots,n`.
+- Na niej dwa rozłączne segmenty, np. `[2,4]` i `[7,9]`.
+- Obok dwie mini-ilustracje:
+- `Merge([5,6])` łączy oba w jeden większy segment,
+- `Split([3,3])` rozcina istniejący segment na dwa.
+- Rysunek ma być czysto pomocniczy, bez dodatkowych ozdobników.
+
+15 (backup). **a) Tytuł**
+**Backup: why are there only \(O_d(n)\) canonical slabs?**
+
+**b) Cele slajdu**
+- Mieć gotową odpowiedź na pytanie o Lemma 4.
+- Pokazać intuicję „charging to corners”, ale bez pełnego dowodu w detalach.
+
+**c) Treść slajdu**
+- Krótko:
+- `a corner is a \(2\times 2\) zone whose two rows are different and whose two columns are different`
+- `Lemma 1: a \(d\)-twin-ordered matrix has at most \(f_d(n+2)\) corners`
+- `every internal canonical slab must intersect a corner`
+- `boundary cases contribute only \(4n\)`
+- Wniosek:
+\[
+|\mathcal R| \le 4f_d(n+2)+4n
+\]
+
+**d) Bardzo precyzyjny opis rysunku**
+- Jedna średnia macierz.
+- W środku żółty canonical slab.
+- Przy jego prawym brzegu czerwono obrysowany mały blok `2\times 2` oznaczony `corner`.
+- Na brzegu macierzy dwie małe etykiety `boundary cases`.
+- Chodzi o wizualne pokazanie lokalnego świadka, nie o odtwarzanie całego dowodu.
+
+16 (backup). **a) Tytuł**
+**Backup: rebuilding \(\mathcal K\) from \(\mathcal P\) and \(\mathcal Q\) in detail**
+
+**b) Cele slajdu**
+- Odpowiedzieć na pytanie o techniczne detale recomputation.
+- Rozbić procedurę na kilka prostych kroków, bez przepisywania całego dowodu Theorem 4.
+- Mieć pod ręką dokładniejszą wersję mechaniki row-by-row splitting, której nie trzeba dźwigać na slajdzie głównym.
+
+**c) Treść slajdu**
+- Kroki:
+- `sort \(\mathcal Q\) lexicographically`
+- `assign 0-updates to slabs of \(\mathcal P\)`
+- `for each affected slab \(P=(a,b,c,d)\), process row batches \(L_i\) of 0-updates with the same first coordinate`
+- `for each non-empty batch \(L_i\), add \(P[<i]\), split the single-row slab \(P[i]\) at the sorted second coordinates from \(L_i\), and continue with \(P[>i]\)`
+- `add \(1\times 1\) slabs for uncovered 1-updates`
+- `obtain \( |\mathcal K|\le |\mathcal P|+2|\mathcal Q| \), then run \(\mathtt{Decompose}(n,\mathcal K)\)`
+- Na dole:
+`This is the exact rebuilding step amortized over the threshold \(8f_d(n+2)\).`
+
+**d) Bardzo precyzyjny opis rysunku**
+- Flowchart z siedmioma prostokątami połączonymi strzałkami:
+`old \(\mathcal P\)` → `sort \(\mathcal Q\)` → `assign 0-updates` → `split affected slabs` → `add \(1\times 1\) slabs` → `Decompose` → `new canonical slabs`
+- Obok mały, całkowicie ogólny szkic jednego slaba: zaznaczyć jeden wiersz `i`, listę kolumn z `L_i`, punkty cięcia oraz wynikowe podprzedziały w tym jednym wierszu.
+- Pod szkicem dodać tylko neutralne etykiety `\(P[<i]\)`, `\(P[i]\) split by \(L_i\)`, `\(P[>i]\)`; nie wpisywać literalnych współrzędnych.
+- Bez dekoracji; tylko techniczna czytelność.
+
+## Część III. Kontrola zgodności z 10 cechami dobrego referatu
+
+1. **Prezentacja zaprojektowana na 16–17 minut mówienia.**
+- Realizacja: slajdy 1–13 jako jedyny główny korpus; slajdy 14–16 wyłącznie jako backup.
+- Uzasadnienie: slajd 1 jest bardzo krótki, setup merytoryczny kończy się do slajdu 4, theorem pojawia się na slajdzie 5, a część techniczna jest ograniczona do 6–12 i nie próbuje pokrywać pełnych dowodów.
+
+2. **Około 12–14 głównych slajdów plus 2–5 backup slides.**
+- Realizacja: 13 głównych slajdów i 3 backup slides.
+- Uzasadnienie: plan trafia dokładnie w wymagane widełki, bez sztucznego rozdmuchiwania części głównej i bez symbolicznych backupów.
+
+3. **Do 3. minuty słuchacz rozumie problem, model i pytanie badawcze.**
+- Realizacja: slajdy 2–4.
+- Uzasadnienie: slajd 1 trwa tylko chwilę, slajd 2 ustawia obiekt i operacje, slajd 3 daje minimalną prawdziwą definicję modelu, a slajd 4 stawia dynamiczne pytanie względem wyniku statycznego.
+
+4. **Główny wynik pokazany wcześnie i bardzo wyraźnie.**
+- Realizacja: slajd 5.
+- Uzasadnienie: Theorem 1 ma osobny theorem box, pojawia się zaraz po setupie i jest jedynym dominującym elementem slajdu.
+
+5. **Referat wyjaśnia główną nową ideę, a nie tylko oznajmia twierdzenie.**
+- Realizacja: slajdy 6–12.
+- Uzasadnienie: najpierw pojawia się strukturalna idea slabów i canonical slabs, potem `Decompose`, potem dwuwarstwowy invariant `\(\mathbb P\)+\(\mathbb Q\)`, potem przebudowa i dopiero na końcu deamortyzacja.
+
+6. **Jest running example / centralny przykład pomagający śledzić prezentację.**
+- Realizacja: slajdy 8–12.
+- Uzasadnienie: Figure 4 i Figure 5 dostarczają ten sam mały przykład dla `\mathtt{Decompose}` na slajdach 8–9, a slajdy 10–12 utrzymują ciągłość przez ponowne użycie końcowej bazy jako intuicji `last rebuilt state`, lecz samą warstwę dynamiczną pokazują już przez schematy ogólne, bez dopisywania własnych współrzędnych ani własnej sekwencji aktualizacji.
+
+7. **Related work / kontekst wcześniejszych prac jest krótki, celowy i nieprzeładowany.**
+- Realizacja: slajd 4.
+- Uzasadnienie: kontekst ogranicza się do jednego bezpośrednio relewantnego poprzednika statycznego i do pytania, które ta praca rozwiązuje; nie ma osobnego, rozwleczonego slajdu related work.
+
+8. **Część techniczna pokazuje proof idea / structural idea, a nie pełny dowód.**
+- Realizacja: slajdy 6–12 oraz backupy 14–16.
+- Uzasadnienie: w części głównej są tylko definicje, boundy, invarianty i schematy przebudowy; cięższe dowodowe detale są odsunięte do backupów.
+
+9. **Plan jest zgodny z realiami PDF uruchamianego na obcym komputerze.**
+- Realizacja: wszystkie slajdy, szczególnie 3, 6, 7, 8, 9, 11 i 12.
+- Uzasadnienie: plan bazuje na statycznych figurach z artykułu albo na prostych nowych schematach PDF-safe; nie ma multimediów, a slajdy 11–12 zostały dodatkowo odchudzone tak, by nie opierały się na przeładowanych, wieloelementowych kompozycjach.
+
+10. **Ostatni główny slajd daje mocny take-away i naturalne wejście w pytania.**
+- Realizacja: slajd 13.
+- Uzasadnienie: końcówka powtarza wynik, kompresuje ideę do jednego pipeline’u i zostawia prosty slajd wiszący `Questions?`, bez niesource’owanego open problemu udającego treść artykułu.
+
+**Końcowe podsumowanie mapowania źródeł**
+- Najbardziej bezpośrednio z `main-all.tex` wynikają slajdy 4–12 oraz backupy 14–16, bo tam treść zależy od dokładnych definicji, nazw procedur, inwariantów, kosztów i kolejności argumentu z Introduction oraz Sections 2–5.
+- Najbardziej bezpośrednio z `main.pdf` wynikają slajdy 3, 6, 7, 8 i 9, zaś slajd 11 czerpie z PDF przede wszystkim wzorzec kompozycyjny i narracyjny z Figure 6.
+- Adaptacjami materiału z artykułu są rysunki na slajdach 3, 6, 7, 8 i 9: odpowiednio Figure 1, Figure 2, Figure 3, Figure 4 i Figure 5.
+- Nowymi, ale ściśle tekstowo uzasadnionymi wizualizacjami są slajdy 2, 4, 5, 10, 11, 12, 13 oraz backupy 14–16; w szczególności slajd 10 jest nowym dwuwarstwowym schematem opartym na Theorem 4 i na końcu Figure 5, slajd 11 jest nowym schematem rebuildingowym opartym bezpośrednio na Theorem 4 i tylko kompozycyjnie inspirowanym Figure 6, a slajd 12 jest nową osią czasu opartą bezpośrednio na Theorem 5.

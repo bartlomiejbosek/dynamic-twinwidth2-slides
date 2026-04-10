@@ -529,14 +529,14 @@ $i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\{[1,1],[3,4]\}$ & $[4,\bot,4,\bot]$ & $(1,1,4,
 %% ============== SLIDE 10: Amortized structure ==============
 \begin{frame}{Amortized structure: $\mathbb{P}$ for slabs, $\mathbb{Q}$ for recent flips}
 
-{\footnotesize Take the final canonical slab decomposition from slide~9 as the last rebuilt base stored in $\mathbb{P}$; all newer updates are kept only symbolically in $\mathbb{Q}$.}
+{\footnotesize Take the final canonical decomposition from slide~9 as the last rebuilt base. New flips are not merged into the slabs immediately.}
 
 \smallskip
-\begin{columns}[T]
-\begin{column}{0.44\textwidth}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.43\textwidth}
 \centering
-\begin{tikzpicture}[scale=0.50]
-\node[font=\scriptsize\bfseries] at (2,4.85) {base canonical slabs in $\mathbb{P}$};
+\begin{tikzpicture}[scale=0.54]
+\node[font=\scriptsize\bfseries,align=center] at (2,4.85) {$\mathbb{P}$: last rebuilt\\canonical slabs};
 \fillslab{slab1}{2}{2}{1}{1}{4}
 \fillslab{slab2}{4}{4}{1}{1}{4}
 \fillslab{slab4}{2}{4}{2}{3}{4}
@@ -558,27 +558,34 @@ $i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\{[1,1],[3,4]\}$ & $[4,\bot,4,\bot]$ & $(1,1,4,
 \drawslab{slab4}{2}{4}{2}{3}{4}
 \drawslab{slab5}{1}{1}{4}{4}{4}
 \drawslab{slab3}{3}{4}{4}{4}{4}
-\draw[updatezero,line width=1.1pt,rounded corners=1pt] (1,2) rectangle (2,3);
-\draw[updateone,line width=1.1pt,rounded corners=1pt] (3,2) rectangle (4,3);
-\node[draw,rounded corners,fill=gray!6,align=left,font=\scriptsize,anchor=north west] at (4.55,3.95) {$\mathbb{Q}$ keeps only overrides\\[3pt]
-\tikz{\draw[updatezero,line width=1pt,rounded corners=1pt] (0,0) rectangle (0.22,0.22);}~buffered $0$\\[2pt]
-\tikz{\draw[updateone,line width=1pt,rounded corners=1pt] (0,0) rectangle (0.22,0.22);}~buffered $1$};
+\node[font=\tiny,align=center,gray] at (2,-0.45) {same base as the running example};
 \end{tikzpicture}
 
-\smallskip
-{\tiny\color{gray} New schematic based directly on Theorem~4; base picture reused from Figure~5.}
 \end{column}
-\begin{column}{0.54\textwidth}
-{\small \textbf{$\mathbb{P}$:} static 2D orthogonal point location on the canonical slab decomposition stored at the last rebuild.}
-
-\medskip
-{\small \textbf{$\mathbb{Q}$:} dictionary of explicit cell values for the updates buffered since that rebuild.}
-
-\medskip
-{\small Buffer threshold:}
-\[
-|\mathbb{Q}| \leq 8f_d(n+2)
-\]
+\begin{column}{0.55\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.86,transform shape,font=\scriptsize,
+  box/.style={draw,rounded corners,align=center,fill=gray!6,inner sep=4pt},
+  op/.style={draw,rounded corners,align=center,fill=darkblue!7,inner sep=4pt,text width=2.15cm},
+  smallbox/.style={draw,rounded corners,align=center,fill=white,inner sep=3pt,text width=2.15cm}]
+\node[box,text width=4.8cm] (q) at (0,0) {\textbf{$\mathbb{Q}$: explicit overrides}\\since the last rebuild\\[2pt]
+\begin{tabular}{c|c}
+key & stored value\\
+$(i,j)$ & $0$ or $1$
+\end{tabular}};
+\node[op] (query) at (-1.45,-1.45) {$\mathtt{QueryBit}(i,j)$};
+\node[op] (update) at (1.45,-1.45) {$\mathtt{Update}(i,j)$};
+\node[smallbox] (qhit) at (-1.45,-2.55) {hit in $\mathbb{Q}$: return\\miss: ask $\mathbb{P}$};
+\node[smallbox] (store) at (1.45,-2.55) {hit in $\mathbb{Q}$: negate\\miss: query $\mathbb{P}$, store};
+\node[box,fill=darkred!7,text width=4.8cm] (threshold) at (0,-3.72)
+  {at $|\mathbb{Q}|=8f_d(n+2)$: rebuild $\mathbb{P}$ and empty $\mathbb{Q}$};
+\draw[-{Stealth[length=4pt]},thick] (q)--(query);
+\draw[-{Stealth[length=4pt]},thick] (q)--(update);
+\draw[-{Stealth[length=4pt]},thick] (query)--(qhit);
+\draw[-{Stealth[length=4pt]},thick] (update)--(store);
+\draw[-{Stealth[length=4pt]},thick] (qhit)--(threshold);
+\draw[-{Stealth[length=4pt]},thick] (store)--(threshold);
+\end{tikzpicture}
 \end{column}
 \end{columns}
 
@@ -586,150 +593,189 @@ $i\!=\!4$ & $\{[1,1],[3,4]\}$ & $\{[1,1],[3,4]\}$ & $[4,\bot,4,\bot]$ & $(1,1,4,
 {\footnotesize \textbf{Invariant:} $(i,j)\in\mathbb{Q} \Rightarrow M[i,j]=\mathbb{Q}[i,j]$. \;
 $(i,j)\notin\mathbb{Q} \Rightarrow M[i,j]=1 \iff (i,j)$ lies in a base slab of $\mathbb{P}$.}
 
-\medskip
-{\scriptsize $\mathtt{QueryBit}(i,j)$ first checks $\mathbb{Q}$ and asks $\mathbb{P}$ on a miss. \;
-$\mathtt{Update}(i,j)$ stores the newest explicit value in $\mathbb{Q}$; on first touch it queries $\mathbb{P}$ to recover the old value. When $|\mathbb{Q}|=8f_d(n+2)$, rebuild the base decomposition and empty the buffer.}
-
-{\tiny\color{gray} Theorem~4: $\Oh(\log\log n)$ expected worst-case queries and $\Oh(\log\log n)$ expected amortized updates.}
 \end{frame}
 
 %% ============== SLIDE 11: Rebuilding ==============
 \begin{frame}{Rebuilding $\mathbb{P}$: 0-updates split slabs, uncovered 1-updates become $1\!\times\!1$ slabs}
 
-{\scriptsize Rebuilding starts from slabs $\mathcal{P}$ extracted from $\mathbb{P}$ and explicit updates $\mathcal{Q}$ extracted from $\mathbb{Q}$.}
+{\scriptsize At the threshold, extract old slabs $\mathcal{P}$ from $\mathbb{P}$ and explicit updates $\mathcal{Q}$ from $\mathbb{Q}$. Figure~6 supplies the concrete update pattern below.}
 
-\smallskip
-\begin{columns}[T]
-\begin{column}{0.49\textwidth}
-\scriptsize
-\textbf{Four steps:}
-\begin{enumerate}
-\setlength\itemsep{0.05em}
-\item Partition $\mathcal{Q}$ into 0-updates and 1-updates
-\item Assign 0-updates to slabs of $\mathcal{P}$
-\item Split each affected slab row-by-row; keep untouched pieces
-\item Every uncovered 1-update becomes a $1\!\times\!1$ slab
-\end{enumerate}
-
-\smallskip
-{\scriptsize The resulting family $\mathcal{K}$ is already a slab decomposition of the current matrix, with $|\mathcal{K}| \leq |\mathcal{P}|+2|\mathcal{Q}|$.}
-
-{\scriptsize Then run $\mathtt{Decompose}(n,\mathcal{K})$ to get the new canonical decomposition.}
-\end{column}
-\begin{column}{0.49\textwidth}
+\vspace{-0.2em}
 \centering
-\begin{tikzpicture}[scale=0.29,font=\scriptsize]
-\node[font=\tiny\bfseries] at (2.5,5.05) {old $\mathbb{P}$ + new $\mathbb{Q}$};
-\fillslab{slab5}{3}{5}{1}{2}{5}
-\fillslab{slab4}{3}{4}{3}{3}{5}
-\fillslab{slab1}{4}{5}{4}{5}{5}
+\begin{tikzpicture}[scale=0.40,font=\tiny,
+  panel/.style={font=\tiny\bfseries,align=center},
+  note/.style={font=\tiny,align=center}]
+\begin{scope}
+\node[panel] at (2.5,5.65) {1. old $\mathcal{P}$ in $\mathbb{P}$};
+\fillslab{slab4}{1}{2}{4}{4}{5}
+\fillslab{slab2}{3}{5}{1}{2}{5}
+\fillslab{slab5}{3}{4}{3}{3}{5}
+\fillslab{slab3}{4}{5}{5}{5}{5}
+\fillslab{slab1}{5}{5}{4}{4}{5}
+\foreach \r/\d [count=\ri from 0] in {
+0/{0,0,0,1,0},
+1/{0,0,0,1,0},
+2/{1,1,1,0,0},
+3/{1,1,1,0,1},
+4/{1,1,0,1,1}}{
+  \foreach \v [count=\ci from 0] in \d {
+    \node at (\ci+0.5,4.5-\ri) {\v};
+  }
+}
 \draw[step=1,gray!45] (0,0) grid (5,5);
 \draw[thick] (0,0) rectangle (5,5);
-\drawslab{slab5}{3}{5}{1}{2}{5}
-\drawslab{slab4}{3}{4}{3}{3}{5}
-\drawslab{slab1}{4}{5}{4}{5}{5}
-\draw[updatezero,line width=1.1pt,rounded corners=1pt] (2,2) rectangle (3,3);
-\draw[updatezero,line width=1.1pt,rounded corners=1pt] (3,1) rectangle (4,2);
-\draw[updateone,line width=1.1pt,rounded corners=1pt] (4,2) rectangle (5,3);
-\node[font=\tiny,align=center,anchor=north] at (2.5,-0.1) {base + overrides};
+\drawslab{slab4}{1}{2}{4}{4}{5}
+\drawslab{slab2}{3}{5}{1}{2}{5}
+\drawslab{slab5}{3}{4}{3}{3}{5}
+\drawslab{slab3}{4}{5}{5}{5}{5}
+\drawslab{slab1}{5}{5}{4}{4}{5}
+\end{scope}
 
-\draw[-{Stealth[length=5pt]},very thick] (5.25,2.45)--(5.85,2.45);
+\begin{scope}[shift={(7.15,0)}]
+\node[panel] at (2.5,5.65) {2. updates $\mathcal{Q}$};
+\draw[step=1,gray!25] (0,0) grid (5,5);
+\draw[thick,gray!60] (0,0) rectangle (5,5);
+\draw[updateone,line width=1.2pt,rounded corners=1pt] (1,4) rectangle (2,5);
+\draw[updateone,line width=1.2pt,rounded corners=1pt] (3,1) rectangle (4,2);
+\draw[updatezero,line width=1.2pt,rounded corners=1pt] (1,0) rectangle (2,1);
+\node[updateone,font=\scriptsize\bfseries] at (1.5,4.5) {$1$};
+\node[updateone,font=\scriptsize\bfseries] at (3.5,1.5) {$1$};
+\node[updatezero,font=\scriptsize\bfseries] at (1.5,0.5) {$0$};
+\node[note,anchor=west] at (5.35,3.95) {$(1,2)\mapsto 1$\\$(4,4)\mapsto 1$\\$(5,2)\mapsto 0$};
+\node[note] at (2.5,-0.35) {explicit overrides};
+\end{scope}
 
-\begin{scope}[shift={(6.15,0)}]
-\node[font=\tiny\bfseries] at (2.5,5.05) {build $\mathcal{K}$};
-\fillslab{slab5}{3}{5}{1}{2}{5}
-\fillslab{slab4}{3}{3}{3}{3}{5}
-\fillslab{splitpiece}{4}{4}{3}{3}{5}
-\fillslab{slab1}{4}{5}{4}{5}{5}
-\fillslab{updateone!35}{3}{3}{5}{5}{5}
+\begin{scope}[shift={(0,-7.0)}]
+\node[panel] at (2.5,5.65) {3. build $\mathcal{K}$};
+\fillslab{slab4}{1}{2}{4}{4}{5}
+\fillslab{slab2}{3}{4}{1}{2}{5}
+\fillslab{splitpiece}{5}{5}{1}{1}{5}
+\fillslab{slab5}{3}{4}{3}{3}{5}
+\fillslab{slab3}{4}{5}{5}{5}{5}
+\fillslab{slab1}{5}{5}{4}{4}{5}
+\fillslab{updateone!35}{1}{1}{2}{2}{5}
+\fillslab{updateone!35}{4}{4}{4}{4}{5}
+\foreach \r/\d [count=\ri from 0] in {
+0/{0,1,0,1,0},
+1/{0,0,0,1,0},
+2/{1,1,1,0,0},
+3/{1,1,1,1,1},
+4/{1,0,0,1,1}}{
+  \foreach \v [count=\ci from 0] in \d {
+    \node at (\ci+0.5,4.5-\ri) {\v};
+  }
+}
 \draw[step=1,gray!45] (0,0) grid (5,5);
 \draw[thick] (0,0) rectangle (5,5);
-\drawslab{slab5}{3}{5}{1}{2}{5}
-\drawslab{slab4}{3}{3}{3}{3}{5}
-\drawslab{splitpiece}{4}{4}{3}{3}{5}
+\drawslab{slab4}{1}{2}{4}{4}{5}
+\drawslab{slab2}{3}{4}{1}{2}{5}
+\drawslab{splitpiece}{5}{5}{1}{1}{5}
+\drawslab{slab5}{3}{4}{3}{3}{5}
+\drawslab{slab3}{4}{5}{5}{5}{5}
+\drawslab{slab1}{5}{5}{4}{4}{5}
+\draw[updatezero,line width=1.1pt,rounded corners=1pt] (1,0) rectangle (2,1);
+\draw[updateone,line width=1.1pt,rounded corners=1pt] (1,4) rectangle (2,5);
+\draw[updateone,line width=1.1pt,rounded corners=1pt] (3,1) rectangle (4,2);
+\node[note] at (2.5,-0.35) {split $0$; add uncovered $1\!\times\!1$};
+\end{scope}
+
+\begin{scope}[shift={(7.15,-7.0)}]
+\node[panel] at (2.5,5.65) {4. after $\mathtt{Decompose}$};
+\fillslab{splitpiece}{1}{1}{2}{2}{5}
+\fillslab{slab4}{1}{2}{4}{4}{5}
+\fillslab{slab2}{3}{5}{1}{1}{5}
+\fillslab{slab5}{3}{4}{2}{3}{5}
+\fillslab{slab1}{4}{5}{4}{5}{5}
+\foreach \r/\d [count=\ri from 0] in {
+0/{0,1,0,1,0},
+1/{0,0,0,1,0},
+2/{1,1,1,0,0},
+3/{1,1,1,1,1},
+4/{1,0,0,1,1}}{
+  \foreach \v [count=\ci from 0] in \d {
+    \node at (\ci+0.5,4.5-\ri) {\v};
+  }
+}
+\draw[step=1,gray!45] (0,0) grid (5,5);
+\draw[thick] (0,0) rectangle (5,5);
+\drawslab{splitpiece}{1}{1}{2}{2}{5}
+\drawslab{slab4}{1}{2}{4}{4}{5}
+\drawslab{slab2}{3}{5}{1}{1}{5}
+\drawslab{slab5}{3}{4}{2}{3}{5}
 \drawslab{slab1}{4}{5}{4}{5}{5}
-\draw[updateone,line width=1.1pt,rounded corners=1pt] (4,2) rectangle (5,3);
-\node[font=\tiny,align=center,anchor=north] at (2.5,-0.1) {split + uncovered $1\times 1$};
+\node[note] at (2.5,-0.35) {new canonical slabs};
 \end{scope}
 
-\draw[-{Stealth[length=5pt]},very thick] (11.4,2.45)--(11.95,2.45);
-
-\begin{scope}[shift={(12.3,0.15)}]
-\draw[rounded corners,fill=gray!5] (0,0.3) rectangle (2.55,4.35);
-\node[font=\tiny\bfseries,align=center] at (1.275,3.85) {$\mathtt{Decompose}$};
-\fill[gray!10] (0.45,1.0) rectangle (2.05,3.1);
-\draw[gray!35,step=0.4] (0.45,1.0) grid (2.05,3.1);
-\draw[thick,gray!55] (0.45,1.0) rectangle (2.05,3.1);
-\fill[slab5!35] (0.45,1.0) rectangle (0.85,3.1);
-\fill[slab4!35] (0.85,1.4) rectangle (1.25,2.6);
-\fill[slab1!32] (1.25,1.0) rectangle (2.05,1.8);
-\draw[slab5!80!black,very thick] (0.45,1.0) rectangle (0.85,3.1);
-\draw[slab4!80!black,very thick] (0.85,1.4) rectangle (1.25,2.6);
-\draw[slab1!80!black,very thick] (1.25,1.0) rectangle (2.05,1.8);
-\node[font=\tiny,align=center] at (1.275,0.62) {new canonical slabs};
-\end{scope}
+\draw[-{Stealth[length=5pt]},very thick] (2.5,-0.45)--(2.5,-1.45);
+\draw[-{Stealth[length=5pt]},very thick] (8.75,-0.45)--(4.25,-1.65);
+\draw[-{Stealth[length=5pt]},very thick] (5.45,-4.55)--(6.75,-4.55)
+  node[midway,above,font=\tiny] {$\mathtt{Decompose}$};
 \end{tikzpicture}
 
-\smallskip
-{\tiny\color{gray} New schematic based on Theorem~4; layout inspired by Figure~6.}
-\end{column}
-\end{columns}
+\vspace{-0.3em}
+{\scriptsize Build $\mathcal{K}$ by splitting old slabs at $0$-updates and adding uncovered $1$-updates; then $|\mathcal{K}|\leq|\mathcal{P}|+2|\mathcal{Q}|$.}
 \end{frame}
 
 %% ============== SLIDE 12: De-amortization ==============
 \begin{frame}{From amortized to worst-case: epochs and snapshot copies}
 
-{\small Threshold: $L = 8f_d(n+2)$. \quad Partition all updates into epochs $E_0,E_1,E_2,\ldots$ of length $L$.}
+{\footnotesize Same update stream, same rebuild mechanism as on slide~11; Theorem~5 schedules the work over epochs instead of paying it at once.}
 
-\medskip
-\textbf{Key idea:} one copy keeps answering updates, while the next copy is initialized in the background and then catches up.
+\smallskip
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+{\scriptsize \textbf{Theorem~4: amortized $\mathbb{A}$.} Keep $\mathbb{P}+\mathbb{Q}$; when $|\mathbb{Q}|=L=8f_d(n+2)$, rebuild and empty the buffer.}
+\end{column}
+\begin{column}{0.48\textwidth}
+{\scriptsize \textbf{Theorem~5: worst-case $\mathbb{W}$.} Partition updates into epochs of length $L$ and spread the same rebuild/catch-up work.}
+\end{column}
+\end{columns}
 
-\medskip
-\begin{itemize}
-\item During $E_{2i-2}$: spread $\mathtt{Init}(n,\mathcal{K})$ of the next structure over the whole epoch
-\item During $E_{2i-1}$: the next structure catches up by processing two updates while the previous one processes one
-\item Queries keep going to the currently active copy throughout
-\end{itemize}
-
-\medskip
-{\footnotesize Two copies are needed: $\mathbb{A}_{i,0}$ is the active structure, while $\mathbb{A}_{i,1}$ is the frozen snapshot that gives uninterrupted access to the old state during initialization.}
-
-\medskip
+\smallskip
 \centering
-\begin{tikzpicture}[x=0.95cm,y=0.74cm,font=\small]
-\draw[thick,-{Stealth[length=5pt]}] (0,0)--(7.6,0);
-\node[font=\tiny,gray] at (0.35,0.2) {$\cdots$};
-\node[font=\tiny,gray] at (7.1,0.2) {$\cdots$};
-\fill[darkblue!8] (1.0,-0.02) rectangle (3.9,0.52);
-\fill[darkblue!16] (3.9,-0.02) rectangle (6.6,0.52);
-\node[font=\scriptsize] at (2.45,0.24) {$E_{2i-2}$};
-\node[font=\scriptsize] at (5.25,0.24) {$E_{2i-1}$};
+\begin{tikzpicture}[x=0.88cm,y=0.63cm,font=\scriptsize]
+\draw[thick,-{Stealth[length=5pt]}] (0,0)--(10.2,0);
+\node[font=\tiny,gray] at (0.45,0.23) {$\cdots$};
+\node[font=\tiny,gray] at (9.65,0.23) {$\cdots$};
+\fill[darkblue!8] (1.2,-0.02) rectangle (4.25,0.54);
+\fill[darkblue!16] (4.25,-0.02) rectangle (7.3,0.54);
+\fill[darkblue!8] (7.3,-0.02) rectangle (9.2,0.54);
+\node at (2.72,0.27) {$E_{2i-2}$};
+\node at (5.78,0.27) {$E_{2i-1}$};
+\node at (8.25,0.27) {$E_{2i}$};
 
-\node[left,font=\scriptsize,darkblue,align=right] at (0.9,1.75) {active copy\\answering updates};
-\node[left,font=\scriptsize,darkred,align=right] at (0.9,0.9) {next copy\\being prepared};
-\draw[thick,darkblue] (1.0,1.75)--(6.55,1.75);
-\node[font=\tiny,darkblue,above] at (3.8,1.78) {$\mathbb{A}_{i,0}$ keeps answering queries};
-\draw[thick,darkred] (1.0,0.9)--(6.55,0.9);
+\node[left,font=\tiny,align=right,darkblue] at (1.05,3.62) {writable active\\copy};
+\node[left,font=\tiny,align=right,gray!70!black] at (1.05,2.48) {frozen read-only\\snapshot};
+\node[left,font=\tiny,align=right,darkred] at (1.05,1.28) {next copy\\under construction};
 
-\node[draw,rounded corners,fill=gray!8,font=\tiny,align=center] (snap) at (1.45,2.45) {read-only snapshot\\$\mathbb{A}_{i,1}$};
-\draw[gray!70,-{Stealth[length=4pt]}] (snap.south)--(1.45,1.02);
+\draw[darkblue,line width=1.1pt] (1.2,3.62)--(7.3,3.62);
+\node[draw,rounded corners,fill=darkblue!7,font=\tiny,align=center] at (4.25,3.98)
+  {$\mathbb{A}_{i-1,0}$ answers \texttt{QueryBit}/\texttt{Update}};
 
-\fill[slab4!55] (1.0,0.72) rectangle (3.9,1.08);
-\node[font=\tiny,darkred] at (2.45,0.48) {background Init from frozen snapshot};
+\draw[gray!70,line width=1pt] (1.2,2.48)--(4.25,2.48);
+\node[draw,rounded corners,fill=gray!8,font=\tiny,align=center] (snap) at (2.72,2.85)
+  {$\mathbb{A}_{i-1,1}$ frozen snapshot\\uninterrupted access to old $\mathbb{P}+\mathbb{Q}$};
 
-\fill[slab3!45] (3.9,0.72) rectangle (6.55,1.08);
-\foreach \x in {4.35,4.95,5.55,6.15} {
-  \draw[darkred,-{Stealth[length=4pt]},line width=0.9pt] (\x,0.78)--++(0.18,0.18);
-  \draw[darkred,-{Stealth[length=4pt]},line width=0.9pt] (\x,0.92)--++(0.18,0.18);
+\fill[slab4!55] (1.2,1.02) rectangle (4.25,1.55);
+\node[font=\tiny,darkred,align=center] at (2.72,1.28)
+  {background $\mathtt{Init}(n,\mathcal{K})$};
+\draw[gray!70,-{Stealth[length=4pt]}] (snap.south)--(2.72,1.58);
+
+\fill[slab3!45] (4.25,1.02) rectangle (7.3,1.55);
+\node[font=\tiny,darkred,align=center] at (5.78,1.28)
+  {catch-up: process two updates\\for each active update};
+\foreach \x in {4.75,5.35,5.95,6.55} {
+  \draw[darkred,-{Stealth[length=4pt]},line width=0.85pt] (\x,1.62)--++(0.16,0.25);
+  \draw[darkred,-{Stealth[length=4pt]},line width=0.85pt] (\x,1.86)--++(0.16,0.25);
 }
-\node[font=\tiny,darkred] at (5.2,0.48) {catch-up: 2 updates here / 1 above};
 
-\draw[-{Stealth[length=6pt]},very thick,darkred] (6.55,0.9)--(6.95,1.75);
-\node[font=\tiny,darkred,right] at (6.98,1.36) {takes over};
+\draw[-{Stealth[length=6pt]},very thick,darkred] (7.3,1.28)--(7.75,3.62);
+\node[draw,rounded corners,fill=darkred!8,font=\tiny,align=center,anchor=west] at (7.78,3.62)
+  {takeover:\\$\mathbb{A}_{i,0}$ becomes active};
 \end{tikzpicture}
 
 \smallskip
-{\footnotesize\color{gray} New timeline schematic based on Theorem~5; no literal update sequence shown.}
+{\footnotesize At any time: one mutable active copy, one frozen snapshot used only to initialize the successor.}
 \end{frame}
 
 %% ============== SLIDE 13: Take-away ==============
@@ -757,6 +803,9 @@ $\Oh_d(n)$ memory and $\Oh(\log\log n)$ expected worst-case time for both \textt
 
 \bigskip
 {\small Structural core: canonicalization. \quad Dynamic core: buffered updates plus scheduled rebuilding.}
+
+\medskip
+{\small\color{darkblue}\textbf{Natural direction:} can dynamic updates approach the static $\Oh_d(n)$-bit compression level?}
 
 \vfill
 \centering

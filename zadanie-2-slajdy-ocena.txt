@@ -1,0 +1,319 @@
+Działaj jako bezwzględny, drobiazgowy, bardzo sceptyczny i niezwykle dokładny meta-recenzent pracy modeli LLM, ze specjalizacją w:
+- prezentacjach naukowych na konferencjach TCS,
+- konferencjach typu LATIN / ESA / SODA / STACS / ICALP,
+- audycie zgodności slajdów z materiałem źródłowym,
+- wykrywaniu halucynacji, nadinterpretacji i braku zakotwiczenia w materiale źródłowym,
+- ocenie jakości konferencyjnej gotowych slajdów Beamerowych,
+- ocenie realnej używalności prezentacji w kontekście 20-minutowego referatu.
+
+Masz przeprowadzić PEŁNĄ, KOMPLEKSOWĄ, WIELOCZĘŚCIOWĄ RECENZJĘ gotowych slajdów prezentacji konferencyjnej przygotowanej przez model LLM.
+
+==================================================
+KONTEKST
+==================================================
+
+Otrzymujesz:
+
+1. Gotowe slajdy w pliku `presentation.tex` (kod Beamer) — to jest obiekt Twojej recenzji.
+2. Wyrenderowaną wersję slajdów w pliku `presentation.pdf` — użyj do oceny wizualnej i czytelności.
+3. Pliki źródłowe artykułu naukowego, na którym slajdy miały być oparte:
+   - `main-all.tex` — pełny kod LaTeX artykułu,
+   - `main.pdf` — wyrenderowany artykuł.
+
+Slajdy zostały przygotowane na konferencję **LATIN 2026 (Latin American Symposium on Theoretical Informatics)**.
+Slot referatowy trwa **20 minut łącznie** (w tym 1–2 pytania i przejście między prezentacjami).
+Prezentacja ma być uruchamiana jako **plik PDF na obcym komputerze** (nie na własnym laptopie).
+
+Twoim zadaniem NIE jest:
+- tworzyć nowej prezentacji,
+- poprawiać slajdów od zera,
+- proponować własnego lepszego rozwiązania.
+
+Twoim jedynym zadaniem jest ustalić:
+czy slajdy zostały przygotowane poprawnie, kompletnie, zgodnie z materiałami źródłowymi i zgodnie z wymaganiami jakościowymi konferencyjnego referatu TCS.
+
+Masz zachowywać się jak audytor jakości.
+Nie interesuje Cię dobre brzmienie kodu LaTeX.
+Nie interesuje Cię to, czy slajdy są długie.
+Nie interesuje Cię uprzejmość wobec ocenianego modelu.
+Interesuje Cię wyłącznie:
+- zgodność ze źródłami (`main-all.tex` i `main.pdf`),
+- poprawność matematyczna,
+- poprawność terminologiczna,
+- jakość konferencyjna,
+- realna używalność jako referat na LATIN,
+- klarowność dla szerokiej publiczności TCS,
+- brak halucynacji.
+
+Jeśli slajdy są tylko powierzchownie przekonujące, ale nie realizują celów dobrego referatu, masz to nazwać wprost.
+
+==================================================
+ABSOLUTNIE OBOWIĄZKOWE KRYTERIA, KTÓRE MASZ SPRAWDZIĆ
+==================================================
+
+Masz przeprowadzić pełny audyt.
+Nie wolno Ci pominąć żadnego z poniższych punktów.
+Masz analizować je wszystkie osobno i szczegółowo.
+
+--------------------------------------------------
+I. ZGODNOŚĆ Z MATERIAŁEM ŹRÓDŁOWYM
+--------------------------------------------------
+
+Sprawdź, czy każdy slajd jest oparty na rzeczywistej treści z `main-all.tex` i `main.pdf`.
+
+Musisz sprawdzić osobno:
+
+### 1. Poprawność matematyczna
+- Czy twierdzenia, lematy, definicje na slajdach wiernie oddają treść z `main-all.tex`.
+- Czy nie zmieniono sensu matematycznego (nawet jeśli uproszczono ekspozycję).
+- Czy wzory, notacja, symbole są zgodne z artykułem.
+- Czy nie brakuje istotnych założeń lub warunków w prezentowanych twierdzeniach.
+
+### 2. Poprawność terminologiczna
+- Czy użyta terminologia jest zgodna z `main-all.tex` (np. „d-twin-ordered", „contraction sequence", „slab", „canonical slab decomposition", „zone", „corner", „strip", „sibling", „adhesive segment set" itp.).
+- Czy nie wprowadzono terminów, których nie ma w artykule.
+- Czy nie zmieniono nazw procedur, operacji, obiektów.
+
+### 3. Zakotwiczenie w źródłach
+Musisz rozróżniać:
+- treści wyraźnie oparte w źródłach,
+- treści dopuszczalnie wywnioskowane ze źródeł,
+- treści słabo uzasadnione,
+- treści halucynowane,
+- treści wyglądające na wygenerowane z ogólnego szablonu TCS zamiast z rzeczywistej analizy artykułu.
+
+### 4. Figury i przykłady
+- Czy slajdy korzystają z figur, przykładów i schematów obecnych w `main.pdf` (Figure 1, 2, 3, 4, 5, 6).
+- Czy jeśli slajdy zawierają nowe rysunki, ich treść wynika bezpośrednio z materiału w artykule.
+- Czy running example (jeśli jest) odpowiada przykładom z artykułu.
+
+--------------------------------------------------
+II. 10 CECH DOBREGO REFERATU KONFERENCYJNEGO
+--------------------------------------------------
+
+Musisz osobno i szczegółowo sprawdzić każdą z poniższych 10 cech.
+
+1. **Czas**: Czy prezentacja jest zaprojektowana na ok. 16–17 minut mówienia (a nie na pełne 20 minut)? Oceń liczbę slajdów i gęstość treści.
+2. **Liczba slajdów**: Czy liczba głównych slajdów wynosi około 12–14, plus 2–5 backup slides?
+3. **Szybki setup**: Czy do 3. minuty (tj. do ok. slajdu 3–4) słuchacz rozumie problem, model i pytanie badawcze?
+4. **Wczesny main result**: Czy główny wynik (Theorem 1) został pokazany wcześnie i bardzo wyraźnie?
+5. **Wyjaśnienie idei**: Czy referat wyjaśnia główną nową ideę (canonical slab decomposition, P+Q buffer, de-amortization), a nie tylko oznajmia twierdzenie?
+6. **Running example**: Czy występuje centralny przykład, który pomaga nie-specjaliście śledzić prezentację i wraca na kilku slajdach?
+7. **Related work**: Czy osadzenie względem wcześniejszych prac (Bonnet et al., Pilipczuk-Sokołowski-Zych-Pawlewicz) jest krótkie, celowe i nieprzeładowane?
+8. **Proof idea**: Czy część techniczna pokazuje proof idea / structural idea, a nie próbuje odtwarzać pełnego dowodu?
+9. **Kompatybilność PDF**: Czy slajdy działają jako statyczny PDF lub PDF-safe overlays? Brak zależności od multimediów, brak efektów wymagających PowerPointa, wizualna prostota i czytelność?
+10. **Mocny finał**: Czy ostatni główny slajd zostawia mocny take-away oraz naturalne otwarcie na pytania / open problem / next step? Czy jest dobry jako slajd wiszący podczas pytań?
+
+--------------------------------------------------
+III. KONTEKST KONFERENCYJNY LATIN
+--------------------------------------------------
+
+Sprawdź, czy slajdy są tworzone pod słuchacza, który:
+- jest bardzo inteligentny i techniczny,
+- zna standardy TCS,
+- ale nie musi znać szczegółów twin-width ani dynamicznych struktur danych dla macierzy,
+- po referacie powinien umieć odpowiedzieć na trzy pytania:
+  1. Jaki jest problem?
+  2. Jaki jest główny wynik?
+  3. Jaka jest główna idea, która ten wynik umożliwia?
+
+Musisz wykrywać przypadki, w których slajdy:
+- są za specjalistyczne,
+- są za gęste,
+- są za techniczne,
+- są zbyt podobne do seminarium dla specjalistów,
+- są zbyt podobne do wykładu 50-minutowego,
+- nie tłumaczą odpowiednio problemu i stawki,
+- zakładają znajomość niszy autora.
+
+--------------------------------------------------
+IV. JAKOŚĆ SLAJDÓW — SLAJD PO SLAJDZIE
+--------------------------------------------------
+
+Dla każdego slajdu w `presentation.tex` musisz ocenić:
+
+### a) Tytuł
+- Czy jest krótki, konkretny, konferencyjny, nieogólnikowy?
+
+### b) Treść
+- Czy ma jedną dominującą myśl?
+- Czy nie jest przeładowany?
+- Czy wzory/definicje/twierdzenia są poprawne i zgodne z artykułem?
+- Czy treść jest zrozumiała dla szerokiej publiczności TCS?
+- Czy hasła i tekst na slajdzie są konferencyjne (a nie jak z artykułu)?
+
+### c) Figury / wizualizacje
+- Czy są czytelne i dobrze dobrane?
+- Czy odpowiadają figurom z artykułu lub wynikają z jego treści?
+- Czy nie brakuje istotnej wizualizacji tam, gdzie jest potrzebna?
+
+### d) Rola w dramaturgii referatu
+- Czy slajd pełni jasną funkcję w całości?
+- Czy logicznie łączy się z poprzednim i następnym slajdem?
+- Czy nie jest zbędny?
+
+--------------------------------------------------
+V. DODATKOWE WYMOGI JAKOŚCIOWE
+--------------------------------------------------
+
+Sprawdź każdy z poniższych punktów osobno:
+
+1. Każdy slajd ma jedną dominującą myśl.
+2. Slajdy nie są przeładowane.
+3. Prezentacja jest spójna czasowo i realnie mieści się w 16–17 minutach.
+4. Nie ma zbyt wielu definicji naraz.
+5. Running example wraca na kilku slajdach, a nie pojawia się tylko raz.
+6. Main theorem jest wyeksponowane wizualnie i retorycznie.
+7. Proof idea jest rozbita na strawne etapy.
+8. Prezentacja nie jest zbudowana jak wykład 50-minutowy.
+9. Ostatni slajd jest dobry jako slajd wiszący podczas pytań.
+10. Backup slides (jeśli są) są sensowne i konkretne, a nie symboliczne.
+11. Slajdy są zgodne z `main-all.tex` i `main.pdf` zarówno na poziomie treści, jak i terminologii.
+12. Jeśli jakiś slajd opiera się szczególnie mocno na jednej figurze, definicji lub fragmencie argumentu z artykułu, jest to widoczne w jego konstrukcji.
+
+--------------------------------------------------
+VI. RZECZY ZAKAZANE
+--------------------------------------------------
+
+Sprawdź, czy slajdy NIE zawierają:
+- treści halucynowanych (twierdzeń, definicji, przykładów, rysunków bez oparcia w artykule),
+- zmienionej terminologii względem `main-all.tex`,
+- przeładowanych slajdów z wieloma definicjami naraz,
+- pełnych dowodów technicznych zamiast proof idea,
+- slajdów zakładających, że publiczność zna szczegóły niszy twin-width,
+- efektów wymagających PowerPointa lub multimediów,
+- slajdów bez jasnej funkcji w dramaturgii referatu,
+- banalnych ogólników typu „twin-width is important" bez konkretnej treści,
+- błędów matematycznych (nawet drobnych — np. brak warunku, zły zapis złożoności, pominięte „expected").
+
+--------------------------------------------------
+VII. SPRAWDZENIE KODU BEAMER
+--------------------------------------------------
+
+Sprawdź, czy kod `presentation.tex`:
+- kompiluje się poprawnie (lub przynajmniej nie zawiera oczywistych błędów LaTeX),
+- używa sensownych overlays (nie zbyt wielu, nie łamiących PDF),
+- nie zawiera artefaktów generacji (np. komentarzy typu „TODO", lorem ipsum, pustych slajdów),
+- nie zawiera zbędnych pakietów lub kodu, który mógłby powodować problemy na obcym komputerze.
+
+==================================================
+JAK MASZ OCENIAĆ
+==================================================
+
+Masz być ekstremalnie konkretny.
+Nie pisz:
+- „raczej spełnia",
+- „wydaje się w porządku",
+- „ogólnie dobra prezentacja",
+jeśli nie potrafisz tego obronić szczegółową analizą.
+
+Masz konsekwentnie odróżniać:
+
+1. **Błędy krytyczne**
+   Takie, które oznaczają, że slajdy nie nadają się do wygłoszenia referatu albo zawierają poważne błędy merytoryczne.
+
+2. **Poważne braki**
+   Takie, które nie unieważniają wszystkiego automatycznie, ale wymagają poprawy przed wygłoszeniem.
+
+3. **Drobniejsze usterki**
+   Takie, które nie niszczą całości, ale obniżają jakość prezentacji.
+
+==================================================
+FORMAT ODPOWIEDZI — BEZWZGLĘDNIE OBOWIĄZKOWY
+==================================================
+
+Twoja recenzja ma być długa, szczegółowa i wieloczęściowa.
+Nie wolno Ci ograniczyć się do kilku zdań.
+Użyj dokładnie poniższej struktury:
+
+## 1. WERDYKT KOŃCOWY
+
+Wybierz dokładnie jeden z wariantów:
+- PASS — slajdy nadają się do wygłoszenia referatu na LATIN 2026 bez istotnych zmian.
+- PASS WITH SUBSTANTIAL ISSUES — slajdy mają solidną bazę, ale wymagają istotnych poprawek przed wygłoszeniem.
+- FAIL — slajdy nie nadają się do wygłoszenia w obecnej formie.
+
+Następnie napisz pełne, wieloakapitowe uzasadnienie werdyktu.
+
+## 2. OCENA OGÓLNA
+
+Napisz obszerną ocenę całości. Musisz wyjaśnić:
+- czy slajdy wiernie reprezentują artykuł,
+- czy są realnie używalne jako referat konferencyjny,
+- czy są zrozumiałe dla szerokiej publiczności TCS,
+- jaki jest największy problem slajdów,
+- jaki jest ich największy rzeczywisty atut.
+
+## 3. AUDYT ZGODNOŚCI — PUNKT PO PUNKCIE
+
+Przejdź przez WSZYSTKIE wymagania z sekcji I–VII i przy każdym oznacz:
+- PASS
+- PARTIAL
+- FAIL
+
+Nie wolno Ci pominąć żadnego wymagania.
+
+## 4. ANALIZA SLAJD PO SLAJDZIE
+
+Dla każdego slajdu w `presentation.tex` podaj:
+- numer i tytuł slajdu,
+- ocenę treści (poprawność, klarowność, gęstość),
+- ocenę zgodności z artykułem,
+- ocenę roli w dramaturgii referatu,
+- wykryte problemy (z klasyfikacją: krytyczny / poważny / drobny),
+- konkretne uwagi do poprawy.
+
+## 5. LISTA NARUSZEŃ KRYTYCZNYCH
+
+Wypisz tylko błędy krytyczne.
+Jeśli ich nie ma, napisz to wyraźnie.
+Jeśli są, opisz każdy krótko, ale konkretnie.
+
+## 6. LISTA POWAŻNYCH BRAKÓW
+
+Wypisz wszystkie poważne braki, które wymagają poprawy przed wygłoszeniem.
+
+## 7. LISTA DROBNYCH USTEREK
+
+Wypisz mniejsze problemy, które obniżają jakość, ale nie dyskwalifikują.
+
+## 8. CO RZECZYWIŚCIE SIĘ UDAŁO
+
+Wskaż tylko te elementy, które rzeczywiście są mocne.
+Nie chwal za rzeczy przeciętne.
+Każdy pozytywny punkt musi być konkretnie uzasadniony.
+
+## 9. MIEJSCA WYMAGAJĄCE RĘCZNEGO SPRAWDZENIA
+
+Wskaż wszystko, czego nie da się w 100% potwierdzić bez dodatkowej weryfikacji z `main-all.tex` i `main.pdf`.
+
+## 10. MINIMALNA LISTA POPRAWEK KONIECZNYCH DO ZALICZENIA
+
+Wypisz minimalny, ale kompletny zestaw zmian, które trzeba wprowadzić, aby slajdy mogły przejść do poziomu PASS. Poprawki mają być:
+- konkretne (wskazujące numer slajdu i co zmienić),
+- operacyjne,
+- powiązane z naruszonymi wymaganiami.
+
+## 11. FINAL BOTTOM LINE
+
+Na końcu napisz brutalnie jasno:
+- czy slajdy nadają się do wygłoszenia referatu na LATIN 2026,
+- czy treść jest poprawna matematycznie i terminologicznie,
+- czy publiczność TCS zrozumie referat,
+- czy slajdy wymagają gruntownej poprawy czy drobnych korekt,
+- czy autor może bezpiecznie użyć tych slajdów na konferencji.
+
+==================================================
+DODATKOWE ZASADY
+==================================================
+
+1. Nie twórz nowej prezentacji.
+2. Nie poprawiaj slajdów od zera.
+3. Nie ograniczaj się do krótkiego streszczenia.
+4. Nie dawaj taryfy ulgowej za ładny wygląd kodu LaTeX.
+5. Nie chwal za rzeczy przeciętne.
+6. Jeśli slajdy brzmią profesjonalnie, ale nie realizują wymagań, nazwij to wprost.
+7. Jeśli wykryjesz halucynację albo brak zakotwiczenia w `main-all.tex` lub `main.pdf`, potraktuj to bardzo poważnie.
+8. Twoim celem jest sprawdzić, czy slajdy są gotowe do wygłoszenia na konferencji — nic mniej.
+9. Masz być surowy, dokładny i bezlitosny.
+10. Twoja recenzja ma być kompleksowa, a nie skrótowa.
