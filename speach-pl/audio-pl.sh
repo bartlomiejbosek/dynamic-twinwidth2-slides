@@ -13,6 +13,26 @@ NC='\033[0m' # No Color
 
 echo -e "${GREEN}=== Generowanie MP3 ze wszystkich plików TXT ===${NC}\n"
 
+LENGTH_SCALE="${1:-1.0}"
+
+if [[ ! "$LENGTH_SCALE" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    echo -e "${RED}Błąd: parametr tempa musi być dodatnią liczbą, np. 1.0, 1.33, 2.0 albo 4.0.${NC}"
+    exit 1
+fi
+
+detect_length_scale_flag() {
+    local help_output
+    help_output="$(piper-tts --help 2>&1 || true)"
+
+    if grep -q -- "--length-scale" <<< "$help_output"; then
+        echo "--length-scale"
+    elif grep -q -- "--length_scale" <<< "$help_output"; then
+        echo "--length_scale"
+    else
+        echo "--length-scale"
+    fi
+}
+
 # 1. Sprawdzanie dostępności wymaganych programów w pętli (czystszy kod)
 for cmd in piper-tts wget ffmpeg; do
     if ! command -v "$cmd" &> /dev/null; then
@@ -93,6 +113,9 @@ if [ ! -d "$VOICE_DIR" ]; then
     mkdir -p "$VOICE_DIR"
 fi
 
+LENGTH_SCALE_FLAG="$(detect_length_scale_flag)"
+echo -e "${YELLOW}Używany parametr tempa mowy: ${LENGTH_SCALE_FLAG} ${LENGTH_SCALE}${NC}"
+
 # 4. Pobieranie modelu (tylko jeśli go nie ma)
 echo -e "\n${YELLOW}Sprawdzanie plików modelu głosu...${NC}"
 if [ ! -f "$MODEL_FILE" ]; then
@@ -159,7 +182,7 @@ for TEXT_FILE in "${TEXT_FILES[@]}"; do
         continue
     fi
 
-    if ! piper-tts --model "$MODEL_FILE" --output_file "$WAV_FILE" < "$CLEAN_TEXT_FILE"; then
+    if ! piper-tts --model "$MODEL_FILE" "$LENGTH_SCALE_FLAG" "$LENGTH_SCALE" --output_file "$WAV_FILE" < "$CLEAN_TEXT_FILE"; then
         echo -e "${RED}Błąd generowania WAV dla: $TEXT_FILE${NC}"
         rm -f "$WAV_FILE"
         FAIL_COUNT=$((FAIL_COUNT + 1))
